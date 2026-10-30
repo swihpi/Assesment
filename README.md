@@ -8,9 +8,19 @@ The main script is **160 lines**, uses Python's standard library, and is intende
 
 ## Run in Development or Test
 
-Stefan directs Codex to execute these checks in the local Development/Test workspace and reviews the results. The commands below also support direct reproduction by another engineer.
+I direct Codex to execute these checks in the local Development/Test workspace and review the results. The commands below also support direct reproduction by another engineer.
 
-Use Python 3; the verified runtime is Python 3.14.4. No packages, credentials, database, or cloud connection are required. From this folder:
+Use Python 3.12 or 3.14; both have been verified in clean local environments. No third-party packages, credentials, database, or cloud connection are required to run the processor. Git is needed only for the clone step; downloading and extracting the repository ZIP is an alternative.
+
+Clone the repository, enter its folder, and check that Python is available:
+
+```sh
+git clone https://github.com/swihpi/Assesment.git
+cd Assesment
+python3 --version
+```
+
+From the repository root, run the examples and tests:
 
 ```sh
 python3 process_export.py --input samples/valid.csv --output runs/dev-valid
@@ -19,7 +29,7 @@ python3 process_export.py --input samples/bad_values.csv --output runs/dev-held
 python3 -m unittest discover -s tests -v
 ```
 
-The first two runs produce the same three normalized records. The bad-value report returns HELD and exit code 2; no cleaned file is released. Every run needs a fresh folder. Existing output is never overwritten.
+The first two runs produce the same three normalized records. The bad-value example deliberately returns HELD and **exit code 2**; no cleaned file is released. This is the expected rejection outcome, not a crash. Run the commands on separate lines as shown: chaining them with `&&` stops at that expected non-zero result, so the test command would not run. Every example needs a fresh output folder. Existing output is never overwritten.
 
 **Never test a new script or mapping in Production first.** Use synthetic examples locally, then validate the deployed integration in a dedicated Development or Test environment. Promote the reviewed artifacts to Production only after that validation. [Deployment and promotion approach](docs/deployment.md).
 
@@ -69,9 +79,13 @@ Exit codes: 0 = READY; 2 = HELD; 1 = operational/configuration failure. Invalid 
 
 ![Proposed CRM-to-staging handoff](docs/diagrams/deployment.svg)
 
-The scenario assumes no usable CRM API or supported application-specific connector is available, including through OIC. The CRM does support a scheduled daily CSV report and native delivery to a customer-controlled SFTP location. OIC retrieves the completed export with its FTP Adapter configured for SFTP, then invokes a separately hosted Python function through its OCI Function action. Autonomous Database/ADW receives approved data; it does not pull the export from the CRM. The command-line script is not an embedded OIC Python library. Its rules could be reused, but a handler, request/response interface, access configuration, and deployed integration still need implementation and testing.
+**Demonstration choice:** standalone Python makes the selected validation behavior locally reproducible without Oracle platform access.
 
-Basic transformations can also be configured in OIC. Python makes this selected slice locally reproducible without platform access. The cloud path is a documented architecture proposal, not a claimed deployment.
+**Production recommendation:** first assess whether native Oracle Integration Cloud mappings and controls meet the validation, duplicate-handling, and diagnostic requirements. Use a separately hosted Python function where those requirements justify it.
+
+The scenario assumes no usable CRM API or supported application-specific connector is available, including through Oracle Integration Cloud. The CRM supports a scheduled daily CSV report and native delivery to a customer-controlled SFTP location. Oracle Integration Cloud retrieves the completed export using its FTP Adapter configured for SFTP.
+
+The diagram shows the proposed Python option: Oracle Integration Cloud invokes a separately hosted Python function through its OCI Function action and routes approved data to Autonomous Database/ADW. The database receives approved data; it does not pull the export from the CRM. The command-line script is not an embedded Oracle Integration Cloud Python library. Its rules could be reused, but a handler, cloud input/output interface, access configuration, and deployed integration still need implementation and testing. The cloud flow remains a proposal.
 
 ## Verification
 
@@ -91,9 +105,11 @@ This is the local file-to-file slice. It has no live extraction, schedule, datab
 
 Explicit dates avoid ambiguous guessing. Standard CSV parsing handles quoting and UTF-8 BOM; unsupported encoding holds the file. Mappings are reviewed data rather than inferred meanings.
 
-Stefan originated and championed the sports sentiment initiative within Oracle, helped bring colleagues together, contributed to the OIC/ADW/OAC architecture, created dashboards, and developed the broader idea of combining customer sources for useful audience information. He supplied this experience, directed the assessment iterations, challenged unnecessary complexity, and reviewed Codex results. Codex assisted with the hypothetical CRM incident, detailed rules, fixtures and expected outcomes created before implementation, code/tests, documentation, research, and execution. A supplied Claude critique informed the review. Codex was chosen to work with files, code, and actual execution results in one workspace. No runtime LLM is used: explicit rules make known transformations repeatable; unfamiliar meanings require human confirmation.
+I originated and championed the sports sentiment initiative within Oracle, helped bring colleagues together, contributed to the Oracle Integration Cloud / Autonomous Data Warehouse / Oracle Analytics Cloud architecture, created dashboards, and developed the broader idea of combining customer sources for useful audience information. I supplied this experience, directed the assessment iterations, challenged unnecessary complexity, and reviewed Codex results.
 
-The implementation is available in the private [Assesment repository](https://github.com/swihpi/Assesment). Reviewers need repository access.
+Codex assisted with the hypothetical CRM incident, detailed rules, fixtures and expected outcomes created before implementation, code/tests, documentation, research, and execution. A supplied Claude critique informed my review. I chose Codex to work with files, code, and actual execution results in one workspace. I deliberately kept an LLM out of the running processor: explicit rules make known transformations repeatable, while unfamiliar meanings require human confirmation.
+
+The implementation is available in the public [Assesment repository](https://github.com/swihpi/Assesment).
 
 The accompanying presentation provides historical screenshots. This repository contains the runnable implementation and vector flow diagrams; the original slide images are not included.
 
@@ -109,5 +125,5 @@ The accompanying presentation provides historical screenshots. This repository c
 | Tests and reliability | 19 passing checks and predefined expected output. |
 | Logging and scalability mindset | Counts, status, markers, measured runs, memory limitation. |
 | AI disclosure | Candidate and Codex contributions, with explicit runtime rules. |
-| Repository URL | [Assesment](https://github.com/swihpi/Assesment) (private; reviewer access required). |
+| Repository URL | [Assesment](https://github.com/swihpi/Assesment) (public). |
 | Safe delivery | Development/Test first, then reviewed Production promotion. |
