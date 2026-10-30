@@ -1,0 +1,5 @@
+customer_id,name,region,member_since,last_purchase_date,marketing_permission
+F001,Alex Morgan,NY,2022-04-15,2026-10-20,Y
+F001,Alex Morgan,NY,2022-04-15,2026-10-20,yes
+F002,Casey Taylor,CA,2023-06-01,,N
+F002,Casey Taylor,CA,2023-06-01,,Y

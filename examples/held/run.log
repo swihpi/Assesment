@@ -1,0 +1,3 @@
+READ bad_values.csv
+CHECK 4 parsed, 2 rejected, 0 duplicates removed
+RESULT HELD

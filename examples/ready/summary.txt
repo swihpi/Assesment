@@ -1,0 +1,9 @@
+status: READY
+source_file: valid.csv
+source_fully_parsed: true
+parsed_records: 3
+valid_records: 3
+rejected_records: 0
+identical_duplicates_removed: 0
+warnings: 0
+processing_seconds_before_report_write: 0.000501

@@ -1,0 +1,3 @@
+READ valid.csv
+CHECK 3 parsed, 0 rejected, 0 duplicates removed
+RESULT READY

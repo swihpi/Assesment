@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="507" height="155.0" preserveAspectRatio="xMinYMin meet" viewBox="0 0 507 155" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="507" height="155.0"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-155)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="0" y="104" width="104" height="34" rx="5" ry="5" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(92%,95%,95%); fill-rule: evenodd;"/>
+			<text x="21.199999999999996" y="118.0" style="font-family: Helvetica-Bold; font-size: 8.8px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,236) scale(1,-1)">CRM snapshot</text>
+			<rect x="134" y="104" width="104" height="34" rx="5" ry="5" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(92%,95%,95%); fill-rule: evenodd;"/>
+			<text x="152.25639999999999" y="118.0" style="font-family: Helvetica-Bold; font-size: 8.8px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,236) scale(1,-1)">Check headings</text>
+			<rect x="268" y="104" width="104" height="34" rx="5" ry="5" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(92%,95%,95%); fill-rule: evenodd;"/>
+			<text x="288.2056" y="118.0" style="font-family: Helvetica-Bold; font-size: 8.8px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,236) scale(1,-1)">Validate values</text>
+			<rect x="402" y="104" width="104" height="34" rx="5" ry="5" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(92%,95%,95%); fill-rule: evenodd;"/>
+			<text x="426.8608" y="118.0" style="font-family: Helvetica-Bold; font-size: 8.8px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,236) scale(1,-1)">Compare IDs</text>
+			<polyline points="104 121, 134 121" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
+			<polygon points="134 121, 129 118.6, 129 123.4" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(39%,47%,52%); fill-rule: evenodd;"/>
+			<polyline points="238 121, 268 121" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
+			<polygon points="268 121, 263 118.6, 263 123.4" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(39%,47%,52%); fill-rule: evenodd;"/>
+			<polyline points="372 121, 402 121" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
+			<polygon points="402 121, 397 118.6, 397 123.4" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(39%,47%,52%); fill-rule: evenodd;"/>
+			<polyline points="454 104, 454 76, 151 76, 151 47" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
+			<polygon points="151 47, 148.6 52, 153.4 52" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(8%,46%,43%); fill-rule: evenodd;"/>
+			<polyline points="454 76, 378 76, 378 47" style="stroke: rgb(58%,37%,11%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
+			<polygon points="378 47, 375.6 52, 380.4 52" style="stroke: rgb(58%,37%,11%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(58%,37%,11%); fill-rule: evenodd;"/>
+			<text x="123.436" y="58" style="font-family: Helvetica; font-size: 8px;fill: rgb(8%,46%,43%); stroke:none;" transform="translate(0,116) scale(1,-1)">All checks pass</text>
+			<text x="331.764" y="58" style="font-family: Helvetica; font-size: 8px;fill: rgb(58%,37%,11%); stroke:none;" transform="translate(0,116) scale(1,-1)">Rejection or invalid format</text>
+			<rect x="46" y="5" width="210" height="40" rx="5" ry="5" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(92%,95%,95%); fill-rule: evenodd;"/>
+			<text x="135.25" y="27.5" style="font-family: Helvetica-Bold; font-size: 9px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,55) scale(1,-1)">READY</text>
+			<text x="83.095" y="16.5" style="font-family: Helvetica; font-size: 9px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,33) scale(1,-1)">Cleaned CSV + diagnostic reports</text>
+			<rect x="282" y="5" width="210" height="40" rx="5" ry="5" style="stroke: rgb(58%,37%,11%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(98%,95%,91%); fill-rule: evenodd;"/>
+			<text x="374.751" y="27.5" style="font-family: Helvetica-Bold; font-size: 9px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,55) scale(1,-1)">HELD</text>
+			<text x="315.72" y="16.5" style="font-family: Helvetica; font-size: 9px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,33) scale(1,-1)">Diagnostic reports; no cleaned CSV</text>
+		</g>
+	</g>
+</svg>

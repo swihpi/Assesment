@@ -1,0 +1,14 @@
+source_column,output_column
+customer_id,customer_id
+customer id,customer_id
+fan_id,customer_id
+name,name
+full name,name
+region,region
+home region,region
+member_since,member_since
+customer since,member_since
+last_purchase_date,last_purchase_date
+last purchase,last_purchase_date
+marketing_permission,marketing_permission
+email opt in,marketing_permission

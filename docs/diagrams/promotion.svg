@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="507" height="77.0" preserveAspectRatio="xMinYMin meet" viewBox="0 0 507 77" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="507" height="77.0"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-77)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="0" y="25" width="143" height="40" rx="5" ry="5" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(92%,95%,95%); fill-rule: evenodd;"/>
+			<text x="34.8151" y="47.5" style="font-family: Helvetica-Bold; font-size: 8.1px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,95) scale(1,-1)">Local development</text>
+			<text x="33.344950000000004" y="36.5" style="font-family: Helvetica; font-size: 8.1px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,73) scale(1,-1)">Synthetic files + tests</text>
+			<rect x="182" y="25" width="143" height="40" rx="5" ry="5" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(95%,96%,96%); fill-rule: evenodd;"/>
+			<text x="216.13875000000002" y="47.5" style="font-family: Helvetica-Bold; font-size: 8.1px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,95) scale(1,-1)">Dedicated Dev/Test</text>
+			<text x="196.3221" y="36.5" style="font-family: Helvetica; font-size: 8.1px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,73) scale(1,-1)">Flow + connectors + destination</text>
+			<rect x="364" y="25" width="143" height="40" rx="5" ry="5" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(95%,96%,96%); fill-rule: evenodd;"/>
+			<text x="392.975" y="47.5" style="font-family: Helvetica-Bold; font-size: 8.1px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,95) scale(1,-1)">Production promotion</text>
+			<text x="384.9722" y="36.5" style="font-family: Helvetica; font-size: 8.1px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,73) scale(1,-1)">Reviewed version + rollback</text>
+			<polyline points="143 45, 182 45" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
+			<polygon points="182 45, 177 42.6, 177 47.4" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(39%,47%,52%); fill-rule: evenodd;"/>
+			<polyline points="325 45, 364 45" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
+			<polygon points="364 45, 359 42.6, 359 47.4" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(39%,47%,52%); fill-rule: evenodd;"/>
+			<text x="41.216" y="10" style="font-family: Helvetica; font-size: 8px;fill: rgb(8%,46%,43%); stroke:none;" transform="translate(0,20) scale(1,-1)">Exercised locally</text>
+			<text x="217.872" y="10" style="font-family: Helvetica; font-size: 8px;fill: rgb(39%,47%,52%); stroke:none;" transform="translate(0,20) scale(1,-1)">Proposed validation</text>
+			<text x="388.76" y="10" style="font-family: Helvetica; font-size: 8px;fill: rgb(39%,47%,52%); stroke:none;" transform="translate(0,20) scale(1,-1)">After successful validation</text>
+		</g>
+	</g>
+</svg>

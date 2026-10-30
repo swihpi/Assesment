@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="507" height="171.0" preserveAspectRatio="xMinYMin meet" viewBox="0 0 507 171" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="507" height="171.0"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-171)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="0" y="127" width="134" height="32" rx="5" ry="5" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(95%,96%,96%); fill-rule: evenodd;"/>
+			<text x="12.340349999999994" y="140.0" style="font-family: Helvetica-Bold; font-size: 8.3px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,280) scale(1,-1)">Social posts / game context</text>
+			<rect x="169" y="127" width="146" height="32" rx="5" ry="5" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(95%,96%,96%); fill-rule: evenodd;"/>
+			<text x="197.60025" y="140.0" style="font-family: Helvetica-Bold; font-size: 8.5px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,280) scale(1,-1)">Sentiment processing</text>
+			<polyline points="134 143, 169 143" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
+			<polygon points="169 143, 164 140.6, 164 145.4" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(39%,47%,52%); fill-rule: evenodd;"/>
+			<rect x="0" y="82" width="134" height="32" rx="5" ry="5" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(92%,95%,95%); fill-rule: evenodd;"/>
+			<text x="41.406949999999995" y="95.0" style="font-family: Helvetica-Bold; font-size: 8.3px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,190) scale(1,-1)">CRM profiles</text>
+			<rect x="169" y="82" width="146" height="32" rx="5" ry="5" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(92%,95%,95%); fill-rule: evenodd;"/>
+			<text x="198.3015" y="95.0" style="font-family: Helvetica-Bold; font-size: 8.5px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,190) scale(1,-1)">Profile quality checks</text>
+			<polyline points="134 98, 169 98" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
+			<polygon points="169 98, 164 95.6, 164 100.4" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(8%,46%,43%); fill-rule: evenodd;"/>
+			<rect x="0" y="37" width="134" height="32" rx="5" ry="5" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(95%,96%,96%); fill-rule: evenodd;"/>
+			<text x="24.562099999999994" y="50.0" style="font-family: Helvetica-Bold; font-size: 8.3px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,100) scale(1,-1)">Ticketing / purchases</text>
+			<rect x="169" y="37" width="146" height="32" rx="5" ry="5" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(95%,96%,96%); fill-rule: evenodd;"/>
+			<text x="194.757" y="50.0" style="font-family: Helvetica-Bold; font-size: 8.5px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,100) scale(1,-1)">Source-specific checks</text>
+			<polyline points="134 53, 169 53" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
+			<polygon points="169 53, 164 50.6, 164 55.4" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(39%,47%,52%); fill-rule: evenodd;"/>
+			<rect x="369" y="82" width="138" height="52" rx="5" ry="5" style="stroke: rgb(9%,21%,27%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(92%,94%,96%); fill-rule: evenodd;"/>
+			<text x="397.1535" y="110.5" style="font-family: Helvetica-Bold; font-size: 8.7px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,221) scale(1,-1)">Customer-held data</text>
+			<text x="394.2477" y="99.5" style="font-family: Helvetica; font-size: 8.7px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,199) scale(1,-1)">ADW / analytics / OAC</text>
+			<polyline points="315 143, 341 143, 341 120, 369 120" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
+			<polygon points="369 120, 364 117.6, 364 122.4" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(39%,47%,52%); fill-rule: evenodd;"/>
+			<polyline points="315 98, 369 98" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
+			<polygon points="369 98, 364 95.6, 364 100.4" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(8%,46%,43%); fill-rule: evenodd;"/>
+			<polyline points="315 53, 341 53, 341 91, 369 91" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
+			<polygon points="369 91, 364 88.6, 364 93.4" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(39%,47%,52%); fill-rule: evenodd;"/>
+			<rect x="369" y="5" width="138" height="42" rx="5" ry="5" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(95%,96%,96%); fill-rule: evenodd;"/>
+			<text x="409.63785" y="28.5" style="font-family: Helvetica-Bold; font-size: 8.1px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,57) scale(1,-1)">Analyst review</text>
+			<text x="382.1748" y="17.5" style="font-family: Helvetica; font-size: 8.1px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,35) scale(1,-1)">Audience / campaign decisions</text>
+			<polyline points="438 82, 438 47" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
+			<polygon points="438 47, 435.6 52, 440.4 52" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(39%,47%,52%); fill-rule: evenodd;"/>
+			<text x="56.524" y="13" style="font-family: Helvetica; font-size: 8px;fill: rgb(8%,46%,43%); stroke:none;" transform="translate(0,26) scale(1,-1)">Wider concept; CRM file checks are the implemented slice.</text>
+		</g>
+	</g>
+</svg>

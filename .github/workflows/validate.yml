@@ -1,0 +1,37 @@
+name: Validate CSV processor
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run core reliability tests
+        run: python3 -m unittest discover -s tests -v
+      - name: Reproduce READY and HELD examples
+        shell: bash
+        run: |
+          python3 process_export.py --input samples/valid.csv --output runs/valid
+          python3 process_export.py --input samples/renamed_report.csv --output runs/renamed
+          python3 - <<'PY'
+          import csv
+          from pathlib import Path
+          def rows(path):
+              with Path(path).open(newline='') as handle:
+                  return list(csv.DictReader(handle))
+          expected = rows('samples/expected/cleaned_valid.csv')
+          for name in ['valid', 'renamed']:
+              assert rows(f'runs/{name}/cleaned.csv') == expected
+              assert Path(f'runs/{name}/READY').is_file()
+          PY
+          set +e
+          python3 process_export.py --input samples/bad_values.csv --output runs/held
+          result=$?
+          set -e
+          test "$result" -eq 2
+          test -f runs/held/HELD
+          test ! -e runs/held/cleaned.csv

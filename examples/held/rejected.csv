@@ -1,0 +1,3 @@
+record,customer_id,field,code,message,next_action
+2,,customer_id,MISSING_VALUE,Required value missing or date invalid,Supply required values and real YYYY-MM-DD dates.
+3,F003,member_since,INVALID_DATE,Required value missing or date invalid,Supply required values and real YYYY-MM-DD dates.

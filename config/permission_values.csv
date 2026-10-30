@@ -1,0 +1,9 @@
+source_value,output_value
+yes,YES
+y,YES
+true,YES
+1,YES
+no,NO
+n,NO
+false,NO
+0,NO
