@@ -5,18 +5,22 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.12', '3.14']
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: ${{ matrix.python }}
       - name: Run core reliability tests
         run: python3 -m unittest discover -s tests -v
-      - name: Reproduce READY and HELD examples
+      - name: Reproduce ready, exception and blocked examples
         shell: bash
         run: |
           python3 process_export.py --input samples/valid.csv --output runs/valid
           python3 process_export.py --input samples/renamed_report.csv --output runs/renamed
+          python3 process_export.py --input samples/bad_values.csv --output runs/exceptions
           python3 - <<'PY'
           import csv
           from pathlib import Path
@@ -27,11 +31,15 @@ jobs:
           for name in ['valid', 'renamed']:
               assert rows(f'runs/{name}/cleaned.csv') == expected
               assert Path(f'runs/{name}/READY').is_file()
+          assert Path('runs/exceptions/READY_WITH_EXCEPTIONS').is_file()
+          assert [r['customer_id'] for r in rows('runs/exceptions/cleaned.csv')] == ['F001', 'F004']
+          assert len(rows('runs/exceptions/rejected.csv')) == 2
+          assert Path('runs/exceptions/received.csv').read_bytes() == Path('samples/bad_values.csv').read_bytes()
           PY
           set +e
-          python3 process_export.py --input samples/bad_values.csv --output runs/held
+          python3 process_export.py --input samples/breaking_change.csv --output runs/blocked
           result=$?
           set -e
           test "$result" -eq 2
-          test -f runs/held/HELD
-          test ! -e runs/held/cleaned.csv
+          test -f runs/blocked/BLOCKED
+          test ! -e runs/blocked/cleaned.csv

@@ -1,32 +1,28 @@
 # Validation evidence
 
-30 October 2026. Checks executed by the assistant in the local development workspace with synthetic data. No Production system or live customer dataset was used. Candidate review and independent rehearsal remain outstanding.
+30 October 2026. Local Development/Test execution uses synthetic inputs; no customer or Production system is involved. Candidate-independent rehearsal remains separate from automated checks.
 
-## Behavior checks
+## Correctness and recovery boundaries
+
+The 24-test suite verifies exact normalized output, heading drift, missing/invalid values, explicit NO versus UNKNOWN, duplicates, input preservation, source-record status, malformed CSV, encoding, reruns, CLI exit codes and report/completion-marker failures. It includes a generated 10,000-record case with 800 missing IDs: all received bytes are retained, exactly the 9,200 expected valid IDs are released, and exactly 800 statuses require correction. A late structural error blocks every approval, even after a valid record was parsed. The customerdata_id example is blocked until its explicit alias is provided.
+
+The original fixture values predated the original processor. The reviewed release expectations explicitly state approved IDs and independent counts. Tests and sample outputs check the documented current policy.
 
 ```sh
 python3 -m unittest discover -s tests -v
 ```
 
-**19 tests passed** for the 160-line processor. Tests cover approved mappings/reordering, additional/missing columns, invalid values, permission uncertainty, duplicate handling, malformed CSV, encoding/BOM, multiline records, reruns, configuration changes, CLI outcomes, and report-write failure without a completed marker.
+## Reproduction examples
 
-Examples in `examples/ready` and `examples/held` show the recorded outputs. The held case has no cleaned CSV. Predefined expected output remains in `samples/expected`.
+- valid.csv: READY; three approved records matching the predefined CSV.
+- renamed_report.csv: READY; the same three approved records.
+- bad_values.csv: READY_WITH_EXCEPTIONS; F001 and F004 approved, two correction cases, source copy unchanged.
+- breaking_change.csv: BLOCKED; no approved output, diagnostics and received copy retained.
 
-## Measured local runs
+Python 3.12 and 3.14 are the verification targets, locally and in GitHub's Linux workflow. The full outputs in examples/ show a successful run, a run with exceptions and a blocked run. Consumers require the corresponding success marker before using cleaned.csv.
 
-```sh
-python3 tools/benchmark.py --sizes 1000 100000 --output runs/benchmark.csv
-```
+## Measurements and limitations
 
-| Input records | Verified output | Wall seconds |
-| ---: | ---: | ---: |
-| 1,000 | 1,000 | 0.037468 |
-| 100,000 | 100,000 | 0.393321 |
+Single local Python 3.14.4 measurements on macOS 26.6.2 ARM64: 1,000 records in 0.038596 seconds; 100,000 in 0.517292 seconds. Counts were independently checked. Startup, snapshot copying, processing and reports are timed; input generation and independent output counting are not. Raw results are in benchmark.csv. Memory grows with retained records/statuses; no Production capacity, constant-memory, cloud-performance or peak-memory claim is made.
 
-Raw results are in `benchmark.csv`. The timer covers process startup and the processor, including reports. Generation and independent output counting are outside it. Environment: Python 3.14.4, macOS 26.6.2 ARM64. Single runs, with no memory profiling or cold-cache control. Memory grows with retained records. No production or cloud capacity claim is made.
-
-## Reproducibility and environment limits
-
-A clean Git export was verified with Python 3.12.14, independently of the working folder. The valid and renamed samples returned READY (exit 0), matched the predefined three-record output, and wrote READY markers. The bad-value sample returned HELD (exit 2) with no cleaned CSV. All 19 tests also passed in that clean export. No cloud OIC flow, OCI Function handler, connector, database load, or Production configuration has been deployed or tested.
-
-The documented promotion policy is Development/Test validation first, followed by reviewed promotion to Production. The standalone local checks establish only the implemented file-processing behavior.
+No Oracle Integration Cloud/OCI Function handler, ADW connection, approved-view access control, campaign filter, exception delivery or correction workflow has been deployed. Automated checks establish only the local processor's behavior. New cloud work must be validated in Development/Test before reviewed Production promotion.

@@ -1,0 +1,10 @@
+status: BLOCKED
+source_file: breaking_change.csv
+source_fully_parsed: false
+parsed_records: 0
+valid_records: 0
+rejected_records: 0
+released_records: 0
+identical_duplicates_removed: 0
+warnings: 0
+processing_seconds_before_report_write: 0.004043

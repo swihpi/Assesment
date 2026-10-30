@@ -1,51 +1,38 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE svg
-  PUBLIC '-//W3C//DTD SVG 1.0//EN'
-  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
-<svg width="507" height="206.0" preserveAspectRatio="xMinYMin meet" viewBox="0 0 507 206" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
-	<title>...</title>
-	<desc>...</desc>
-	<clipPath id="clip">
-		<rect x="0" y="0" width="507" height="206.0"/>
-	</clipPath>
-	<g id="group" transform="scale(1,-1) translate(0,-206)" style="clip-path: url(#clip)">
-		<g transform="">
-			<rect x="0" y="158" width="142" height="38" rx="5" ry="5" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(92%,95%,95%); fill-rule: evenodd;"/>
-			<text x="24.244999999999997" y="179.5" style="font-family: Helvetica-Bold; font-size: 9px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,359) scale(1,-1)">CRM reporting facility</text>
-			<text x="29.865499999999997" y="168.5" style="font-family: Helvetica; font-size: 9px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,337) scale(1,-1)">Daily CSV + delivery</text>
-			<rect x="182" y="158" width="142" height="38" rx="5" ry="5" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(92%,95%,95%); fill-rule: evenodd;"/>
-			<text x="222.49450000000002" y="179.5" style="font-family: Helvetica-Bold; font-size: 9px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,359) scale(1,-1)">SFTP file drop</text>
-			<text x="217.486" y="168.5" style="font-family: Helvetica; font-size: 9px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,337) scale(1,-1)">Completed export</text>
-			<rect x="365" y="158" width="142" height="38" rx="5" ry="5" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(92%,95%,95%); fill-rule: evenodd;"/>
-			<text x="401.99575" y="179.5" style="font-family: Helvetica-Bold; font-size: 8.5px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,359) scale(1,-1)">Oracle Integration Cloud</text>
-			<text x="387.57975" y="168.5" style="font-family: Helvetica; font-size: 8.5px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,337) scale(1,-1)">Scheduled SFTP retrieval</text>
-			<polyline points="142 177, 182 177" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
-			<polygon points="182 177, 177 174.6, 177 179.4" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(39%,47%,52%); fill-rule: evenodd;"/>
-			<polyline points="324 177, 365 177" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
-			<polygon points="365 177, 360 174.6, 360 179.4" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(39%,47%,52%); fill-rule: evenodd;"/>
-			<rect x="0" y="67" width="142" height="40" rx="5" ry="5" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(92%,95%,95%); fill-rule: evenodd;"/>
-			<text x="7" y="89.5" style="font-family: Helvetica-Bold; font-size: 8px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,179) scale(1,-1)">Python validation &amp; normalization</text>
-			<text x="13" y="78.5" style="font-family: Helvetica; font-size: 8px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,157) scale(1,-1)">Proposed hosting: OCI Function</text>
-			<rect x="182" y="67" width="142" height="40" rx="5" ry="5" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(92%,95%,95%); fill-rule: evenodd;"/>
-			<text x="205.7825" y="89.5" style="font-family: Helvetica-Bold; font-size: 8.5px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,179) scale(1,-1)">Autonomous DB / ADW</text>
-			<text x="210.4745" y="78.5" style="font-family: Helvetica; font-size: 8.5px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,157) scale(1,-1)">Approved staging data</text>
-			<rect x="365" y="67" width="142" height="40" rx="5" ry="5" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(92%,95%,95%); fill-rule: evenodd;"/>
-			<text x="396.742" y="89.5" style="font-family: Helvetica-Bold; font-size: 9px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,179) scale(1,-1)">Analytics platform</text>
-			<text x="397.4845" y="78.5" style="font-family: Helvetica; font-size: 9px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,157) scale(1,-1)">Later customer use</text>
-			<text x="205" y="138" style="font-family: Helvetica; font-size: 8px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,276) scale(1,-1)">Invoke validation</text>
-<polyline points="436 158, 436 132, 71 132, 71 107" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
-			<polygon points="71 107, 68.6 112, 73.4 112" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(39%,47%,52%); fill-rule: evenodd;"/>
-			<polyline points="142 87, 182 87" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
-			<polygon points="182 87, 177 84.6, 177 89.4" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(8%,46%,43%); fill-rule: evenodd;"/>
-			<text x="149.08125" y="96" style="font-family: Helvetica; font-size: 7.5px;fill: rgb(8%,46%,43%); stroke:none;" transform="translate(0,192) scale(1,-1)">READY</text>
-			<polyline points="324 87, 365 87" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
-			<polygon points="365 87, 360 84.6, 360 89.4" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(39%,47%,52%); fill-rule: evenodd;"/>
-			<rect x="182" y="0" width="142" height="35" rx="5" ry="5" style="stroke: rgb(58%,37%,11%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(98%,95%,91%); fill-rule: evenodd;"/>
-			<text x="215.45125" y="20.0" style="font-family: Helvetica-Bold; font-size: 8.5px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,40) scale(1,-1)">Diagnostic reports</text>
-			<text x="219.697" y="9.0" style="font-family: Helvetica; font-size: 8.5px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,18) scale(1,-1)">Source correction</text>
-			<polyline points="71 67, 71 17, 182 17" style="stroke: rgb(58%,37%,11%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
-			<polygon points="182 17, 177 14.6, 177 19.4" style="stroke: rgb(58%,37%,11%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(58%,37%,11%); fill-rule: evenodd;"/>
-			<text x="117.5987" y="26" style="font-family: Helvetica; font-size: 7.8px;fill: rgb(58%,37%,11%); stroke:none;" transform="translate(0,52) scale(1,-1)">HELD</text>
-		</g>
-	</g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="650" viewBox="0 0 900 650" role="img" aria-labelledby="title desc"><title id="title">Proposed ADW receiving, validation and controlled-use flow</title><desc id="desc">CRM exports to SFTP. Oracle Integration Cloud retains readable records in an ADW receiving area. Proposed Python validation in an OCI Function assigns status. Approved records proceed to downstream eligibility checks; correction cases remain restricted and are reported to the source owner.</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#637880"/></marker></defs><rect width="900" height="650" rx="14" fill="#fbfcfa"/>
+<text x="450" y="30" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="700" fill="#40857b">PROPOSED PRODUCTION FLOW</text>
+<rect x="24" y="52" width="250" height="75" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
+<text x="149.0" y="79" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">CRM reporting</text>
+<text x="149.0" y="102" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Completed daily CSV export</text>
+<rect x="325" y="52" width="250" height="75" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
+<text x="450.0" y="79" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">SFTP file drop</text>
+<text x="450.0" y="102" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Customer-controlled location</text>
+<rect x="626" y="52" width="250" height="75" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
+<text x="751.0" y="79" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">Oracle Integration Cloud</text>
+<text x="751.0" y="102" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Retrieval &amp; orchestration</text>
+<polyline points="274,90 325,90" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)"/>
+<polyline points="575,90 626,90" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)"/>
+<polyline points="751,127 751,160 450,160 450,187" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="180" y="187" width="540" height="90" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
+<text x="450.0" y="214" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">ADW receiving area</text>
+<text x="450.0" y="237" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Retain all readable received records</text>
+<text x="450.0" y="258" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Batch and source-row references; restricted access</text>
+<polyline points="450,277 450,314" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="180" y="314" width="540" height="96" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
+<text x="450.0" y="341" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">Python validation &amp; normalization</text>
+<text x="450.0" y="364" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Proposed hosting: OCI Function invoked by integration</text>
+<text x="450.0" y="385" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Assess native mappings first; assign status and reason</text>
+<polyline points="450,410 450,438 234,438 234,471" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)"/>
+<polyline points="450,438 666,438 666,471" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="24" y="471" width="420" height="100" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
+<text x="234.0" y="498" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">APPROVED SELECTION</text>
+<text x="234.0" y="521" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">ACCEPTED / ACCEPTED_WITH_WARNING</text>
+<text x="234.0" y="542" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Required checks pass; uncertainty is preserved</text>
+<rect x="456" y="471" width="420" height="100" rx="9" fill="#faf1e4" stroke="#a47530" stroke-width="1.3"/>
+<text x="666.0" y="498" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">CORRECTION CASES</text>
+<text x="666.0" y="521" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">NEEDS_CORRECTION + reason</text>
+<text x="666.0" y="542" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Missing ID, invalid required data or conflict</text>
+<text x="234" y="601" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="700" fill="#17363d">Apply current channel / purpose eligibility</text>
+<text x="234" y="625" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="400" fill="#17363d">UNKNOWN or NO does not authorise sending</text>
+<text x="666" y="601" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="700" fill="#17363d">Exception report → source owner</text>
+<text x="666" y="625" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="400" fill="#17363d">Correct at source → re-export → revalidate</text>
+<text x="450" y="403" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#835c22">Input contract failure → BLOCKED; no approved records</text></svg>

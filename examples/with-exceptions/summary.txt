@@ -1,9 +1,10 @@
-status: HELD
+status: READY_WITH_EXCEPTIONS
 source_file: bad_values.csv
 source_fully_parsed: true
 parsed_records: 4
 valid_records: 2
 rejected_records: 2
+released_records: 2
 identical_duplicates_removed: 0
 warnings: 1
-processing_seconds_before_report_write: 0.000252
+processing_seconds_before_report_write: 0.000595

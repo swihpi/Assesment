@@ -1,31 +1,28 @@
-# Expected outcomes established before implementation
+# Explicit expected outcomes
 
-These are proposed demonstration rules, not incidents or policies supplied by a real customer. The synthetic fixtures were written before the processor. Their expected values are explicit so the code can be checked against something other than itself.
+These are synthetic assumptions, not policies supplied by a real customer. The original sample files and expected normalized values predated the original processor. Following review of the release policy, these expectations now specify record-level release and whole-input blocking separately. Tests compare outputs against these values and independently generated counts.
 
-## Small set of rules
+## Rules
 
-- Recognise column names through the readable alias table in `config/column_aliases.csv`.
-- Allow reordered columns. Warn about extra unused columns. Hold a file if an expected column is absent or two columns mean the same output field.
-- Trim surrounding whitespace. Collapse repeated spaces in names and region labels. Preserve identifiers, including leading zeroes, and preserve region meaning rather than invent a geographical mapping.
-- Require customer ID, name, region, and customer-since date. Last-purchase date may be empty.
-- Accept real calendar dates in the documented `YYYY-MM-DD` format. Reject ambiguous alternatives rather than guess.
-- Map recognised permission values through `config/permission_values.csv`. Missing or unfamiliar permission becomes `UNKNOWN` with a warning; it never becomes `YES`.
-- Treat identical normalized records for one customer ID as duplicates: retain one and warn.
-- If records for one ID disagree, reject all records for that ID and hold the batch. An ID on an otherwise invalid row still participates in conflict detection.
-- Any rejected record holds the batch. This deliberately simple snapshot policy has no adjustable rejection threshold. Identical duplicates are counted separately; conflicting IDs and broken file structure hold the batch.
-- A held batch has no `cleaned.csv`. Review diagnostics are still written. The source remains unchanged.
+Preserve the received bytes and original source. Recognise headings through the approved alias CSV; allow reordering and report unused extra columns. Missing or ambiguous required headings, malformed CSV, invalid encoding, or an empty input block approval. A partial parse never releases its apparently valid prefix.
 
-## Hand-specified expectations
+For fully parsed input, release valid records and report required-value failures or conflicting identities as correction cases. Remove identical normalized duplicates once, with a warning. Preserve leading zeroes, real ISO dates, optional empty purchase dates, and YES/NO/UNKNOWN permission meanings. No error-rate threshold overrides identity or permission rules.
 
-| Fixture | Expected result under the default policy |
+| Fixture | Expected result |
 | --- | --- |
-| `valid.csv` | READY: 3 records accepted; 0 rejected; values match `expected/cleaned_valid.csv`. |
-| `renamed_report.csv` | READY: same cleaned records as `valid.csv`, despite aliases, order, whitespace, and value forms. |
-| `extra_column.csv` | READY: 1 accepted, warning about `loyalty_points`; no such column in output. |
-| `bad_values.csv` | HELD: 4 parsed; 2 accepted candidates; 2 rejected. Missing customer ID and impossible date explain the rejections. F004 has `UNKNOWN` permission and a warning. No cleaned output is released. |
-| `duplicates.csv` | HELD: 4 parsed; 1 accepted candidate; 1 identical duplicate removed; 2 conflicting rows rejected. No cleaned output is released. |
-| `breaking_change.csv` | HELD before processing records: `supporter_number` is not an approved alias and `customer_id` is missing. |
-| `unknown_permission.csv` | READY: 2 accepted records, both with `UNKNOWN` permission and a warning each. |
-| `malformed.csv` | HELD: malformed quoted CSV; complete record totals cannot be asserted. |
+| `valid.csv` | READY: three approved records, exactly matching `expected/cleaned_valid.csv`. |
+| `renamed_report.csv` | READY: the same three approved records despite aliases, order and whitespace. |
+| `extra_column.csv` | READY: one approved record; unused `loyalty_points` warning. |
+| `bad_values.csv` | READY_WITH_EXCEPTIONS: four parsed, two approved (F001 and F004), two correction cases (missing ID and invalid date). F004 retains UNKNOWN permission. |
+| `duplicates.csv` | READY_WITH_EXCEPTIONS: four parsed, one approved F001, one identical duplicate ignored, two conflicting F002 records requiring correction. |
+| `breaking_change.csv` | BLOCKED: no approved output; `supporter_number` lacks an approved alias for the required customer ID heading. |
+| `unknown_permission.csv` | READY: two approved records with UNKNOWN permission and warnings. |
+| `malformed.csv` | BLOCKED: no approved output; received bytes and diagnostics remain. Complete record totals cannot be asserted. |
 
-`READY` means the file passed this normalization contract and release policy. It does not mean the customers are eligible for marketing, identity has been independently verified, or a campaign is authorised.
+Each completed run has received.csv, diagnostic reports, record_status.csv and its final completion marker. cleaned.csv exists only for READY or READY_WITH_EXCEPTIONS. No completion marker means no completed result.
+
+The 10,000-record test generates 800 missing-ID rows and 9,200 valid unique IDs. Expected result: exact received-byte preservation; 9,200 approved IDs matching the independent expected set; 800 NEEDS_CORRECTION statuses; 10,000 status rows; READY_WITH_EXCEPTIONS. It does not assume duplicates or overlapping error categories.
+
+A separate test renames the heading to customerdata_id. It is BLOCKED before source-approved configuration is supplied and READY after the explicit alias is added. Tests also verify NO/UNKNOWN remain distinct and a late structure error prevents release of earlier valid rows.
+
+Passing ingestion does not verify the truth of every source attribute or authorise marketing. Campaign checks are outside the processor.

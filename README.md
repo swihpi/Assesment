@@ -2,17 +2,13 @@
 
 [Code and files](https://github.com/swihpi/Assesment) · [Automated validation](https://github.com/swihpi/Assesment/actions/workflows/validate.yml)
 
-A standalone Python program reads a CRM export, normalizes approved equivalents, reports bad records, and releases a cleaned file only when the selected checks pass.
+A standalone Python program preserves a received CRM CSV, normalizes approved equivalents, releases valid customer records, and reports records needing correction. If the file cannot be interpreted reliably, it blocks release of the entire input. The hypothetical customer is a sports organisation preparing customer data for analytics and later audience decisions. [Customer context and value](docs/customer_note.md) · [Assessment narrative](docs/assessment.md).
 
-The main script is **160 lines**, uses Python's standard library, and is intended to be easy to review. The hypothetical customer is a sports organisation preparing profile data for later analytics. [Customer note](docs/customer_note.md). [Assessment narrative](docs/assessment.md).
+The processor is **176 lines**, including comments and blank lines, and uses Python's standard library. This is a local demonstration of the same receiving → validation → approved/correction policy proposed for ADW. The Oracle cloud integration and campaign controls are not implemented.
 
-## Run in Development or Test
+## Setup and run in Development or Test
 
-I direct Codex to execute these checks in the local Development/Test workspace and review the results. The commands below also support direct reproduction by another engineer.
-
-Use Python 3.12 or 3.14; both have been verified in clean local environments. No third-party packages, credentials, database, or cloud connection are required to run the processor. Git is needed only for the clone step; downloading and extracting the repository ZIP is an alternative.
-
-Clone the repository, enter its folder, and check that Python is available:
+Use Python 3.12 or 3.14; both are checked in clean environments. No third-party packages, credentials, database or cloud connection are required. Git is needed only for cloning; downloading and extracting the repository ZIP is an alternative.
 
 ```sh
 git clone https://github.com/swihpi/Assesment.git
@@ -20,22 +16,30 @@ cd Assesment
 python3 --version
 ```
 
-From the repository root, run the examples and tests:
+I direct Codex to execute these checks in the local Development/Test workspace and review the results. Another engineer can reproduce them directly from the repository root:
 
 ```sh
 python3 process_export.py --input samples/valid.csv --output runs/dev-valid
 python3 process_export.py --input samples/renamed_report.csv --output runs/dev-renamed
-python3 process_export.py --input samples/bad_values.csv --output runs/dev-held
+python3 process_export.py --input samples/bad_values.csv --output runs/dev-exceptions
 python3 -m unittest discover -s tests -v
 ```
 
-The first two runs produce the same three normalized records. The bad-value example deliberately returns HELD and **exit code 2**; no cleaned file is released. This is the expected rejection outcome, not a crash. Run the commands on separate lines as shown: chaining them with `&&` stops at that expected non-zero result, so the test command would not run. Every example needs a fresh output folder. Existing output is never overwritten.
+The first two examples return READY and the same three normalized records. The third returns READY_WITH_EXCEPTIONS: two valid records are released, and two records need correction. Each command exits 0. Each example needs a fresh output folder; existing runs cannot be overwritten.
 
-**Never test a new script or mapping in Production first.** Use synthetic examples locally, then validate the deployed integration in a dedicated Development or Test environment. Promote the reviewed artifacts to Production only after that validation. [Deployment and promotion approach](docs/deployment.md).
+To demonstrate a file-level block, run this separately:
 
-## Input and rules
+```sh
+python3 process_export.py --input samples/breaking_change.csv --output runs/dev-blocked
+```
 
-All six headings must exist:
+This deliberately returns BLOCKED and **exit code 2**, because a required heading has no approved mapping. No cleaned CSV is produced. This is expected rejection, not a crash; chaining further commands with `&&` would stop there. Exit 1 indicates an operational/configuration failure. Invalid command syntax also uses the argument parser's exit code 2, so read the message and completion marker.
+
+**Never test a new script or mapping in Production first.** Use synthetic inputs locally, then validate the deployed integration in a dedicated Development/Test environment before reviewed Production promotion. [Deployment approach](docs/deployment.md).
+
+## Processing contract
+
+All six headings must exist, using canonical names or approved aliases:
 
 | Field | Rule |
 | --- | --- |
@@ -46,84 +50,77 @@ All six headings must exist:
 | `last_purchase_date` | Same date format or empty. |
 | `marketing_permission` | Approved values become YES/NO; missing or unfamiliar values stay UNKNOWN with a warning. |
 
-The two readable CSV files under `config/` contain heading aliases and permission values.
+Readable CSV mappings in `config/` define heading aliases and permission equivalents. Approved heading changes and reordered columns work; an extra unused column warns. A missing/ambiguous required heading, wrong record width, broken quoting, unsupported encoding or empty input blocks the input. Even a valid prefix of a structurally broken file is not released.
 
-- Approved renamed/reordered headings work; an extra unused column warns.
-- Missing or ambiguous required headings hold the file.
-- Invalid required values or dates reject the record.
-- Identical normalized duplicates become one, with a warning.
-- Conflicting records for one ID are rejected; no winner is guessed.
-- Any rejection holds the batch. There is no adjustable rejection threshold.
+For a fully parsed file, missing/invalid required values and conflicting identities affect those records, while valid records are released. Identical normalized duplicates are retained once. A new heading such as `customerdata_id` initially blocks release; only after source-owner confirmation should its alias to `customer_id` be added and tested. A change in identifier meaning or values needs identity reconciliation, not a spelling substitution.
 
-Unknown permission remains UNKNOWN. READY does not establish marketing eligibility or the truth of source attributes.
+![Implemented local processing](docs/diagrams/validation.svg)
 
-![Validation and release](docs/diagrams/validation.svg)
+## Outputs, record status and completion
 
-## Outputs and errors
+Every readable source is copied byte for byte to `received.csv` before parsing. The original source remains unchanged. The run folder identifies the import batch; `record` refers to a nonblank CSV record in source order, not a physical line, which may span multiple lines.
 
-`cleaned.csv` exists only for READY. `rejected.csv` identifies the record, field, problem, and next action. `warnings.csv` reports unused columns, unknown permission, and removed duplicates. `summary.txt` and `run.log` provide counts, duration, and status.
+| Output | Purpose |
+| --- | --- |
+| `received.csv` | Exact received bytes, including records excluded from approved output. |
+| `cleaned.csv` | Approved normalized records only; exists only for a releasable run. |
+| `record_status.csv` | Source-record reference, available customer ID, validation status and reason. |
+| `rejected.csv` | File/record, field, problem and corrective action. |
+| `warnings.csv` | Unknown permission, unused columns and ignored identical duplicates. |
+| `summary.txt`, `run.log` | Parsing completeness, counts, released records, outcome, duration and stages. |
 
-A READY or HELD marker is written last. Consumers must require READY. No marker means incomplete output. The source remains unchanged.
+Record statuses are ACCEPTED, ACCEPTED_WITH_WARNING, NEEDS_CORRECTION, or DUPLICATE_IGNORED. A valid candidate in an incompletely parsed input is NOT_RELEASED. Missing IDs are traceable through the batch and source-record reference; these are tracking references, not invented customer identities.
 
-For fully parsed input:
+| Run status / final marker | Result | Exit |
+| --- | --- | --- |
+| `READY` | Complete input; approved output; no rejected records. Warnings may exist. | 0 |
+| `READY_WITH_EXCEPTIONS` | Complete input; approved output plus correction cases. | 0 |
+| `BLOCKED` | Input cannot be interpreted completely, or no valid records remain; no approved output. | 2 |
 
-```text
-parsed records = valid records + rejected records + identical duplicates removed
-```
+The completion marker is written **last**, after reports and any cleaned output. Consumers must require READY or READY_WITH_EXCEPTIONS before using `cleaned.csv`. No marker means incomplete output, even if a file is present. BLOCKED inputs retain their received copy and available diagnostics. A missing/unreadable source or failed configuration may stop before a run folder can be created.
 
-Malformed CSV or invalid encoding holds the batch and marks parsing incomplete. Partial counts are not represented as complete source counts.
+For complete input: **parsed records = valid records + rejected records + identical duplicates removed**. For blocked input, `released_records` is zero; `valid_records` may describe candidates seen before a parsing failure and is not evidence of release.
 
-Exit codes: 0 = READY; 2 = HELD; 1 = operational/configuration failure. Invalid command syntax also uses the parser's exit code 2; read the message and run marker.
+## Data quality and marketing eligibility
 
-## Programmatic customer deployment
+NO means explicit opt-out; UNKNOWN means missing or unrecognised permission. We preserve that distinction. For the assumed consent-based campaign, neither authorises sending. An identifiable record with unknown permission can be released with a warning; it is not thereby eligible for marketing. The single permission field is a demonstration simplification: email permission does not authorise push, SMS or WhatsApp. Production activation must check current channel/purpose permission, address/device validity and other agreed rules.
 
-![Proposed CRM-to-staging handoff](docs/diagrams/deployment.svg)
+The script does **not** implement campaign selection or send messages. In production, access to the approved customer selection and campaign-specific filters must enforce the restrictions; a flag that downstream exports can ignore is insufficient.
 
-**Demonstration choice:** standalone Python makes the selected validation behavior locally reproducible without Oracle platform access.
+## Proposed production deployment and correction
 
-**Production recommendation:** first assess whether native Oracle Integration Cloud mappings and controls meet the validation, duplicate-handling, and diagnostic requirements. Use a separately hosted Python function where those requirements justify it.
+![Proposed CRM, ADW and validation flow](docs/diagrams/deployment.svg)
 
-The scenario assumes no usable CRM API or supported application-specific connector is available, including through Oracle Integration Cloud. The CRM supports a scheduled daily CSV report and native delivery to a customer-controlled SFTP location. Oracle Integration Cloud retrieves the completed export using its FTP Adapter configured for SFTP.
+**Demonstration choice:** local Python and CSV files make the processing policy reproducible without Oracle platform access. **Production recommendation:** assess native Oracle Integration Cloud mappings and controls first; use a separately hosted Python function where the validation, duplicate-handling and diagnostic requirements justify it.
 
-The diagram shows the proposed Python option: Oracle Integration Cloud invokes a separately hosted Python function through its OCI Function action and routes approved data to Autonomous Database/ADW. The database receives approved data; it does not pull the export from the CRM. The command-line script is not an embedded Oracle Integration Cloud Python library. Its rules could be reused, but a handler, cloud input/output interface, access configuration, and deployed integration still need implementation and testing. The cloud flow remains a proposal.
+The assumed CRM has no usable API or supported application-specific connector, but supports scheduled CSV reports and SFTP delivery. Oracle Integration Cloud retrieves the completed file, retains readable records in a restricted ADW receiving area, and coordinates validation and status updates. The diagram illustrates Python hosted in an OCI Function; its handler and cloud I/O still need implementation. ADW retains received records while an approved selection excludes correction cases. Campaign eligibility is a further check. [Architecture, ownership and recovery](docs/deployment.md).
 
-## Verification
+For 10,000 fully parsed records with 800 independent required-value failures and no duplicates, the local demonstration preserves all 10,000 in `received.csv`, releases 9,200 in `cleaned.csv`, and reports 800 correction cases. A test verifies this exact scenario. The proposed ADW deployment applies the same policy. It requires a destination that supports partial updates: omitted rows must not mean deletion, and a partial file must never blindly replace a complete customer table. Reconciliation, updates to existing customers and correction replay remain deployment work.
 
-**19 tests passed** after simplification. Cases cover predefined output, additive/breaking changes, aliases/reordering, dates, unknown permission, duplicates, malformed files, encoding, reruns, and incomplete publication. [Expected outcomes](samples/expected_outcomes.md). [Validation evidence](docs/validation.md).
+The CRM/data owner owns source correction; the integration owner owns mappings and processing. An exception report should be securely routed to the responsible owner, corrected at source, re-exported and revalidated, with unresolved counts and age tracked. The script produces diagnostics; report delivery, workflow assignment and recovery tracking are proposed. Missing permission remains UNKNOWN unless authoritative evidence resolves it.
+
+## Verification, performance and limits
+
+**24 automated tests** cover expected output, heading drift, required fields/dates, NO/UNKNOWN, duplicates, malformed input, encoding, reruns, write failures, source retention, approved alias changes and the 10,000/800 case. [Expected outcomes](samples/expected_outcomes.md) · [Validation evidence](docs/validation.md).
 
 ```sh
 python3 tools/benchmark.py --sizes 1000 100000 --output runs/benchmark.csv
 ```
 
-Single local measurements: 1,000 records in 0.037 seconds; 100,000 in 0.393 seconds, with output counts verified. Python 3.14.4 on macOS 26.6.2 ARM64. The timer includes process startup and report writing. Input generation and independent output counting are outside it.
+Single local runs measured 1,000 records in 0.039 seconds and 100,000 in 0.517 seconds, with counts verified. Python 3.14.4 on macOS 26.6.2 ARM64. The timer includes startup, snapshot copying, processing and report writing; generation and independent output counting are outside it. Records and statuses are retained in memory, so memory grows with input. These measurements do not establish Production/cloud capacity.
 
-Records are retained for duplicate checks, so memory grows with the file. No production/cloud throughput or constant-memory claim is made.
+No live extraction, schedule, ADW load, cloud status management, source locking, exactly-once delivery, automated correction, sentiment model or campaign enforcement is implemented. The caller must provide a completed file. Source retention makes local outcomes inspectable; Production access, retention and deletion rules remain customer decisions. Reprocessing uses a fresh run folder, not an append operation. [Walkthrough](docs/walkthrough.md).
 
-## Trade-offs, AI use, and remaining work
+## My judgement and Codex assistance
 
-This is the local file-to-file slice. It has no live extraction, schedule, database load, freshness check, source-change lock, exactly-once delivery, sentiment model, or campaign action. The caller supplies a completed, stable export. Repeated processing uses a new folder rather than appending to previous results.
+I originated and championed the sports sentiment initiative within Oracle, brought colleagues together, contributed to the Oracle Integration Cloud / Autonomous Data Warehouse / Oracle Analytics Cloud architecture and created dashboards. I supplied that experience, directed the assessment and challenged assumptions rather than accepting the generated design unchanged.
 
-Explicit dates avoid ambiguous guessing. Standard CSV parsing handles quoting and UTF-8 BOM; unsupported encoding holds the file. Mappings are reviewed data rather than inferred meanings.
-
-I originated and championed the sports sentiment initiative within Oracle, helped bring colleagues together, contributed to the Oracle Integration Cloud / Autonomous Data Warehouse / Oracle Analytics Cloud architecture, created dashboards, and developed the broader idea of combining customer sources for useful audience information. I supplied this experience, directed the assessment iterations, challenged unnecessary complexity, and reviewed Codex results.
-
-Codex assisted with the hypothetical CRM incident, detailed rules, fixtures and expected outcomes created before implementation, code/tests, documentation, research, and execution. A supplied Claude critique informed my review. I chose Codex to work with files, code, and actual execution results in one workspace. I deliberately kept an LLM out of the running processor: explicit rules make known transformations repeatable, while unfamiliar meanings require human confirmation.
-
-The implementation is available in the public [Assesment repository](https://github.com/swihpi/Assesment).
-
-The accompanying presentation provides historical screenshots. This repository contains the runnable implementation and vector flow diagrams; the original slide images are not included.
-
-## Assignment coverage
-
-| Matter | Evidence / status |
+| My review question | Consequence |
 | --- | --- |
-| Customer context and assumptions | Customer note and assessment narrative. |
-| Runnable ingestion/normalization | Standalone processor and synthetic fixtures. |
-| Drift, bad data, actionable errors | Explicit mappings, warnings, rejections, READY/HELD. |
-| Setup/run instructions | Commands above and fresh-export check. |
-| Architecture, trade-offs, limits | README and deployment note. |
-| Tests and reliability | 19 passing checks and predefined expected output. |
-| Logging and scalability mindset | Counts, status, markers, measured runs, memory limitation. |
-| AI disclosure | Candidate and Codex contributions, with explicit runtime rules. |
-| Repository URL | [Assesment](https://github.com/swihpi/Assesment) (public). |
-| Safe delivery | Development/Test first, then reviewed Production promotion. |
+| How does the CRM export actually reach the integration? | We made scheduled CSV delivery to SFTP and retrieval explicit. |
+| Why introduce unfamiliar database programming or a long script? | We chose a compact, independently runnable Python example I could inspect. |
+| Why should 800 bad records prevent use of 9,200 valid records? | We revised the policy to preserve received data, release valid rows and track correction cases. |
+| Why do the production diagram and demo describe different release rules? | I challenged the mismatch; the code, tests and documentation were aligned around one policy. |
+| Who fixes missing information, and does missing permission mean NO? | We assigned source ownership and separated data quality from channel-specific marketing eligibility. |
+
+Codex assisted with the hypothetical CRM incident, detailed rules, synthetic fixtures, expected outcomes, code/tests, research, documentation and execution. A supplied Claude critique informed my review. I chose Codex to work with files, code and execution results in one workspace. My review questions shaped the requirements; the detailed changes and their verification were AI-assisted. No runtime LLM is used: repeatable rules handle known mappings, while unfamiliar meanings require human confirmation.

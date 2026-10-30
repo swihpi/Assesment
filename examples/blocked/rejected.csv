@@ -1,0 +1,2 @@
+record,customer_id,field,code,message,next_action
+FILE,,file/header,SOURCE_CONTRACT,Missing required columns: customer_id,"Check the approved headings, UTF-8 encoding, and CSV structure."

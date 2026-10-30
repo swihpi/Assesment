@@ -1,51 +1,31 @@
 # Walkthrough in ordinary language
 
-Start with `samples/valid.csv` and its expected cleaned version. The file describes three fictional people, using familiar customer fields. There is no database to administer.
+The program answers four questions: can the file be interpreted reliably, which records pass the agreed checks, which need correction, and can someone explain the result? It first copies the source bytes, then checks headings and reads records, normalizes approved equivalents, resolves identical duplicates, and writes approved output plus correction/status reports. Only after writing completes does it create a final marker.
 
-## The five questions the program answers
+In valid.csv and renamed_report.csv, all three records pass and the normalized outputs match the predefined expected CSV. In bad_values.csv, F001 and F004 pass and are released; the missing-ID record and invalid-date record need correction. F004 retains UNKNOWN permission and an ACCEPTED_WITH_WARNING status. Ingestion acceptance is not marketing eligibility.
 
-1. **Do these headings mean what we expect?** The alias CSV lists approved equivalents. Reordering is fine. A harmless extra column is reported. A missing ID column stops the batch.
-2. **Can the values be represented consistently?** Names have whitespace tidied, dates must be real ISO dates, and approved permission values become YES or NO. Unknown permission stays UNKNOWN.
-3. **Does one ID describe more than one profile?** Identical normalized copies become one record. Conflicting copies are all rejected; the program cannot decide which is true.
-4. **Can this batch be released under the chosen rule?** Any rejected record holds the batch. This conservative snapshot policy is deliberately fixed and simple to explain.
-5. **Can someone explain the outcome?** The summary, rejected records, warnings, and log show what happened. A READY marker is written only after output writing finishes.
+A missing required heading or malformed CSV blocks the entire input, because its meaning or completeness is uncertain. Even records parsed successfully before a late structural failure are not released. A valid file with independent row errors produces READY_WITH_EXCEPTIONS and the valid selection. If no valid records remain, the outcome is BLOCKED and no cleaned CSV exists. Source bytes and diagnostics remain available.
 
-## Follow one successful record
-
-In `renamed_report.csv`, F001 has an ID with surrounding whitespace, the name `Alex   Morgan`, and permission `y`. The configured headings identify the right fields. The result is F001, `Alex Morgan`, and `YES`. Its dates keep their meaning. Compare the actual result with `samples/expected/cleaned_valid.csv`.
-
-## Follow one problem
-
-In `bad_values.csv`, a record has no customer ID and another says the customer joined on 30 February. The rejection report identifies each issue. Two other records are valid, but the fixed policy holds the whole batch, so no cleaned file is released. The source can be corrected and exported again into a new run folder.
-
-F004 has blank permission. That is represented as UNKNOWN and reported as a warning. Retaining the profile for analysis does not authorise marketing to it.
-
-## Explain the code structure
+## Code structure
 
 | Function | Responsibility |
 | --- | --- |
-| `load_mapping` | Read an approved CSV mapping for headings or permission values. |
-| `normalize` | Apply the small set of per-record rules. |
-| `process_file` | Check headings, coordinate reading, compare duplicate IDs, and decide release. |
-| `write_csv` | Write a consistent CSV report. |
+| load_mapping | Read approved heading or permission equivalents from CSV. |
+| normalize | Apply required-value, date, whitespace and permission rules. |
+| process_file | Preserve input, check the contract, compare identities, assign statuses and coordinate output. |
+| write_csv | Write consistent CSV files. |
 
-Duplicate comparison and final reporting are short sections inside `process_file`. The implementation has a fixed hold policy and assumes a completed, stable export.
+The receiving/approved/correction decisions are the same locally and in the proposed ADW architecture. Local files simulate storage boundaries; cloud loading, access enforcement, source correction and campaigns remain proposed. Partial updates must not cause missing records to be deleted from the destination.
 
-The underlying code needs review, but the choices above are the reasons it exists. We do not need to justify SQL queries or database indexes because this implementation uses neither.
+## Questions to rehearse
 
-## Questions to answer independently before submission
+- Why can an unused extra column be ignored while an unfamiliar required ID heading blocks release?
+- Why do bad dates affect individual records, while a broken CSV structure blocks all approval?
+- What do READY, READY_WITH_EXCEPTIONS and BLOCKED mean?
+- How do received.csv, record_status.csv and cleaned.csv correspond to the proposed ADW areas?
+- Why do NO and UNKNOWN remain distinct, and what further checks does a campaign require?
+- Who corrects source facts, who maintains mappings, and how is a corrected export reconciled?
+- Why does the destination need an agreed partial-update contract?
+- What happens if a file exists but its completion marker does not?
 
-- Why can an extra column be ignored while a missing customer ID column cannot?
-- Why is an empty last-purchase date allowed?
-- Why is unknown permission different from YES and NO?
-- Why not simply choose a winner for conflicting IDs?
-- What happens if half the rows fail validation?
-- What does READY prove, and what does it leave unproven?
-- How do we know the test expectations were not merely copied from the implementation?
-- What do the measured timings say, and what do they not establish?
-
-These are prompts for understanding. They are not a script to memorise or evidence that Stefan has already completed the rehearsal.
-
-## Development, Test, then Production
-
-The supplied examples and tests use synthetic files in a local development environment. We never use Production as the first place to try a script or mapping change. A future OIC/OCI Functions deployment would first be exercised in a dedicated Development or Test environment, including its connectors, held batches, and destination behavior. Only the reviewed, validated artifacts would then be promoted to Production with separate environment configuration and monitoring.
+These are prompts for understanding, not evidence of completed independent rehearsal. Stefan directs Codex to execute examples and tests and reviews the results. All new integration changes are exercised in Development/Test before reviewed Production promotion.

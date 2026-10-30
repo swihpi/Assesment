@@ -1,0 +1,4 @@
+record,customer_id,validation_status,validation_reason
+1,F001,ACCEPTED,Required checks passed
+2,F002,ACCEPTED,Required checks passed
+3,F003,ACCEPTED,Required checks passed

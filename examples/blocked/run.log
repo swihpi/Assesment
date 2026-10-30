@@ -1,0 +1,3 @@
+READ breaking_change.csv
+CHECK 0 parsed, 0 rejected, 0 duplicates removed
+RESULT BLOCKED

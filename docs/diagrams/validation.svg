@@ -1,41 +1,35 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE svg
-  PUBLIC '-//W3C//DTD SVG 1.0//EN'
-  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
-<svg width="507" height="155.0" preserveAspectRatio="xMinYMin meet" viewBox="0 0 507 155" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
-	<title>...</title>
-	<desc>...</desc>
-	<clipPath id="clip">
-		<rect x="0" y="0" width="507" height="155.0"/>
-	</clipPath>
-	<g id="group" transform="scale(1,-1) translate(0,-155)" style="clip-path: url(#clip)">
-		<g transform="">
-			<rect x="0" y="104" width="104" height="34" rx="5" ry="5" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(92%,95%,95%); fill-rule: evenodd;"/>
-			<text x="21.199999999999996" y="118.0" style="font-family: Helvetica-Bold; font-size: 8.8px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,236) scale(1,-1)">CRM snapshot</text>
-			<rect x="134" y="104" width="104" height="34" rx="5" ry="5" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(92%,95%,95%); fill-rule: evenodd;"/>
-			<text x="152.25639999999999" y="118.0" style="font-family: Helvetica-Bold; font-size: 8.8px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,236) scale(1,-1)">Check headings</text>
-			<rect x="268" y="104" width="104" height="34" rx="5" ry="5" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(92%,95%,95%); fill-rule: evenodd;"/>
-			<text x="288.2056" y="118.0" style="font-family: Helvetica-Bold; font-size: 8.8px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,236) scale(1,-1)">Validate values</text>
-			<rect x="402" y="104" width="104" height="34" rx="5" ry="5" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(92%,95%,95%); fill-rule: evenodd;"/>
-			<text x="426.8608" y="118.0" style="font-family: Helvetica-Bold; font-size: 8.8px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,236) scale(1,-1)">Compare IDs</text>
-			<polyline points="104 121, 134 121" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
-			<polygon points="134 121, 129 118.6, 129 123.4" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(39%,47%,52%); fill-rule: evenodd;"/>
-			<polyline points="238 121, 268 121" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
-			<polygon points="268 121, 263 118.6, 263 123.4" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(39%,47%,52%); fill-rule: evenodd;"/>
-			<polyline points="372 121, 402 121" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
-			<polygon points="402 121, 397 118.6, 397 123.4" style="stroke: rgb(39%,47%,52%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(39%,47%,52%); fill-rule: evenodd;"/>
-			<polyline points="454 104, 454 76, 151 76, 151 47" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
-			<polygon points="151 47, 148.6 52, 153.4 52" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(8%,46%,43%); fill-rule: evenodd;"/>
-			<polyline points="454 76, 378 76, 378 47" style="stroke: rgb(58%,37%,11%); stroke-linecap: butt; stroke-width: 1.05; fill: None; fill-rule: evenodd;"/>
-			<polygon points="378 47, 375.6 52, 380.4 52" style="stroke: rgb(58%,37%,11%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(58%,37%,11%); fill-rule: evenodd;"/>
-			<text x="123.436" y="58" style="font-family: Helvetica; font-size: 8px;fill: rgb(8%,46%,43%); stroke:none;" transform="translate(0,116) scale(1,-1)">All checks pass</text>
-			<text x="331.764" y="58" style="font-family: Helvetica; font-size: 8px;fill: rgb(58%,37%,11%); stroke:none;" transform="translate(0,116) scale(1,-1)">Rejection or invalid format</text>
-			<rect x="46" y="5" width="210" height="40" rx="5" ry="5" style="stroke: rgb(8%,46%,43%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(92%,95%,95%); fill-rule: evenodd;"/>
-			<text x="135.25" y="27.5" style="font-family: Helvetica-Bold; font-size: 9px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,55) scale(1,-1)">READY</text>
-			<text x="83.095" y="16.5" style="font-family: Helvetica; font-size: 9px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,33) scale(1,-1)">Cleaned CSV + diagnostic reports</text>
-			<rect x="282" y="5" width="210" height="40" rx="5" ry="5" style="stroke: rgb(58%,37%,11%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(98%,95%,91%); fill-rule: evenodd;"/>
-			<text x="374.751" y="27.5" style="font-family: Helvetica-Bold; font-size: 9px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,55) scale(1,-1)">HELD</text>
-			<text x="315.72" y="16.5" style="font-family: Helvetica; font-size: 9px;fill: rgb(9%,21%,27%); stroke:none;" transform="translate(0,33) scale(1,-1)">Diagnostic reports; no cleaned CSV</text>
-		</g>
-	</g>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="650" viewBox="0 0 1000 650" role="img" aria-labelledby="title desc"><title id="title">Implemented local receiving and record-level validation</title><desc id="desc">Preserve received CSV, check its contract, normalize records, release valid records and report correction cases. Structural input failures block every approval. A final success marker is required before using approved output.</desc><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#637880"/></marker></defs><rect width="1000" height="650" rx="14" fill="#fbfcfa"/>
+<text x="500" y="28" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="700" fill="#40857b">IMPLEMENTED LOCAL FLOW</text>
+<rect x="150" y="48" width="600" height="82" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
+<text x="450.0" y="76" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="18" font-weight="700" fill="#17363d">Preserve received data</text>
+<text x="450.0" y="101" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="16" font-weight="400" fill="#17363d">Exact received.csv copy; original source unchanged</text>
+<polyline points="450,130 450,169" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="150" y="169" width="600" height="82" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
+<text x="450.0" y="197" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="18" font-weight="700" fill="#17363d">Interpret the input contract</text>
+<text x="450.0" y="222" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="16" font-weight="400" fill="#17363d">Required headings, CSV structure and encoding</text>
+<polyline points="750,210 855,210 855,290" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="815" y="197" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="400" fill="#17363d">Unreliable</text>
+<rect x="760" y="290" width="215" height="125" rx="9" fill="#faf1e4" stroke="#a47530" stroke-width="1.3"/>
+<text x="867.5" y="318" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="18" font-weight="700" fill="#17363d">BLOCKED</text>
+<text x="867.5" y="343" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="16" font-weight="400" fill="#17363d">No cleaned.csv</text>
+<text x="867.5" y="365" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="16" font-weight="400" fill="#17363d">Received bytes and</text>
+<text x="867.5" y="387" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="16" font-weight="400" fill="#17363d">diagnostics retained</text>
+<polyline points="450,251 450,289" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#a)"/>
+<text x="485" y="275" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="400" fill="#17363d">Readable</text>
+<rect x="150" y="289" width="550" height="100" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
+<text x="425.0" y="317" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="18" font-weight="700" fill="#17363d">Normalize &amp; validate records</text>
+<text x="425.0" y="342" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="16" font-weight="400" fill="#17363d">Approved mappings; required values; identity conflicts</text>
+<text x="425.0" y="364" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="16" font-weight="400" fill="#17363d">Preserve NO / UNKNOWN; remove identical duplicates</text>
+<polyline points="425,389 425,422 242,422 242,455" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#a)"/>
+<polyline points="425,422 630,422 630,455" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="25" y="455" width="435" height="96" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
+<text x="242.5" y="483" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="18" font-weight="700" fill="#17363d">APPROVED RECORDS</text>
+<text x="242.5" y="508" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="16" font-weight="400" fill="#17363d">cleaned.csv: valid records only</text>
+<text x="242.5" y="530" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="16" font-weight="400" fill="#17363d">READY or READY_WITH_EXCEPTIONS</text>
+<rect x="480" y="455" width="495" height="96" rx="9" fill="#faf1e4" stroke="#a47530" stroke-width="1.3"/>
+<text x="727.5" y="483" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="18" font-weight="700" fill="#17363d">CORRECTION CASES</text>
+<text x="727.5" y="508" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="16" font-weight="400" fill="#17363d">rejected.csv + record_status.csv</text>
+<text x="727.5" y="530" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="16" font-weight="400" fill="#17363d">Invalid records do not block other valid records</text>
+<text x="500" y="588" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="400" fill="#17363d">All parsed records are traceable; no valid records also means BLOCKED.</text>
+<text x="500" y="620" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="16" font-weight="700" fill="#17363d">Completion marker written last → consumers require READY or READY_WITH_EXCEPTIONS.</text>
 </svg>
