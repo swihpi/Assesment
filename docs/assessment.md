@@ -40,13 +40,13 @@ The first discussion would establish what the CRM can reliably provide today, wh
 
 ![Proposed production flow: OIC retrieves and archives the original CSV, coordinates validation before database loading, then writes approved records and restricted correction cases to ADW. Python in an OCI Function is the illustrated validation option; the cloud deployment remains proposed.](diagrams/deployment.svg)
 
-The assumed incident is a report-template change: headings are renamed, columns are reordered, and some records contain missing or inconsistent values. The database itself need not have changed. We agree field meanings with the source owner and make those rules executable. Automated delivery alone does not establish that a renamed field has the intended meaning. The **implemented demonstration starts with an available, completed CSV** and ends with local output. The CRM export, SFTP collection, cloud integration, and database loading remain proposed deployment work.
+The assumed incident is a report-template change: headings are renamed, columns are reordered, and some records contain missing or inconsistent values. The database itself need not have changed. We agree field meanings with the source owner and make those rules executable. Automated delivery alone does not establish that a renamed field has the intended meaning. The implemented demonstration starts with an available, completed CSV and ends with local output. The CRM export, SFTP collection, cloud integration, and database loading remain proposed deployment work.
 
 For that deployment, we must also agree how completed files are recognised, how missing exports are reported, and how previously processed files are handled.
 
 ## The processing decisions
 
-The local demonstration and proposed ADW deployment follow the same policy: **preserve received data, release valid records and report correction cases.** All six selected headings must exist. Customer ID, name, region and joining date require valid values; last-purchase date may be empty. Readable CSV mapping files define approved heading aliases and permission equivalents. We do not infer a field’s meaning from its spelling or invent missing identity.
+The local demonstration and proposed ADW deployment follow the same policy: preserve received data, release valid records and report correction cases. All six selected headings must exist. Customer ID, name, region and joining date require valid values; last-purchase date may be empty. Readable CSV mapping files define approved heading aliases and permission equivalents. We do not infer a field’s meaning from its spelling or invent missing identity.
 
 | Situation | Processing decision |
 | --- | --- |
@@ -101,6 +101,14 @@ process_export.py · lines 39–46[View full Python code on GitHub ↗](https://
             except ValueError:
                 problems.append((field, "INVALID_DATE"))
 ```
+
+### How I execute and review the demonstration
+
+I use Codex to run and verify the demonstration by providing the commands or describing the checks in natural language, then reviewing the reported outcomes against the expected results. In this run, the valid and renamed exports each released three records; the bad-value example released F001 and F004 and reported two correction cases; the missing required heading blocked release. All 24 tests passed. This approach lets me repeat the checks without manually entering each command in a terminal, while the README retains the commands for independent reproduction.
+
+![Actual execution output from a Codex-directed local Development/Test run on 31 October 2026, displayed in Codex’s browser. Python 3.12.14: READY, READY_WITH_EXCEPTIONS, BLOCKED and 24 passing tests.](evidence/codex-validation-current.png)
+
+[Read the full execution log](evidence/codex-run-current.txt)
 
 ### One successful record
 
@@ -245,11 +253,3 @@ The original screenshot places social information alongside game events. Correla
 | Logging and observability | Counts, parsing completeness, reports, log, duration, and completion markers. |
 | Performance and scalability thinking | Recorded measurements, their limits, and the memory bottleneck. |
 | AI disclosure and deliberate non-reliance | Section 6 and the README. |
-
-## Sources
-
-1. *Integrating a Messy External Data Source — Forward Deployed Engineer Home Assignment*, and the supplied Candidate Guide.
-2. [Oracle: Define the integration schedule](https://docs.oracle.com/en/cloud/paas/application-integration/integrations-user/define-integration-schedule.html).
-3. [Oracle: Invoke OCI Functions from an OIC integration](https://docs.oracle.com/en/cloud/paas/application-integration/integrations-user/invoke-oracle-cloud-infrastructure-functions-directly-from-integration-oci-function-action.html).
-4. [Oracle: Python function packaging](https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functions-codeonly-python.htm).
-5. [Oracle: FTP Adapter capabilities, including SFTP](https://docs.oracle.com/en/cloud/paas/application-integration/ftp-adapter/ftp-adapter-capabilities.html).
