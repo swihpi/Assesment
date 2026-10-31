@@ -4,7 +4,7 @@
 
 A standalone Python program preserves a received CRM CSV, normalizes approved equivalents, releases valid customer records, and reports records needing correction. If the file cannot be interpreted reliably, it blocks release of the entire input. The hypothetical customer is a sports organisation preparing customer data for analytics and later audience decisions. [Customer context and value](docs/customer_note.md) · [Assessment narrative](docs/assessment.md).
 
-The processor is **176 lines**, including comments and blank lines, and uses Python's standard library. This is a local demonstration of the same receiving → validation → approved/correction policy proposed for ADW. The Oracle cloud integration and campaign controls are not implemented.
+The processor is **190 lines**, including comments and blank lines, and uses Python's standard library. This is a local demonstration of the same receiving → validation → approved/correction policy proposed for ADW. The Oracle cloud integration and campaign controls are not implemented.
 
 ## Result and scope
 
@@ -103,9 +103,9 @@ This row is taken from `rejected.csv` produced by the bad-value example. Record 
 
 | Record | Customer ID | Field | Code | Message | Next action |
 | --- | --- | --- | --- | --- | --- |
-| 3 | F003 | member_since | INVALID_DATE | Required value missing or date invalid | Supply required values and real YYYY-MM-DD dates. |
+| 3 | F003 | member_since | INVALID_DATE | Joining date is not a valid YYYY-MM-DD calendar date. | Confirm joining date in the authoritative CRM record, correct it and re-export. |
 
-The source owner corrects the invalid joining date in the CRM and re-exports; the processor does not guess a replacement. [Full generated report](docs/evidence/actionable-errors.csv). Repeated IDs with inconsistent records use `CONFLICTING_RECORDS_FOR_ID`; the program does not establish that distinct identities exist.
+Messages and next actions identify the particular missing field or invalid date. Several problems remain combined into one report row per rejected record. The source owner confirms and corrects the joining date in the CRM and re-exports; the processor does not guess a replacement. [Full generated report](docs/evidence/actionable-errors.csv). Repeated IDs with inconsistent records use `CONFLICTING_RECORDS_FOR_ID`; the program does not establish that distinct identities exist.
 
 ## Data quality and marketing eligibility
 

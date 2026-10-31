@@ -74,6 +74,22 @@ class ProcessorTests(unittest.TestCase):
         self.assertEqual([r["customer_id"] for r in read_csv(output / "cleaned.csv")], ["F001", "F004"])
         self.assertEqual(result["released_records"], 2)
 
+        diagnostics = {row["code"]: row for row in read_csv(output / "rejected.csv")}
+        self.assertEqual(diagnostics["MISSING_VALUE"]["message"], "Customer ID is missing.")
+        self.assertIn("Do not invent an ID.", diagnostics["MISSING_VALUE"]["next_action"])
+        self.assertEqual(diagnostics["INVALID_DATE"]["message"], "Joining date is not a valid YYYY-MM-DD calendar date.")
+        self.assertIn("authoritative CRM record", diagnostics["INVALID_DATE"]["next_action"])
+        source = self.write_source([["", "Alex", "NY", "2024-02-30", "", "Y"]])
+        multiple = self.work / "multiple-errors"
+        summary = process_file(source, multiple)
+        errors = read_csv(multiple / "rejected.csv")
+        self.assertEqual((summary["rejected_records"], len(errors)), (1, 1))
+        self.assertEqual(errors[0]["code"], "MISSING_VALUE; INVALID_DATE")
+        self.assertIn("Customer ID is missing.", errors[0]["message"])
+        self.assertIn("Joining date is not a valid", errors[0]["message"])
+        self.assertIn("Do not invent an ID.", errors[0]["next_action"])
+        self.assertIn("Confirm joining date", errors[0]["next_action"])
+
     def test_unknown_permission_never_becomes_yes(self):
         result, output = self.run_sample("unknown_permission.csv")
         self.assertEqual(result["status"], "READY")

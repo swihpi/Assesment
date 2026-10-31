@@ -51,6 +51,19 @@ def normalize(raw, number, permissions, warnings):
     return row, problems
 
 
+
+def problem_detail(field, code):
+    label = {"customer_id": "Customer ID", "name": "Name", "region": "Region",
+             "member_since": "Joining date", "last_purchase_date": "Last-purchase date"}[field]
+    if code == "MISSING_VALUE":
+        action = f"Retrieve {label.lower().replace('customer id', 'customer ID')} from the authoritative CRM record, correct the export and re-export."
+        if field == "customer_id":
+            action += " Do not invent an ID."
+        return f"{label} is missing.", action
+    return (f"{label} is not a valid YYYY-MM-DD calendar date.",
+            f"Confirm {label.lower()} in the authoritative CRM record, correct it and re-export.")
+
+
 def write_csv(path, columns, rows):
     with path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=columns, lineterminator="\n")
@@ -122,8 +135,9 @@ def process_file(input_path, output_path, config_dir=None):
             elif problems:
                 fields, codes = zip(*problems)
                 row_status, reason = "NEEDS_CORRECTION", "; ".join(codes)
+                messages, actions = zip(*(problem_detail(field, code) for field, code in problems))
                 rejected.append(issue(number, row["customer_id"], "; ".join(fields), "; ".join(codes),
-                                      "Required value missing or date invalid", "Supply required values and real YYYY-MM-DD dates."))
+                                      " ".join(messages), " ".join(actions)))
             elif index:
                 removed += 1
                 row_status, reason = "DUPLICATE_IGNORED", "Identical normalized copy retained once"

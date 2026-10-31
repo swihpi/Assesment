@@ -93,7 +93,7 @@ If `customer_id` becomes `customerdata_id`, the processor initially blocks relea
 
 ## Demonstration and evidence
 
-The Python processor is 176 lines, including comments and blank lines, and uses the standard library. It runs without cloud credentials, a database or additional packages. I direct Codex to execute the examples and tests, then review the results; the README contains exact setup and reproduction commands. Local files represent the raw-file archive, per-record status and approved selection, so the implementation demonstrates the policy illustrated in the cloud diagram.
+The Python processor is 190 lines, including comments and blank lines, and uses the standard library. It runs without cloud credentials, a database or additional packages. I direct Codex to execute the examples and tests, then review the results; the README contains exact setup and reproduction commands. Local files represent the raw-file archive, per-record status and approved selection, so the implementation demonstrates the policy illustrated in the cloud diagram.
 
 ### Python preview: checking real dates
 
@@ -134,11 +134,11 @@ The dates retain their meaning. Another record has no last-purchase date and rem
 
 ### One actionable failure
 
-The bad-value sample contains the impossible joining date 2024-02-30. The row below is actual rejected.csv output from a fresh run. Record 3 is the third nonblank source record. The source owner corrects the date in the CRM and re-exports; the processor does not guess a replacement.
+The bad-value sample contains the impossible joining date 2024-02-30. The row below is actual rejected.csv output from a fresh run. Record 3 is the third nonblank source record. Messages and actions identify the particular problem; several problems remain combined into one report row per rejected record. The source owner confirms and corrects the date in the CRM and re-exports; the processor does not guess a replacement.
 
 | Record | Customer ID | Field | Code | Message | Next action |
 | --- | --- | --- | --- | --- | --- |
-| 3 | F003 | member_since | INVALID_DATE | Required value missing or date invalid | Supply required values and real YYYY-MM-DD dates. |
+| 3 | F003 | member_since | INVALID_DATE | Joining date is not a valid YYYY-MM-DD calendar date. | Confirm joining date in the authoritative CRM record, correct it and re-export. |
 
 [Inspect the full generated correction report on GitHub →](https://github.com/swihpi/Assesment/blob/main/docs/evidence/actionable-errors.csv)
 
