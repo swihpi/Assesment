@@ -48,4 +48,3 @@ Independent verification written by retained demonstration:
   "processor_version": "1.1.0",
   "processor_sha256": "7d317b7a39e896c4dc4c0053f9d5c796ac57fd0b44e89606dd26d4fe1c0e9944"
 }
-
