@@ -120,9 +120,9 @@ process_export.py · lines 91–100 · version 1.1.0
 
 I use Codex to run and verify the demonstration by providing the commands or describing the checks in natural language, then reviewing the reported outcomes against the expected results. In this run, the valid and renamed exports each released three records; the bad-value example released F001 and F004 and reported two correction cases; the missing required heading blocked release. All 60 tests passed. This approach lets me repeat the checks without manually entering each command in a terminal, while the README retains the commands for independent reproduction.
 
-*Historical execution capture from the earlier 24-test version, recorded on 31 October 2026. The current version 1.1.0 passes 60 tests; its fresh execution log is linked below. The historical capture is retained unchanged.*
+The private presentation retains a clearly labelled historical execution capture from the earlier 24-test version. The current version 1.1.0 passes 60 tests. Earlier artifacts remain in Git history; the current execution log is linked below.
 
-[Historical 24-test log](evidence/codex-run-24-tests-20261031.txt) · [Current 60-test log](evidence/codex-run-current.txt)
+[Historical 24-test log](https://github.com/swihpi/Assesment/blob/f4d042730f67bca0e334ad5ef359e2ba33115384/docs/evidence/codex-run-24-tests-20261031.txt) · [Current 60-test log](evidence/codex-run-current.txt)
 
 [Read the full execution log](evidence/codex-run-current.txt)
 
@@ -146,7 +146,7 @@ The bad-value sample contains the impossible joining date 2024-02-30. The row be
 | --- | --- | --- | --- | --- | --- |
 | 3 | F003 | member_since | INVALID_DATE | Joining date is not a valid YYYY-MM-DD calendar date. | Confirm joining date in the authoritative CRM record, correct it and re-export. |
 
-[Inspect the full generated correction report on GitHub →](https://github.com/swihpi/Assesment/blob/main/docs/evidence/actionable-errors.csv)
+[Inspect the full generated correction report on GitHub →](https://github.com/swihpi/Assesment/blob/main/examples/with-exceptions/rejected.csv)
 
 | Example | Recorded outcome |
 | --- | --- |
@@ -154,7 +154,7 @@ The bad-value sample contains the impossible joining date 2024-02-30. The row be
 | Renamed/reordered report | READY: the same three expected records. |
 | Bad-value export | READY_WITH_EXCEPTIONS: F001 and F004 released; two correction cases. |
 
-The current reproduction results and test output are available in the [execution log](test-run.txt) and the public repository’s automated checks.
+The current reproduction results and test output are available in the [execution log](evidence/codex-run-current.txt) and the public repository’s automated checks.
 
 Each completed run contains the original received bytes, record statuses, correction and warning reports, a summary and a log. Approved records appear in cleaned.csv. A READY or READY_WITH_EXCEPTIONS marker is written last and must be present before consumption. BLOCKED or no marker means no approved release. Existing run folders cannot be overwritten.
 
@@ -170,10 +170,10 @@ An incomplete parse releases nothing; earlier candidates receive NOT_RELEASED. A
 
 | Synthetic input | Verified output | Recorded wall time |
 | --- | --- | --- |
-| 1,000 records | 1,000 records | 0.039 seconds |
-| 100,000 records | 100,000 records | 0.517 seconds |
+| 1,000 records | 1,000 records | 0.051 seconds |
+| 100,000 records | 100,000 records | 0.595 seconds |
 
-These historical measurements come from an earlier processor revision and are retained for context; version 1.1.0 has not been re-benchmarked. These single local measurements include startup, received-file copying, processing and report writing. Input generation and independent output counting are outside the timer. They used Python 3.14.4 on macOS 26.6.2 ARM64 and do not establish Production or cloud capacity. Memory retained for identity comparisons and record statuses is the main scaling limit. We would measure peak memory and acceptable batch size before considering partitioning or database-backed checks, preserving duplicate detection across partitions.
+These single local measurements use processor version 1.1.0 on Python 3.14.4 and macOS 26.6.2 ARM64. They include startup, received-file copying, processing and report writing; input generation and independent output counting are outside the timer. The raw results record the processor SHA-256 and UTC timestamp. They do not establish Production or cloud capacity. Memory retained for identity comparisons and record statuses is the main scaling limit. We would measure peak memory and acceptable batch size before considering partitioning or database-backed checks, preserving duplicate detection across partitions. [Raw benchmark results](benchmark.csv).
 
 ## Production direction and boundaries
 
@@ -256,6 +256,8 @@ The broader idea combined different sources to support audience decisions:
 Social post text is unstructured; derived sentiment scores and summaries are structured outputs. CRM, ticketing, and purchase records have their own definitions and checks. Aggregate sentiment may inform campaign timing. It does not identify a known customer’s sentiment. Combining individual records requires a reliable linking identifier and confirmation that the information may be used for that purpose.
 
 ### Original initiative
+
+The account of the original initiative and individual responsibilities is my personal account, checked against internal presentation material. That presentation and its historical screenshots are not included in this public repository. The CRM incident and processing rules are hypothetical extensions.
 
 The idea was inspired by existing subscription-based social-listening and sentiment-analysis solutions. We wanted to explore whether a PaaS approach could give customers more control over their data environment and more flexibility to customise the analysis. Rather than relying primarily on a packaged application, the proposed solution would bring data and analysis together within the customer’s own OCI environment, with scope to connect additional sources and adapt the dashboards to their business needs. This offered a potential commercial benefit for the customer while generating consumption of Oracle cloud services. The trade-off was greater responsibility for building and maintaining the solution.
 

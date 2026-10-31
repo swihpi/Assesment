@@ -1,3 +1,0 @@
-record,customer_id,field,code,message,next_action,source_line_start,source_line_end
-2,,customer_id,MISSING_VALUE,Customer ID is missing.,"Retrieve customer ID from the authoritative CRM record, correct the export and re-export. Do not invent an ID.",3,3
-3,F003,member_since,INVALID_DATE,Joining date is not a valid YYYY-MM-DD calendar date.,"Confirm joining date in the authoritative CRM record, correct it and re-export.",4,4

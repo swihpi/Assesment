@@ -2,6 +2,8 @@
 
 import argparse
 import csv
+from datetime import datetime, timezone
+import hashlib
 import platform
 import subprocess
 import sys
@@ -43,16 +45,20 @@ def main():
                 actual = sum(1 for _ in csv.DictReader(handle))
             if actual != size or not (output / "READY").exists():
                 raise RuntimeError("Benchmark output does not match the generated input")
+            summary = dict(line.split(":", 1) for line in (output / "summary.txt").read_text().splitlines())
             result = {
                 "input_rows": size, "input_bytes": source.stat().st_size,
                 "wall_seconds": round(elapsed, 6), "verified_output_rows": actual,
                 "python": platform.python_version(), "platform": platform.platform(),
+                "processor_version": summary["processor_version"].strip(),
+                "processor_sha256": hashlib.sha256((ROOT / "process_export.py").read_bytes()).hexdigest(),
+                "measured_at_utc": datetime.now(timezone.utc).isoformat(),
             }
             results.append(result)
             print(f"{size:,} rows: {elapsed:.3f}s, {actual:,} verified output records")
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("x", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=results[0].keys())
+        writer = csv.DictWriter(handle, fieldnames=results[0].keys(), lineterminator="\n")
         writer.writeheader()
         writer.writerows(results)
 

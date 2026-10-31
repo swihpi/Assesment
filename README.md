@@ -115,7 +115,7 @@ This row is taken from `rejected.csv` produced by the bad-value example. Record 
 | --- | --- | --- | --- | --- | --- |
 | 3 | F003 | member_since | INVALID_DATE | Joining date is not a valid YYYY-MM-DD calendar date. | Confirm joining date in the authoritative CRM record, correct it and re-export. |
 
-Messages and next actions identify the particular missing field or invalid date. Several problems remain combined into one report row per rejected record. The source owner confirms and corrects the joining date in the CRM and re-exports; the processor does not guess a replacement. [Full generated report](docs/evidence/actionable-errors.csv). Repeated IDs with inconsistent records use `CONFLICTING_RECORDS_FOR_ID`; the program does not establish that distinct identities exist.
+Messages and next actions identify the particular missing field or invalid date. Several problems remain combined into one report row per rejected record. The source owner confirms and corrects the joining date in the CRM and re-exports; the processor does not guess a replacement. [Full generated report](examples/with-exceptions/rejected.csv). Repeated IDs with inconsistent records use `CONFLICTING_RECORDS_FOR_ID`; the program does not establish that distinct identities exist.
 
 ## Data quality and marketing eligibility
 
@@ -143,7 +143,7 @@ The CRM/data owner owns source correction; the integration owner owns mappings a
 python3 tools/benchmark.py --sizes 1000 100000 --output runs/benchmark.csv
 ```
 
-Historical local runs of an earlier processor revision measured 1,000 records in 0.039 seconds and 100,000 in 0.517 seconds, with counts verified. Python 3.14.4 on macOS 26.6.2 ARM64. The timer includes startup, snapshot copying, processing and report writing; generation and independent output counting are outside it. Records and statuses are retained in memory, so memory grows with input. Version 1.1.0 has not been re-benchmarked. These historical measurements do not establish Production/cloud capacity.
+Single local runs of processor version 1.1.0 measured 1,000 records in 0.051 seconds and 100,000 in 0.595 seconds, with output counts independently verified. Python 3.14.4 on macOS 26.6.2 ARM64. The timer includes startup, snapshot copying, processing and report writing; generation and independent output counting are outside it. The raw measurements record the processor SHA-256 and UTC timestamp. Memory grows with retained records; these measurements do not establish Production/cloud capacity or a supported memory ceiling. [Raw benchmark results](docs/benchmark.csv).
 
 No live extraction, schedule, ADW load, cloud status management, source locking, exactly-once delivery, automated correction, sentiment model or campaign enforcement is implemented. The caller must provide a completed file. Source retention makes local outcomes inspectable; Production access, retention and deletion rules remain customer decisions. Reprocessing uses a fresh run folder, not an append operation. [Walkthrough](docs/walkthrough.md).
 
