@@ -73,7 +73,7 @@ I questioned why correcting 800 records should prevent the customer from using 9
 
 The destination must not treat omitted rows as deleted customers or replace a complete table with a partial file. An all-or-nothing policy can be appropriate for a complete snapshot replacement or a transaction requiring consistency across records. This prototype proves selection, not database reconciliation. Missing-ID rows remain traceable by batch and source-record reference; these references do not manufacture customer identity.
 
-Different attributes under the same customer ID do not prove that two identities conflict. They may be inconsistent records for one customer. The prototype withholds the group rather than choosing a winner; authoritative-source or recency-based reconciliation is outside scope.
+Different attributes under the same customer ID do not prove that two identities conflict. They may be inconsistent records for one customer. The prototype reports CONFLICTING_RECORDS_FOR_ID and withholds the group rather than choosing a winner; authoritative-source or recency-based reconciliation is outside scope.
 
 ### Permission is different from data quality
 
@@ -134,7 +134,13 @@ The dates retain their meaning. Another record has no last-purchase date and rem
 
 ### One actionable failure
 
-A record with joining date 2024-02-30 is excluded and reported with customer F003, the member_since field, INVALID_DATE and the corrective action. The same sample includes a missing customer ID and unknown permission. F001 and F004 remain valid and are released; F004 retains UNKNOWN with a warning. The other two records require correction. The outcome is READY_WITH_EXCEPTIONS, with the original bytes preserved and four source-record statuses available.
+The bad-value sample contains the impossible joining date 2024-02-30. The row below is actual rejected.csv output from a fresh run. Record 3 is the third nonblank source record. The source owner corrects the date in the CRM and re-exports; the processor does not guess a replacement.
+
+| Record | Customer ID | Field | Code | Message | Next action |
+| --- | --- | --- | --- | --- | --- |
+| 3 | F003 | member_since | INVALID_DATE | Required value missing or date invalid | Supply required values and real YYYY-MM-DD dates. |
+
+[Inspect the full generated correction report on GitHub →](https://github.com/swihpi/Assesment/blob/main/docs/evidence/actionable-errors.csv)
 
 | Example | Recorded outcome |
 | --- | --- |
@@ -206,7 +212,7 @@ If source failures recur, we review reporting, change ownership, supported inter
 
 ### How I approached this implementation
 
-My strongest experience is in cloud architecture, analytics and bringing technical disciplines together around a business problem. The NHL proposition, internal advocacy, architectural direction and dashboard work came from my Oracle experience. For this assessment, I developed the hypothetical scenario with Codex and directed changes to its processing policy. Codex generated the Python and executed checks at my direction. I reviewed functional outcomes and consistency across the code, diagrams and explanation; I do not claim independent authorship of every line.
+My strongest experience is in cloud architecture, analytics and bringing technical disciplines together around a business problem. The NHL proposition, internal advocacy, architectural direction and dashboard work came from my Oracle experience. For this assessment, I developed the hypothetical scenario with Codex and directed changes to its processing policy. Codex generated the Python and executed checks at my direction. I reviewed functional outcomes and consistency across the code, diagrams and explanation.
 
 ### Questions that changed the design
 
@@ -222,7 +228,7 @@ I requested a fresh-copy test on my Mac rather than accepting a claim that the c
 
 ### A small, reproducible change
 
-In an additional Codex-executed check, customerdata_id first produced BLOCKED. Assuming source-owner confirmation, a temporary mapping-only change then released the same three normalized records as the baseline. The processor and repository mappings were unchanged. This is a reproducible exercise, not actual customer approval.
+In an additional Codex-executed check, customerdata_id first produced BLOCKED. Assuming source-owner confirmation, a temporary mapping-only change then released the same three normalized records as the baseline. The processor and repository mappings were unchanged.
 
 [Open the code walkthrough and reproduction instructions →](https://github.com/swihpi/Assesment/blob/main/docs/walkthrough.md)
 

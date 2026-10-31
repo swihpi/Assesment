@@ -97,6 +97,16 @@ The completion marker is written **last**, after reports and any cleaned output.
 
 For complete input: **parsed records = valid records + rejected records + identical duplicates removed**. For blocked input, `released_records` is zero; `valid_records` may describe candidates seen before a parsing failure and is not evidence of release.
 
+## An actual actionable error
+
+This row is taken from `rejected.csv` produced by the bad-value example. Record 3 means the third nonblank source record, not necessarily a physical CSV line.
+
+| Record | Customer ID | Field | Code | Message | Next action |
+| --- | --- | --- | --- | --- | --- |
+| 3 | F003 | member_since | INVALID_DATE | Required value missing or date invalid | Supply required values and real YYYY-MM-DD dates. |
+
+The source owner corrects the invalid joining date in the CRM and re-exports; the processor does not guess a replacement. [Full generated report](docs/evidence/actionable-errors.csv). Repeated IDs with inconsistent records use `CONFLICTING_RECORDS_FOR_ID`; the program does not establish that distinct identities exist.
+
 ## Data quality and marketing eligibility
 
 NO means explicit opt-out; UNKNOWN means missing or unrecognised permission. We preserve that distinction. For the assumed consent-based campaign, neither authorises sending. An identifiable record with unknown permission can be released with a warning; it is not thereby eligible for marketing. The single permission field is a demonstration simplification: email permission does not authorise push, SMS or WhatsApp. Production activation must check current channel/purpose permission, address/device validity and other agreed rules.
@@ -139,7 +149,7 @@ I originated and championed the sports sentiment initiative within Oracle, broug
 | Why do the production diagram and demo describe different release rules? | I challenged the mismatch; the code, tests and documentation were aligned around one policy. |
 | Who fixes missing information, and does missing permission mean NO? | We assigned source ownership and separated data quality from channel-specific marketing eligibility. |
 
-Codex assisted with the hypothetical CRM incident, detailed rules, synthetic fixtures, expected outcomes, code/tests, research, documentation and execution. A supplied Claude critique informed my review. I chose Codex to work with files, code and execution results in one workspace. My review questions shaped the requirements; the detailed changes and their verification were AI-assisted. No runtime LLM is used: repeatable rules handle known mappings, while unfamiliar meanings require human confirmation.
+Codex assisted with the hypothetical CRM incident, detailed rules, synthetic fixtures, expected outcomes, code/tests, research, documentation and execution. A supplied Claude critique informed my review. I chose Codex to work with files, code and execution results in one workspace. No runtime LLM is used: repeatable rules handle known mappings, while unfamiliar meanings require human confirmation.
 
 ## Reproduce a mapping-only change
 

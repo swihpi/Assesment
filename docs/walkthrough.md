@@ -39,7 +39,7 @@ The script uses a temporary workspace and changes only the first heading in the 
 - After assumed source-owner confirmation and a temporary alias: READY, with three released records.
 - The released CSV exactly matches the original valid export. The processor and repository mappings remain unchanged.
 
-The exercise was executed through Codex and its assertions passed. This is evidence of reproducible behavior, not a claim that Stefan independently rehearsed it or obtained real customer approval. A real change requires confirmation of the identifier's meaning, values and uniqueness; spelling similarity is insufficient.
+The exercise was executed through Codex and its assertions passed. Source-owner confirmation is an exercise assumption. A real change requires confirmation of the identifier’s meaning, values and uniqueness; spelling similarity is insufficient.
 
 ## One actual AI correction
 
@@ -60,4 +60,4 @@ Partial release is conditional: complete snapshot replacement or a consistency-s
 - Why does the destination need an agreed partial-update contract?
 - What happens if a file exists but its completion marker does not?
 
-These are prompts for understanding, not evidence of completed independent rehearsal. Stefan directs Codex to execute examples and tests and reviews the results. All new integration changes are exercised in Development/Test before reviewed Production promotion.
+Use these questions to prepare a walkthrough of the decisions and observed outputs. Validate new integration changes in Development/Test before reviewed Production promotion.

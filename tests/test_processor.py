@@ -85,6 +85,7 @@ class ProcessorTests(unittest.TestCase):
         self.assertEqual(result["status"], "READY_WITH_EXCEPTIONS")
         self.assertEqual((result["parsed_records"], result["valid_records"], result["rejected_records"], result["identical_duplicates_removed"]), (4, 1, 2, 1))
         self.assertEqual({row["customer_id"] for row in read_csv(output / "rejected.csv")}, {"F002"})
+        self.assertEqual({row["code"] for row in read_csv(output / "rejected.csv")}, {"CONFLICTING_RECORDS_FOR_ID"})
         self.assertEqual([r["customer_id"] for r in read_csv(output / "cleaned.csv")], ["F001"])
 
     def test_only_identical_duplicates_can_release(self):
