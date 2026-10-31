@@ -301,16 +301,19 @@ The original screenshot places social information alongside game events. Correla
 
 *Historical screenshot is available in the private presentation; original images are not included in this repository.*
 
-## Assignment coverage
+## How this submission addresses the assignment
 
-| Assignment requirement | Evidence |
+This submission was developed around the assignment’s requirements: a small, coherent ingestion and normalisation flow, runnable code with setup instructions, explicit assumptions and trade-offs, actionable errors, meaningful tests, basic observability, and performance considerations. The README documents how AI was used and where human confirmation remains necessary. Production capabilities outside the working slice are identified separately. The table below links each requirement to the corresponding implementation or evidence.
+
+| Requirement from the brief | Implementation or evidence |
 | --- | --- |
-| Customer context, assumptions, and value | Sections 1–2 and the accompanying customer note. |
-| Runnable ingestion and normalization | Processor, mappings, sample files, and README. |
-| Schema drift, bad data, actionable errors | Sections 3–4 and executed examples. |
-| Setup and run instructions | README prerequisites, commands, outputs, and exit statuses. |
-| Architecture, trade-offs, and limitations | Sections 2–5. |
-| Meaningful tests and reliability | Sixty passing tests, explicit expected output, and fresh-copy checks. |
-| Logging and observability | Counts, parsing completeness, reports, log, duration, and completion markers. |
-| Performance and scalability thinking | Recorded measurements, their limits, and the memory bottleneck. |
-| AI disclosure and deliberate non-reliance | Section 6 and the README. |
+| “cope with schema drift and bad data while surfacing clear, actionable errors” | Confirmed heading mappings, field checks, record-level correction cases and file-level blocking are implemented. [Processor](../process_export.py) · [Example correction report](../examples/with-exceptions/rejected.csv) |
+| “runnable code, a README with setup and run instructions, assumptions, architecture overview, trade-offs, and known limitations” | The repository provides runnable code, exact commands, expected outcomes, diagrams and documented boundaries. [README](../README.md) · [Design and deployment](../docs/deployment.md) |
+| “a short note describing the customer context you assumed and the value your solution would create” | The sports-organisation scenario, source constraints and intended value are explicit; the customer incident is hypothetical. [Customer context and value](../docs/customer_note.md) |
+| “the goal is not to build a production-grade system” | The working scope is local file processing. Cloud retrieval, database updates and campaign execution remain proposed extensions. [Scope and limitations](../README.md#result-and-scope) |
+| “A small but coherent end-to-end slice is preferred” | A completed CSV becomes preserved input, normalised approved output, correction reports and a final completion status. [Walkthrough](../docs/walkthrough.md) · [Inspectable outputs](../examples/with-exceptions) |
+| “clarity of design, code quality, reasoning, and trade-offs rather than alignment to a specific stack” | Standard-library Python makes the demonstration reproducible without cloud access. The design explains mapping approval, partial release and conservative conflict handling. [Processing contract](../README.md#processing-contract) · [Design reasoning](../docs/assessment.md) |
+| “where AI was used, how it was used, and where you deliberately chose not to rely on it” | The README describes Codex assistance and human review. Runtime decisions use deterministic rules; unfamiliar source meanings require human confirmation. [AI disclosure](../README.md#my-judgement-and-codex-assistance) |
+| “A small but meaningful test set covering core behavior is preferred” | Automated tests cover selected core behaviour and regression cases, with expected outputs and reproducible execution evidence. [Tests](../tests) · [Validation evidence](../docs/validation.md) |
+| “basic logging and minimal observability that fits the shape of the system” | Logs, counts, statuses, source references, diagnostics and completion markers support troubleshooting of local runs. [Outputs and completion](../README.md#outputs-record-status-and-completion) · [Example run log](../examples/with-exceptions/run.log) |
+| “identify likely bottlenecks, have a sensible measurement strategy, and can explain how the design would scale” | A reproducible benchmark verifies counts and records its environment. Retained records are identified as the memory bottleneck; local timings are not production-capacity claims. [Benchmark tool](../tools/benchmark.py) · [Raw measurements](../docs/benchmark.csv) |
