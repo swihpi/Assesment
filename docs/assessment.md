@@ -228,6 +228,8 @@ Social post text is unstructured; derived sentiment scores and summaries are str
 
 The initiative focused on NHL hockey. The original presentation includes Nashville Predators versus LA Kings. The initiative was internal and intended for exploration as an OCI Sports Unit pilot. It was discontinued because of other priorities within OCI OAC Product Management. Bringing engineers, product management, and DBAs together was a useful learning experience around an idea intended to increase OCI usage and help customers derive commercial value.
 
+The NHL example used the OIC Twitter adapter to bring in Twitter activity, alongside game information obtained through the public NHL API. The data was brought together in ADW and presented through OAC dashboards, combining aggregate sentiment with match-day events.
+
 ### Original slide 6: aggregate sentiment
 
 The original screenshot illustrates aggregate sentiment categories and trends. The source slide identifies Oracle Text in Autonomous.
