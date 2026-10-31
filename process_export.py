@@ -116,7 +116,7 @@ def process_file(input_path, output_path, config_dir=None):
         for index, (number, row, problems) in enumerate(records):
             row_status, reason = "ACCEPTED", "Required checks passed"
             if conflict:
-                row_status, reason = "NEEDS_CORRECTION", "Conflicting customer ID"
+                row_status, reason = "NEEDS_CORRECTION", "Conflicting records for the same customer ID"
                 rejected.append(issue(number, row["customer_id"], "customer_id", "CONFLICTING_ID",
                                       "Repeated ID has conflicting or invalid records", "Resolve in the source; no winner is guessed."))
             elif problems:

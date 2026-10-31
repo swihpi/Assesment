@@ -6,7 +6,7 @@ These are synthetic assumptions, not policies supplied by a real customer. The o
 
 Preserve the received bytes and original source. Recognise headings through the approved alias CSV; allow reordering and report unused extra columns. Missing or ambiguous required headings, malformed CSV, invalid encoding, or an empty input block approval. A partial parse never releases its apparently valid prefix.
 
-For fully parsed input, release valid records and report required-value failures or conflicting identities as correction cases. Remove identical normalized duplicates once, with a warning. Preserve leading zeroes, real ISO dates, optional empty purchase dates, and YES/NO/UNKNOWN permission meanings. No error-rate threshold overrides identity or permission rules.
+For fully parsed input, release valid records and report required-value failures or conflicting records for the same customer ID as correction cases. Remove identical normalized duplicates once, with a warning. Preserve leading zeroes, real ISO dates, optional empty purchase dates, and YES/NO/UNKNOWN permission meanings. No error-rate threshold overrides identity or permission rules.
 
 | Fixture | Expected result |
 | --- | --- |

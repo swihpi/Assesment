@@ -6,6 +6,12 @@ A standalone Python program preserves a received CRM CSV, normalizes approved eq
 
 The processor is **176 lines**, including comments and blank lines, and uses Python's standard library. This is a local demonstration of the same receiving → validation → approved/correction policy proposed for ADW. The Oracle cloud integration and campaign controls are not implemented.
 
+## Result and scope
+
+The tested 10,000-record example preserves all input, releases 9,200 records that pass the selected rules, and reports 800 correction cases. Independent row errors permit partial release; an uncertain required mapping or malformed structure blocks the input. The destination must support partial updates: omission cannot mean deletion. All-or-nothing processing can be appropriate where complete snapshots or transactional consistency are required.
+
+The working slice is deliberately file-to-file: changing headings, normalization, selection and diagnostics can be reproduced without cloud access. Database reconciliation and campaign eligibility remain deployment work. Passing validation does not prove every source attribute is factually correct.
+
 ## Technology key
 
 | Service | Abbreviation | Role in this proposal |
@@ -60,9 +66,11 @@ All six headings must exist, using canonical names or approved aliases:
 
 Readable CSV mappings in `config/` define heading aliases and permission equivalents. Approved heading changes and reordered columns work; an extra unused column warns. A missing/ambiguous required heading, wrong record width, broken quoting, unsupported encoding or empty input blocks the input. Even a valid prefix of a structurally broken file is not released.
 
-For a fully parsed file, missing/invalid required values and conflicting identities affect those records, while valid records are released. Identical normalized duplicates are retained once. A new heading such as `customerdata_id` initially blocks release; only after source-owner confirmation should its alias to `customer_id` be added and tested. A change in identifier meaning or values needs identity reconciliation, not a spelling substitution.
+For a fully parsed file, missing/invalid required values and conflicting records for the same customer ID affect those records, while valid records are released. Identical normalized duplicates are retained once. A new heading such as `customerdata_id` initially blocks release; only after source-owner confirmation should its alias to `customer_id` be added and tested. A change in identifier meaning or values needs identity reconciliation, not a spelling substitution.
 
 ![Implemented local processing](docs/diagrams/validation.svg)
+
+Conflicting attributes under one ID can describe inconsistent records for the same customer. The prototype withholds the group; it does not determine whether distinct identities exist.
 
 ## Outputs, record status and completion
 
@@ -132,3 +140,11 @@ I originated and championed the sports sentiment initiative within Oracle, broug
 | Who fixes missing information, and does missing permission mean NO? | We assigned source ownership and separated data quality from channel-specific marketing eligibility. |
 
 Codex assisted with the hypothetical CRM incident, detailed rules, synthetic fixtures, expected outcomes, code/tests, research, documentation and execution. A supplied Claude critique informed my review. I chose Codex to work with files, code and execution results in one workspace. My review questions shaped the requirements; the detailed changes and their verification were AI-assisted. No runtime LLM is used: repeatable rules handle known mappings, while unfamiliar meanings require human confirmation.
+
+## Reproduce a mapping-only change
+
+```sh
+python3 tools/mapping_walkthrough.py
+```
+
+This temporary-workspace exercise verifies that an unfamiliar `customerdata_id` heading blocks release. It then assumes explicit source-owner confirmation, adds the alias only to a temporary mapping, and verifies that three released records exactly match the baseline. The processor and repository mappings are not modified. Source-owner confirmation is an exercise assumption, not approval obtained from a real customer. See the [code walkthrough](docs/walkthrough.md).

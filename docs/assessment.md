@@ -6,9 +6,17 @@ Stefan Willems — Senior Forward Deployed Engineer assessment
 
 A sports organisation wants to bring customer information from its CRM into an analytics environment. For the customer, a successfully delivered file is only part of the problem: they need to know which information they can use, what still needs attention, and whether correcting one problem will delay everything else. The available interface is a daily CSV export, but changing headings, incomplete values and conflicting records make that input difficult to trust. I built a small flow that preserves received data, releases valid records and reports correction cases; unreliable input prevents approval. The customer and incident are hypothetical, informed by my Oracle experience.
 
+### The working result
+
+In the tested 10,000-record example, all received records are preserved, 9,200 pass the selected checks and are released, and 800 are reported for correction. Independent record errors do not block usable records; an input-wide failure, such as an unrecognised required heading or broken CSV structure, blocks the whole release. All 24 automated tests pass. These are local file-processing results; using partial updates in a database requires an agreed destination policy.
+
 ### Why a batch example?
 
 For this exercise, I deliberately assumed a legacy CRM whose available interface is a scheduled CSV export. This keeps the demonstration focused on a practical source constraint and on making inconsistent data usable. Where the business needs customer changes reflected within seconds or minutes—and the source supports it—a streaming integration would be a stronger fit. The validation, identity and permission principles demonstrated here would still apply, while continuous processing would require additional handling for repeated updates, event ordering and recovery. The current implementation demonstrates batch processing only.
+
+### Why this scope?
+
+I chose to demonstrate the uncertain part of the handoff: interpreting changing headings, separating usable records from correction cases, and explaining failures. Cloud connectivity and database updates remain outside the working implementation so the selected behaviour can be reproduced and inspected. The repository contains the runnable code, assumptions and evidence.
 
 ### Technology key
 
@@ -24,7 +32,7 @@ For this exercise, I deliberately assumed a legacy CRM whose available interface
 | --- | --- |
 | Use the existing CSV/SFTP export | No usable CRM API or supported application connector is available in the assumed environment. |
 | Match confirmed headings by name | Labels and column positions can change without the underlying information changing. |
-| Preserve uncertainty and reject conflicting identities | Missing information or conflicting records should not be resolved by guessing. |
+| Preserve uncertainty and withhold conflicting records for the same customer ID | Missing information or conflicting records should not be resolved by guessing. |
 | Release valid records; block unreliable input | Independent row errors should not block valid records; uncertain headings or broken structure prevent safe approval of the input. |
 | Demonstrate the rules in standalone Python | Reviewers can reproduce the behavior without access to Oracle services. |
 
@@ -36,24 +44,24 @@ The wider ambition was to combine aggregated social-media audience signals with 
 
 ## The source and the missing handoff
 
-The first discussion would establish what the CRM can reliably provide today, who owns the export and which constraints are genuine. A CSV interface may be adequate; replacing it is only useful if it solves a customer problem. For this hypothetical case, no usable CRM API or supported application-specific connector is available, including through OIC. The CRM does support scheduled CSV reports and delivery to customer-controlled SFTP. Each night at 02:00 UTC, it exports ID, name, region, joining date, last-purchase date and marketing permission; OIC retrieves the completed file.
+We first establish what the CRM can provide, who owns its export and which constraints are genuine. Here, no usable API or supported application connector is available, including through OIC. The CRM can deliver a scheduled CSV to customer-controlled SFTP. At 02:00 UTC it exports ID, name, region, joining date, last-purchase date and marketing permission; OIC retrieves the completed file.
 
 ![Proposed production flow: OIC retrieves and archives the original CSV, coordinates validation before database loading, then writes approved records and restricted correction cases to ADW. Python in an OCI Function is the illustrated validation option; the cloud deployment remains proposed.](diagrams/deployment.svg)
 
-The assumed incident is a report-template change: headings are renamed, columns are reordered, and some records contain missing or inconsistent values. The database itself need not have changed. We agree field meanings with the source owner and make those rules executable. Automated delivery alone does not establish that a renamed field has the intended meaning. The implemented demonstration starts with an available, completed CSV and ends with local output. The CRM export, SFTP collection, cloud integration, and database loading remain proposed deployment work.
+The assumed incident is a report-template change: headings are renamed, columns reordered, and some values are missing or inconsistent. The database itself need not have changed. The source owner confirms field meanings before we approve mappings. The local demonstration starts with a completed CSV; the cloud handoff shown above remains proposed.
 
 For that deployment, we must also agree how completed files are recognised, how missing exports are reported, and how previously processed files are handled.
 
 ## The processing decisions
 
-The local demonstration and proposed ADW deployment follow the same policy: preserve received data, release valid records and report correction cases. All six selected headings must exist. Customer ID, name, region and joining date require valid values; last-purchase date may be empty. Readable CSV mapping files define approved heading aliases and permission equivalents. We do not infer a field’s meaning from its spelling or invent missing identity.
+All six headings must exist. Customer ID, name, region and joining date require valid values; last-purchase date may be empty. CSV mapping files define approved aliases and permission equivalents. We do not infer meaning from spelling or invent missing identity.
 
 | Situation | Processing decision |
 | --- | --- |
 | Approved renamed or reordered heading | Map by confirmed name; column position is not the contract. |
 | Extra unused column | Report a warning and continue. |
 | Missing/ambiguous required heading, malformed CSV or invalid encoding | BLOCKED: preserve received bytes and diagnostics; release no approved records. A valid-looking prefix is insufficient. |
-| Missing ID, invalid required value or conflicting identity in a fully parsed file | Mark the affected records NEEDS_CORRECTION and release the other valid records. |
+| Missing ID, invalid required value or conflicting records for the same customer ID in a fully parsed file | Mark the affected records NEEDS_CORRECTION and release the other valid records. |
 | Identical normalized duplicate | Retain one approved copy; report the duplicate as ignored. |
 | Unknown permission | Preserve UNKNOWN, report a warning and retain the otherwise valid record. Campaign eligibility is separate. |
 
@@ -61,13 +69,15 @@ The local demonstration and proposed ADW deployment follow the same policy: pres
 
 ### What happens to 10,000 records with 800 failures?
 
-Rejecting bad data is straightforward to describe. The harder question is what the customer loses while those problems are being corrected. For a fully parsed input with 800 independent required-value failures and no duplicates, received.csv retains all 10,000 records, cleaned.csv contains the 9,200 valid records, and correction/status reports identify the 800 exceptions. The run is READY_WITH_EXCEPTIONS . A test verifies this exact case. If a required heading is missing or the CSV structure breaks, the whole input is BLOCKED , because we cannot establish its meaning or completeness; no cleaned CSV is released. A readable input with no valid records is also BLOCKED.
+I questioned why correcting 800 records should prevent the customer from using 9,200 otherwise usable records. The answer depends on the destination: partial release is appropriate only if it can safely accept independent updates. In the tested case, received.csv retains 10,000 records, cleaned.csv contains 9,200, and correction/status reports identify 800 exceptions. READY_WITH_EXCEPTIONS confirms release. A missing required heading, broken structure or input with no valid records produces BLOCKED and no cleaned CSV.
 
-This assumes the destination supports partial updates: missing rows must not be interpreted as deleted customers, and a partial selection must never blindly replace a complete customer table. The local program demonstrates the selection policy; ADW updates and later correction replay still need implementation. A missing-ID row remains traceable by its import batch and source-record reference, which identifies the received row rather than a real customer. No customer identity is manufactured to make the record pass.
+The destination must not treat omitted rows as deleted customers or replace a complete table with a partial file. An all-or-nothing policy can be appropriate for a complete snapshot replacement or a transaction requiring consistency across records. This prototype proves selection, not database reconciliation. Missing-ID rows remain traceable by batch and source-record reference; these references do not manufacture customer identity.
+
+Different attributes under the same customer ID do not prove that two identities conflict. They may be inconsistent records for one customer. The prototype withholds the group rather than choosing a winner; authoritative-source or recency-based reconciliation is outside scope.
 
 ### Permission is different from data quality
 
-A reliably identified customer can still be ineligible for marketing. We preserve the source meaning: NO is an explicit opt-out, while UNKNOWN means missing or unrecognised information. For the assumed consent-based campaign, neither authorises sending. The single permission field is a demonstration simplification; production activation must check current permission for the relevant channel and purpose, a valid address or device identifier, and other agreed eligibility rules. Email permission does not automatically authorise push notifications, SMS or WhatsApp.
+Data quality and marketing eligibility are separate. NO records an explicit opt-out; UNKNOWN preserves missing or unrecognised information. Neither authorises the assumed consent-based campaign. Production activation must check current channel/purpose permission and a valid address or device. Email permission does not authorise push, SMS or WhatsApp.
 
 | Permission | Meaning | Assumed campaign treatment |
 | --- | --- | --- |
@@ -87,7 +97,7 @@ The Python processor is 176 lines, including comments and blank lines, and uses 
 
 ### Python preview: checking real dates
 
-This eight-line excerpt from the normalize function checks the joining and last-purchase dates. It requires the agreed YYYY-MM-DD format and a real calendar date, so a value such as 2024-02-30 is reported as INVALID_DATE. The complete processor also handles heading mappings, identity conflicts, record status and approved output.
+This eight-line excerpt from the normalize function checks the joining and last-purchase dates. It requires the agreed YYYY-MM-DD format and a real calendar date, so a value such as 2024-02-30 is reported as INVALID_DATE. The complete processor also handles heading mappings, same-ID record conflicts, record status and approved output.
 
 process_export.py · lines 39–46[View full Python code on GitHub ↗](https://github.com/swihpi/Assesment/blob/main/process_export.py#L39-L46)
 
@@ -106,7 +116,7 @@ process_export.py · lines 39–46[View full Python code on GitHub ↗](https://
 
 I use Codex to run and verify the demonstration by providing the commands or describing the checks in natural language, then reviewing the reported outcomes against the expected results. In this run, the valid and renamed exports each released three records; the bad-value example released F001 and F004 and reported two correction cases; the missing required heading blocked release. All 24 tests passed. This approach lets me repeat the checks without manually entering each command in a terminal, while the README retains the commands for independent reproduction.
 
-![Actual execution output from a Codex-directed local Development/Test run on 31 October 2026, displayed in Codex’s browser. Python 3.12.14: READY, READY_WITH_EXCEPTIONS, BLOCKED and 24 passing tests.](evidence/codex-validation-current.png)
+*Codex execution screenshot is available in the private presentation; see [execution evidence](evidence/codex-run-current.txt) for the recorded output.*
 
 [Read the full execution log](evidence/codex-run-current.txt)
 
@@ -134,15 +144,15 @@ A record with joining date 2024-02-30 is excluded and reported with customer F00
 
 The current reproduction results and test output are available in the [execution log](test-run.txt) and the public repository’s automated checks.
 
-The program first preserves the received bytes as received.csv and leaves the original source unchanged. Each completed run writes record_status.csv, rejection and warning reports, a summary and a log. cleaned.csv contains approved records only. A READY or READY_WITH_EXCEPTIONS marker is written last; consumers must require one of those markers before using the output. BLOCKED or no completion marker means no approved release. Existing run folders cannot be overwritten.
+Each completed run contains the original received bytes, record statuses, correction and warning reports, a summary and a log. Approved records appear in cleaned.csv. A READY or READY_WITH_EXCEPTIONS marker is written last and must be present before consumption. BLOCKED or no marker means no approved release. Existing run folders cannot be overwritten.
 
 ### Correctness and operability
 
-Twenty-four automated tests cover predefined output, heading changes, required fields, dates, NO versus UNKNOWN, duplicate handling, malformed input, encoding, reruns and failed report/completion-marker writes. They also verify received-byte preservation, the 10,000/800 case, an explicitly approved customerdata_id alias, and a structure error encountered after valid records. Original fixture values predated the original processor; the revised release expectations explicitly specify approved IDs and independent counts. The summary exposes parsing completeness, candidates, released records, warnings and duration. For fully parsed input:
+Twenty-four automated tests cover predefined output, heading changes, required fields, dates, NO versus UNKNOWN, duplicate handling, malformed input, encoding, reruns and failed report/completion-marker writes. They also verify received-byte preservation, the 10,000/800 case, an explicitly approved customerdata_id alias, and a structure error encountered after valid records. Expected outcomes specify approved IDs and independent counts, rather than relying only on the processor’s summary. The summary exposes parsing completeness, candidates, released records, warnings and duration. For fully parsed input:
 
 Parsed records = Valid records + Rejected records + Identical duplicates removed
 
-Malformed input is marked incomplete. No rows are released from an incomplete parse, even if some candidates looked valid; their status is NOT_RELEASED. If output writing fails before the final marker, the result must not be consumed. Batch and record references make diagnostics traceable, while a missing customer ID still prevents trusted customer linking.
+An incomplete parse releases nothing; earlier candidates receive NOT_RELEASED. A write failure before the final marker also prevents consumption. Batch and source-record references keep diagnostics traceable.
 
 ### Performance and scaling
 
@@ -159,21 +169,21 @@ These single local measurements include startup, received-file copying, processi
 
 ### Retain received data; control approved use
 
-In the proposed production design, OIC retrieves the completed SFTP export and preserves the original file in a restricted raw-file archive, with OCI Object Storage as the proposed location. OIC then coordinates validation and normalisation before invoking ADW loading. Native mappings and controls should first be assessed; the illustrated option invokes Python hosted separately in an OCI Function. For fully readable input, classified results are written to ADW with validation_status, validation_reason and import-batch/source-record references: valid records enter the approved selection, while correction cases remain restricted. Function interfaces, archive access, database loading and access enforcement still require implementation.
+OIC retrieves the completed export and archives the original in restricted OCI Object Storage. It coordinates validation before ADW loading, using native controls where sufficient or a separately hosted Python function where justified. ADW would retain validation status, reason and batch/source-record references, with correction cases excluded from approved access. Cloud interfaces, loading and access enforcement remain proposed.
 
 | Example | Proposed ADW status | Available use |
 | --- | --- | --- |
 | Required fields pass the checks | ACCEPTED | Available for downstream eligibility checks, not automatic campaign activation. |
-| Customer ID missing, required date invalid, or identities conflict | NEEDS_CORRECTION | Retained for investigation; excluded from approved downstream use. |
+| Customer ID missing, required date invalid, or records for the same customer ID conflict | NEEDS_CORRECTION | Retained for investigation; excluded from approved downstream use. |
 | Required checks pass, permission is unknown | ACCEPTED_WITH_WARNING | Retained in the trusted dataset; excluded from campaigns requiring confirmed permission. |
 
-The local files demonstrate the same order and selection policy: received.csv corresponds to the preserved raw file, record_status.csv records classification, cleaned.csv contains the approved selection, and rejected.csv supplies actionable correction diagnostics. For 10,000 fully parsed records with 800 independent failures and no duplicates, all 10,000 remain in the raw file; after validation, ADW can retain 9,200 approved records and 800 restricted correction cases. Exception storage must retain invalid values safely, such as an invalid date as source text. An unreadable file is archived and reported as a file-level failure; it is not represented as successfully parsed customer rows. ADW writes and correction replay remain proposed.
+The local files correspond to the raw archive, classification report, approved selection and correction diagnostics shown in section 3. In the proposed deployment, ADW receives classified results only after validation. Correction storage must safely retain invalid source values, such as a date as text. An unreadable file remains an archived file-level failure, not a set of successfully parsed customer rows.
 
 ### Who corrects the data?
 
-When an import has problems, the customer should know what remains usable, what is restricted, who is investigating and what happens next. In the proposed operating approach, the update would distinguish a source-data problem from a processing failure and establish an agreed point for the next update. The aim is to keep the customer informed while the responsible teams work through the issue, without promising a resolution time before the cause is understood.
+When an import fails, the customer needs to know what remains usable, who is investigating and when to expect the next update. Distinguish source-data problems from processing failures; do not promise a resolution time before understanding the cause.
 
-The customer’s designated data owner is accountable for source quality; the integration team is accountable for applying the agreed rules and reporting failures. An exception CSV identifies the source file, affected row, available customer reference, problem and required action, and is delivered through an agreed secure channel to the responsible owner. The operating process is to assign the issue, correct the authoritative source, re-export, revalidate and reconcile the result. Unresolved counts and their age remain visible so the same records do not silently fail every day. Exception delivery, assignment and recovery tracking are proposed operating capabilities, not functions of the current script.
+The source owner corrects data; integration engineering maintains mappings and processing. An exception CSV supplies file, row, available customer reference, problem and action through an agreed secure channel. Assign, correct at source, re-export, revalidate and reconcile. Track unresolved counts and age. Delivery and recovery tracking remain proposed operating capabilities.
 
 | Issue | Proposed responsible team |
 | --- | --- |
@@ -182,13 +192,13 @@ The customer’s designated data owner is accountable for source quality; the in
 | Changed heading or incorrect mapping | Source owner confirms meaning; integration owner maintains and validates the approved mapping. |
 | Transfer, processing or delivery failure | Integration engineering team. |
 
-After a source correction, the updated export is validated again. A successful correction can move the affected row into the approved selection, with traceability and duplicate handling so reprocessing does not create extra customers. A permission value is not filled in merely to pass validation: if no authoritative evidence exists, it stays UNKNOWN and the relevant marketing restriction remains. Corrections should not silently overwrite newer customer information or more recent permission changes.
+After source correction, revalidation and reconciliation can move a row into the approved selection. A correction must not overwrite newer customer information or permission changes. The destination also needs an explicit rule for yesterday’s approved version when today’s update fails: a stale approval must not be assumed safe for marketing. These update and suspension controls are not implemented in the local processor.
 
 ![Validate locally, then in Development/Test, before reviewed Production promotion.](diagrams/promotion.svg)
 
 We never test a new script, mapping, or integration in Production first. Use synthetic files locally, then a dedicated Development/Test environment to validate completed-file detection, missing exports, permissions, connectivity, retries, raw-file retention, pre-load validation, classified ADW loads, partial updates, exception recovery and downstream exclusion. Only after review and successful validation should the flow be promoted to Production with separate configuration and monitoring. Only the local file-processing stage has been exercised here; no live customer dataset or Production system was used.
 
-The current processor requires a completed source export and snapshots its received bytes before parsing. Live extraction, secure transfer, scheduling, ADW loading and status updates, exception delivery, exactly-once processing, sentiment scoring and campaign enforcement remain outside its implementation. Destination updates must support partial approval and reconciliation; a daily snapshot alone is insufficient for immediate permission changes, so marketing activation needs a suitable current-permission check.
+Outside the working slice are live extraction, transfer, scheduling, database updates, exception delivery, exactly-once processing, sentiment scoring and campaign enforcement. A daily snapshot cannot establish immediate permission changes; activation needs a suitable current-permission check.
 
 If source failures recur, we review reporting, change ownership, supported interfaces, and operating cost. Stabilising the report may suffice. CRM modernisation or replacement becomes a separate recommendation where justified, weighed against migration cost and disruption.
 
@@ -196,7 +206,7 @@ If source failures recur, we review reporting, change ownership, supported inter
 
 ### How I approached this implementation
 
-My strongest experience is in cloud architecture, analytics and bringing different technical disciplines together around a business problem. The original NHL sentiment proposition, internal advocacy, architectural direction and dashboard work came from my Oracle experience. For this assessment, I developed the hypothetical scenario with Codex, questioned assumptions and directed changes to the processing approach. Codex generated the Python implementation and executed the tests at my direction. I reviewed the functional outcomes and challenged whether the diagrams, code and operating explanation described the same solution. The examples below show where those questions changed the result.
+My strongest experience is in cloud architecture, analytics and bringing technical disciplines together around a business problem. The NHL proposition, internal advocacy, architectural direction and dashboard work came from my Oracle experience. For this assessment, I developed the hypothetical scenario with Codex and directed changes to its processing policy. Codex generated the Python and executed checks at my direction. I reviewed functional outcomes and consistency across the code, diagrams and explanation; I do not claim independent authorship of every line.
 
 ### Questions that changed the design
 
@@ -204,15 +214,21 @@ My strongest experience is in cloud architecture, analytics and bringing differe
 | --- | --- |
 | How does the CRM export actually reach the integration? | We made the scheduled CSV export, CRM-to-SFTP delivery and OIC retrieval explicit. |
 | Why introduce unfamiliar database programming or a long script? | We chose a compact, independently runnable Python example I could inspect and discuss. |
-| Why should 800 bad records prevent use of 9,200 valid ones? | We revised the policy to retain received data, release valid records and report correction cases. Unreliable input structure still blocks release. |
-| Why do the production diagram and local demonstration describe different release rules? | I challenged the mismatch. The code, tests, diagrams and documentation were aligned around one processing policy, with local files representing the proposed ADW areas. |
+| Why should 800 bad records prevent use of 9,200 valid ones? | I challenged blanket rejection, then made partial release conditional on a destination that supports independent updates. An all-or-nothing policy remains valid where completeness is required. |
+| Why do the production diagram and local demonstration describe different release rules? | Codex’s diagram and explanation described a different release policy from the code. I rejected that inconsistency and required alignment across code, tests, diagrams and documentation, then checked the revised outputs. |
 | Who fixes missing data, and should missing permission mean NO? | We assigned source ownership and separated data-quality status from channel-specific marketing eligibility; missing permission remains UNKNOWN. |
 
-These review questions shaped the requirements; the detailed implementation changes and their verification were AI-assisted. I also asked for a fresh GitHub-copy test on my Mac rather than relying on an assertion that the code would work. The updated solution is checked in clean Python environments and through automated repository tests. This gives evidence for the implemented behaviour while leaving cloud deployment and campaign controls explicitly unclaimed.
+I requested a fresh-copy test on my Mac rather than accepting a claim that the code worked. Passing checks support the tested behaviour; they do not establish cloud readiness or exhaustive correctness.
+
+### A small, reproducible change
+
+In an additional Codex-executed check, customerdata_id first produced BLOCKED. Assuming source-owner confirmation, a temporary mapping-only change then released the same three normalized records as the baseline. The processor and repository mappings were unchanged. This is a reproducible exercise, not actual customer approval.
+
+[Open the code walkthrough and reproduction instructions →](https://github.com/swihpi/Assesment/blob/main/docs/walkthrough.md)
 
 ### How Codex helped and where judgement remains necessary
 
-I chose Codex to work with documents, code and execution results in one workspace. It assisted with structure, tooling research, synthetic fixtures, expected outcomes, Python, tests, documentation and execution; a supplied Claude critique also informed the review. That assistance extended what I could deliver, but source meanings, operating responsibilities and the consequences of rejecting customer data still required judgement. The distinction between demonstrated behaviour and proposed cloud capabilities remains explicit.
+I chose Codex to work with documents, code and execution results in one workspace. It assisted with the scenario, research, fixtures, code, tests, documentation and execution; a Claude critique also informed review. My responsibility was to define intended behaviour, question consequences and check outcomes. The walkthrough explains the mapping, normalisation, same-ID comparison, file-level failures and completion marker that underpin those decisions.
 
 The running processor has no LLM dependency. Known mappings, dates and duplicate handling need repeatable, explainable outcomes. AI could help investigate an unfamiliar field, but a person must confirm its meaning before approving a mapping. Neither AI nor the integration should invent missing identity or permission. Adding an agent to daily processing would need a specific customer benefit and a reliable way to validate its output.
 
@@ -225,6 +241,8 @@ The broader idea combined different sources to support audience decisions:
 Social post text is unstructured; derived sentiment scores and summaries are structured outputs. CRM, ticketing, and purchase records have their own definitions and checks. Aggregate sentiment may inform campaign timing. It does not identify a known customer’s sentiment. Combining individual records requires a reliable linking identifier and confirmation that the information may be used for that purpose.
 
 ### Original initiative
+
+The idea was inspired by existing subscription-based social-listening and sentiment-analysis solutions. We wanted to explore whether a PaaS approach could give customers more control over their data environment and more flexibility to customise the analysis. Rather than relying primarily on a packaged application, the proposed solution would bring data and analysis together within the customer’s own OCI environment, with scope to connect additional sources and adapt the dashboards to their business needs. This offered a potential commercial benefit for the customer while generating consumption of Oracle cloud services. The trade-off was greater responsibility for building and maintaining the solution.
 
 The initiative focused on NHL hockey. The original presentation includes Nashville Predators versus LA Kings. The initiative was internal and intended for exploration as an OCI Sports Unit pilot. It was discontinued because of other priorities within OCI OAC Product Management. Bringing engineers, product management, and DBAs together was a useful learning experience around an idea intended to increase OCI usage and help customers derive commercial value.
 
