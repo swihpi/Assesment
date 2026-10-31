@@ -23,6 +23,18 @@ python3 -m unittest discover -s tests -v
 
 Python 3.12 and 3.14 are the verification targets, locally and in GitHub's Linux workflow. The full outputs in examples/ show a successful run, a run with exceptions and a blocked run. Consumers require the corresponding success marker before using cleaned.csv.
 
+## Small demonstration versus larger verification
+
+The four-record `samples/bad_values.csv` example releases two records and reports two different correction cases. The separate 10,000-record test deliberately generates 800 missing IDs and 9,200 valid IDs. These are two synthetic inputs processed under the same rules, not conflicting results. Test counts describe test cases, not customer records.
+
+```sh
+python3 process_export.py --input samples/bad_values.csv --output runs/demo-small
+python3 -m unittest discover -s tests -k ten_thousand -v
+python3 tools/large_case_demo.py --output runs/demo-10000
+```
+
+The unittest creates temporary files and deletes them afterward. The last command retains the generated input, processor reports and independent verification for inspection. [Actual retained-case execution](evidence/large-case-current.txt). The generation deliberately sets the 800-record error count; it is not a measurement of a customer dataset. The same retained case is executed in GitHub Actions on both configured Python versions.
+
 ## Measurements and limitations
 
 Single local runs of processor version 1.1.0 measured 1,000 records in 0.051 seconds and 100,000 in 0.595 seconds, with output counts independently verified. Python 3.14.4 on macOS 26.6.2 ARM64. The timer includes startup, snapshot copying, processing and report writing; generation and independent output counting are outside it. The raw measurements record the processor SHA-256 and UTC timestamp. Memory grows with retained records; these measurements do not establish Production/cloud capacity or a supported memory ceiling. [Raw results](benchmark.csv).

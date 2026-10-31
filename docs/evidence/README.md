@@ -1,6 +1,7 @@
 # Execution evidence
 
 - [Current execution log](codex-run-current.txt): genuine local version 1.1.0 execution, 60 passing tests and four sample runs; identifies the code commit and runtime.
+- [Retained 10,000-record execution](large-case-current.txt): actual processor run plus independently checked counts; generated files can be retained locally with `tools/large_case_demo.py`.
 - [Full correction report](../../examples/with-exceptions/rejected.csv): actual current bad-value sample output, including physical source-line ranges.
 - [Validation summary](../validation.md): test coverage, reproduction instructions and limits.
 

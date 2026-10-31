@@ -8,7 +8,11 @@ The standalone Python processor uses only Python's standard library. This is a l
 
 ## Result and scope
 
-The tested 10,000-record example preserves all input, releases 9,200 records that pass the selected rules, and reports 800 correction cases. Independent row errors permit partial release; an uncertain required mapping or malformed structure blocks the input. The destination must support partial updates: omission cannot mean deletion. All-or-nothing processing can be appropriate where complete snapshots or transactional consistency are required.
+Start with `samples/bad_values.csv`: four synthetic customer records, two released and two needing correction (a missing customer ID and an invalid date). Every input and output can be inspected by hand.
+
+A separate automated test generates 10,000 synthetic records, including 800 with missing IDs, and verifies exactly 9,200 released IDs, 800 correction cases and received-byte preservation. It is one of the 60 tests. The same processor handles both datasets; the `--input` file determines how many records it processes. Both cases have been executed; neither is a real customer export.
+
+Independent row errors permit partial release; uncertain mappings or malformed structure block the input. Database destinations must support partial updates: omission cannot mean deletion, and partial files must not replace complete tables.
 
 The working slice is deliberately file-to-file: changing headings, normalization, selection and diagnostics can be reproduced without cloud access. Database reconciliation and campaign eligibility remain deployment work. Passing validation does not prove every source attribute is factually correct.
 
@@ -30,16 +34,39 @@ cd Assesment
 python3 --version
 ```
 
-I direct Codex to execute these checks in the local Development/Test workspace and review the results. Another engineer can reproduce them directly from the repository root:
+Start with the four-record demonstration:
+
+```sh
+python3 process_export.py --input samples/bad_values.csv --output runs/demo-small
+```
+
+Expected result: `READY_WITH_EXCEPTIONS`, two released and two needing correction. Inspect [the input](samples/bad_values.csv), [the released records](examples/with-exceptions/cleaned.csv) and [the two correction cases](examples/with-exceptions/rejected.csv). Unknown permission remains UNKNOWN and does not authorise marketing.
+
+### Verify the separate 10,000-record case
+
+```sh
+python3 -m unittest discover -s tests -k ten_thousand -v
+```
+
+This selects one automated test that generates and checks 10,000 records. It reports one passing test and deletes its temporary files afterward. [See the test](tests/test_processor.py#L212-L227).
+
+To keep the larger input and outputs for inspection, run:
+
+```sh
+python3 tools/large_case_demo.py --output runs/demo-10000
+```
+
+This generates the synthetic input, invokes the same processor CLI and independently checks the resulting files. It retains `input-10000.csv`, the complete `result/` folder and `verification.json`. The verified result is 9,200 released records and 800 missing-ID correction cases. [Recorded execution](docs/evidence/large-case-current.txt). Each command that writes output requires a new folder.
+
+### Other examples and the complete test suite
 
 ```sh
 python3 process_export.py --input samples/valid.csv --output runs/dev-valid
 python3 process_export.py --input samples/renamed_report.csv --output runs/dev-renamed
-python3 process_export.py --input samples/bad_values.csv --output runs/dev-exceptions
 python3 -m unittest discover -s tests -v
 ```
 
-The first two examples return READY and the same three normalized records. The third returns READY_WITH_EXCEPTIONS: two valid records are released, and two records need correction. Each command exits 0. Each example needs a fresh output folder; existing runs cannot be overwritten.
+The first two examples each contain three valid records and produce the same cleaned output. The complete suite runs 60 tests, including the 10,000-record test. GitHub Actions also executes the retained demonstration on Python 3.12 and 3.14.
 
 To demonstrate a file-level block, run this separately:
 

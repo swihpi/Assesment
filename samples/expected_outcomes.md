@@ -21,8 +21,12 @@ For fully parsed input, release valid records and report required-value failures
 
 Each completed run has received.csv, diagnostic reports, record_status.csv and its final completion marker. cleaned.csv exists only for READY or READY_WITH_EXCEPTIONS. No completion marker means no completed result.
 
+The four-record `bad_values.csv` fixture and the generated 10,000-record case are separate inputs to the same processor. Start with the four-record example to inspect each decision.
+
 The 10,000-record test generates 800 missing-ID rows and 9,200 valid unique IDs. Expected result: exact received-byte preservation; 9,200 approved IDs matching the independent expected set; 800 NEEDS_CORRECTION statuses; 10,000 status rows; READY_WITH_EXCEPTIONS. It does not assume duplicates or overlapping error categories.
 
 A separate test renames the heading to customerdata_id. It is BLOCKED before source-approved configuration is supplied and READY after the explicit alias is added. Tests also verify NO/UNKNOWN remain distinct and a late structure error prevents release of earlier valid rows.
 
 Passing ingestion does not verify the truth of every source attribute or authorise marketing. Campaign checks are outside the processor.
+
+To retain the generated large-case files, run `python3 tools/large_case_demo.py --output runs/demo-10000`. This invokes the processor CLI and independently verifies its files; the normal unittest deletes its temporary files.

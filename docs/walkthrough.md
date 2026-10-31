@@ -6,6 +6,10 @@ In valid.csv and renamed_report.csv, all three records pass and the normalized o
 
 A missing required heading or malformed CSV blocks the entire input, because its meaning or completeness is uncertain. Even records parsed successfully before a late structural failure are not released. A valid file with independent row errors produces READY_WITH_EXCEPTIONS and the valid selection. If no valid records remain, the outcome is BLOCKED and no cleaned CSV exists. Source bytes and diagnostics remain available.
 
+## Two inputs, one processor
+
+The starting `bad_values.csv` demonstration has four records: two released and two requiring correction. The separate generated 10,000-record test verifies 9,200 released records and 800 deliberately missing IDs. `process_export.py` processes the file passed through `--input`; its record count is not fixed. To retain the larger files, run `python3 tools/large_case_demo.py --output runs/demo-10000`. The output includes the generated input, processor reports and independent verification.
+
 ## Code structure
 
 | Function | Responsibility |

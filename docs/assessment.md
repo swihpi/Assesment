@@ -8,7 +8,9 @@ A sports organisation wants to bring customer information from its CRM into an a
 
 ### The working result
 
-In the tested 10,000-record example, all received records are preserved, 9,200 pass the selected checks and are released, and 800 are reported for correction. Independent record errors do not block usable records; an input-wide failure, such as an unrecognised required heading or broken CSV structure, blocks the whole release. All 60 automated tests pass. These are local file-processing results; using partial updates in a database requires an agreed destination policy.
+Start with four inspectable records. The supplied samples/bad_values.csv demonstration contains four synthetic customer records: two are released and two need correction, one for a missing customer ID and one for an invalid joining date. One released record retains UNKNOWN permission; ingestion acceptance does not authorise marketing.
+
+The same processor is separately checked with 10,000 synthetic records. An automated test deliberately generates 800 records with missing IDs and 9,200 valid records, then verifies the released IDs, correction counts and received-file preservation. This is one test within the passing 60-test suite. The two examples use different inputs; both were actually executed. These local results do not establish cloud readiness, and database partial updates still require an agreed destination policy.
 
 ### Why a batch example?
 
@@ -94,6 +96,28 @@ If `customer_id` becomes `customerdata_id`, the processor initially blocks relea
 ## Demonstration and evidence
 
 The standalone Python processor uses only the standard library. It runs without cloud credentials, a database or additional packages. I direct Codex to execute the examples and tests, then review the results; the README contains exact setup and reproduction commands. Local files represent the raw-file archive, per-record status and approved selection, so the implementation demonstrates the policy illustrated in the cloud diagram.
+
+### Reproduce the two examples
+
+| Example | Input | Verified outcome |
+| --- | --- | --- |
+| Small, inspectable demonstration | `samples/bad_values.csv`: four synthetic records | Two released; two need correction. |
+| Larger automated verification | Generated 10,000 records, including 800 missing IDs | 9,200 released; 800 need correction; all received bytes retained. |
+
+```sh
+# Small demonstration: four records, two released, two needing correction
+python3 process_export.py --input samples/bad_values.csv --output runs/demo-small
+
+# One automated test that generates and checks 10,000 records
+python3 -m unittest discover -s tests -k ten_thousand -v
+
+# Generate and retain the larger input, outputs and independent verification
+python3 tools/large_case_demo.py --output runs/demo-10000
+```
+
+The automated test uses a temporary folder and deletes its files afterward. The retained demonstration uses the same process_export.py CLI and keeps input-10000.csv, result/summary.txt, result/cleaned.csv, result/rejected.csv, result/received.csv, result/record_status.csv and verification.json under runs/demo-10000. It independently verifies file counts, received bytes and the exact released IDs. Use a new output folder for each run. Both datasets are synthetic; the generated error rate is a test condition, not a measured customer error rate.
+
+The selected unittest command runs one test, which processes 10,000 records. The full suite contains 60 tests. [Inspect the retained-case execution result](evidence/large-case-current.txt) · [Read the generator and independent checks](../tools/large_case_demo.py).
 
 ### Python preview: checking real dates
 

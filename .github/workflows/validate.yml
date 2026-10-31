@@ -15,6 +15,8 @@ jobs:
           python-version: ${{ matrix.python }}
       - name: Run core reliability tests
         run: python3 -m unittest discover -s tests -v
+      - name: Generate and verify the retained 10000-record demonstration
+        run: python3 tools/large_case_demo.py --output runs/demo-10000
       - name: Reproduce ready, exception and blocked examples
         shell: bash
         run: |
