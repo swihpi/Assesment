@@ -73,6 +73,23 @@ If `customer_id` becomes `customerdata_id`, the processor initially blocks relea
 
 The Python processor is 176 lines, including comments and blank lines, and uses the standard library. It runs without cloud credentials, a database or additional packages. I direct Codex to execute the examples and tests, then review the results; the README contains exact setup and reproduction commands. Local files represent the raw-file archive, per-record status and approved selection, so the implementation demonstrates the policy illustrated in the cloud diagram.
 
+### Python preview: checking real dates
+
+This eight-line excerpt from the normalize function checks the joining and last-purchase dates. It requires the agreed YYYY-MM-DD format and a real calendar date, so a value such as 2024-02-30 is reported as INVALID_DATE. The complete processor also handles heading mappings, identity conflicts, record status and approved output.
+
+process_export.py · lines 39–46[View full Python code on GitHub ↗](https://github.com/swihpi/Assesment/blob/main/process_export.py#L39-L46)
+
+```python
+    for field in ("member_since", "last_purchase_date"):
+        if row[field]:
+            try:
+                if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", row[field]):
+                    raise ValueError("Expected YYYY-MM-DD")
+                date.fromisoformat(row[field])
+            except ValueError:
+                problems.append((field, "INVALID_DATE"))
+```
+
 ### One successful record
 
 | Field | Received | Normalized |
