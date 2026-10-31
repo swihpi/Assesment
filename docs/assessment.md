@@ -8,7 +8,7 @@ A sports organisation wants to bring customer information from its CRM into an a
 
 ### The working result
 
-In the tested 10,000-record example, all received records are preserved, 9,200 pass the selected checks and are released, and 800 are reported for correction. Independent record errors do not block usable records; an input-wide failure, such as an unrecognised required heading or broken CSV structure, blocks the whole release. All 24 automated tests pass. These are local file-processing results; using partial updates in a database requires an agreed destination policy.
+In the tested 10,000-record example, all received records are preserved, 9,200 pass the selected checks and are released, and 800 are reported for correction. Independent record errors do not block usable records; an input-wide failure, such as an unrecognised required heading or broken CSV structure, blocks the whole release. All 60 automated tests pass. These are local file-processing results; using partial updates in a database requires an agreed destination policy.
 
 ### Why a batch example?
 
@@ -93,30 +93,36 @@ If `customer_id` becomes `customerdata_id`, the processor initially blocks relea
 
 ## Demonstration and evidence
 
-The Python processor is 305 lines, including comments and blank lines, and uses the standard library. It runs without cloud credentials, a database or additional packages. I direct Codex to execute the examples and tests, then review the results; the README contains exact setup and reproduction commands. Local files represent the raw-file archive, per-record status and approved selection, so the implementation demonstrates the policy illustrated in the cloud diagram.
+The standalone Python processor uses only the standard library. It runs without cloud credentials, a database or additional packages. I direct Codex to execute the examples and tests, then review the results; the README contains exact setup and reproduction commands. Local files represent the raw-file archive, per-record status and approved selection, so the implementation demonstrates the policy illustrated in the cloud diagram.
 
 ### Python preview: checking real dates
 
-This eight-line excerpt from the normalize function checks the joining and last-purchase dates. It requires the agreed YYYY-MM-DD format and a real calendar date, so a value such as 2024-02-30 is reported as INVALID_DATE. The complete processor also handles heading mappings, same-ID record conflicts, record status and approved output.
+This excerpt from the normalize function checks the joining and last-purchase dates. It requires the agreed YYYY-MM-DD format and a real calendar date, so a value such as 2024-02-30 is reported as INVALID_DATE. The complete processor also handles heading mappings, same-ID record conflicts, record status and approved output.
 
-process_export.py · lines 39–46[View full Python code on GitHub ↗](https://github.com/swihpi/Assesment/blob/main/process_export.py#L39-L46)
+process_export.py · lines 91–100 · version 1.1.0
+
+[View the matching Python source on GitHub ↗](https://github.com/swihpi/Assesment/blob/6f125de7ae323d9f72fea7d9a3f7c0d006fc5521/process_export.py#L91-L100)
 
 ```python
     for field in ("member_since", "last_purchase_date"):
         if row[field]:
             try:
-                if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", row[field]):
-                    raise ValueError("Expected YYYY-MM-DD")
-                date.fromisoformat(row[field])
+                valid_format = re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", row[field])
+                if valid_format:
+                    date.fromisoformat(row[field])
+                else:
+                    problems.append((field, "INVALID_DATE"))
             except ValueError:
                 problems.append((field, "INVALID_DATE"))
 ```
 
 ### How I execute and review the demonstration
 
-I use Codex to run and verify the demonstration by providing the commands or describing the checks in natural language, then reviewing the reported outcomes against the expected results. In this run, the valid and renamed exports each released three records; the bad-value example released F001 and F004 and reported two correction cases; the missing required heading blocked release. All 24 tests passed. This approach lets me repeat the checks without manually entering each command in a terminal, while the README retains the commands for independent reproduction.
+I use Codex to run and verify the demonstration by providing the commands or describing the checks in natural language, then reviewing the reported outcomes against the expected results. In this run, the valid and renamed exports each released three records; the bad-value example released F001 and F004 and reported two correction cases; the missing required heading blocked release. All 60 tests passed. This approach lets me repeat the checks without manually entering each command in a terminal, while the README retains the commands for independent reproduction.
 
-*Codex execution screenshot is available in the private presentation; see [execution evidence](evidence/codex-run-current.txt) for the recorded output.*
+*Historical execution capture from the earlier 24-test version, recorded on 31 October 2026. The current version 1.1.0 passes 60 tests; its fresh execution log is linked below. The historical capture is retained unchanged.*
+
+[Historical 24-test log](evidence/codex-run-24-tests-20261031.txt) · [Current 60-test log](evidence/codex-run-current.txt)
 
 [Read the full execution log](evidence/codex-run-current.txt)
 
@@ -134,7 +140,7 @@ The dates retain their meaning. Another record has no last-purchase date and rem
 
 ### One actionable failure
 
-The bad-value sample contains the impossible joining date 2024-02-30. The row below is actual rejected.csv output from a fresh run. Record 3 is the third nonblank source record. Messages and actions identify the particular problem; several problems remain combined into one report row per rejected record. The source owner confirms and corrects the date in the CRM and re-exports; the processor does not guess a replacement.
+The bad-value sample contains the impossible joining date 2024-02-30. The row below shows selected columns from actual rejected.csv output from a fresh run. The full report also includes physical source-line ranges. Record 3 is the third nonblank source record. Messages and actions identify the particular problem; several problems remain combined into one report row per rejected record. The source owner confirms and corrects the date in the CRM and re-exports; the processor does not guess a replacement.
 
 | Record | Customer ID | Field | Code | Message | Next action |
 | --- | --- | --- | --- | --- | --- |
@@ -154,7 +160,7 @@ Each completed run contains the original received bytes, record statuses, correc
 
 ### Correctness and operability
 
-Sixty automated tests cover predefined output, heading changes, required fields, dates, NO versus UNKNOWN, duplicate handling, malformed input, encoding, reruns and failed report/completion-marker writes. They also verify received-byte preservation, the 10,000/800 case, an explicitly approved customerdata_id alias, and a structure error encountered after valid records. Expected outcomes specify approved IDs and independent counts, rather than relying only on the processor’s summary. The summary exposes parsing completeness, candidates, released records, warnings and duration. For fully parsed input:
+Sixty automated tests cover predefined output, heading changes, required fields, dates, NO versus UNKNOWN, duplicate handling, malformed input, encoding, reruns and failed report/completion-marker writes. They also verify received-byte preservation, the 10,000/800 case, an explicitly approved customerdata_id alias, and a structure error encountered after valid records. Expected outcomes specify approved IDs and independent counts, rather than relying only on the processor’s summary. The summary exposes parsing completeness, candidates, released records, warnings, duration, processor version, UTC start time and the received-input SHA-256. Reports include physical source-line ranges; locations remain blank where decoding cannot identify them reliably. BLOCKED exits 3, operational/configuration errors exit 1, invalid command syntax exits 2 and both successful outcomes exit 0. Use --debug for tracebacks. For fully parsed input:
 
 Parsed records = Valid records + Rejected records + Identical duplicates removed
 
@@ -167,7 +173,7 @@ An incomplete parse releases nothing; earlier candidates receive NOT_RELEASED. A
 | 1,000 records | 1,000 records | 0.039 seconds |
 | 100,000 records | 100,000 records | 0.517 seconds |
 
-These single local measurements include startup, received-file copying, processing and report writing. Input generation and independent output counting are outside the timer. They used Python 3.14.4 on macOS 26.6.2 ARM64 and do not establish Production or cloud capacity. Memory retained for identity comparisons and record statuses is the main scaling limit. We would measure peak memory and acceptable batch size before considering partitioning or database-backed checks, preserving duplicate detection across partitions.
+These historical measurements come from an earlier processor revision and are retained for context; version 1.1.0 has not been re-benchmarked. These single local measurements include startup, received-file copying, processing and report writing. Input generation and independent output counting are outside the timer. They used Python 3.14.4 on macOS 26.6.2 ARM64 and do not establish Production or cloud capacity. Memory retained for identity comparisons and record statuses is the main scaling limit. We would measure peak memory and acceptable batch size before considering partitioning or database-backed checks, preserving duplicate detection across partitions.
 
 ## Production direction and boundaries
 
@@ -223,6 +229,9 @@ My strongest experience is in cloud architecture, analytics and bringing technic
 | Why should 800 bad records prevent use of 9,200 valid ones? | I challenged blanket rejection, then made partial release conditional on a destination that supports independent updates. An all-or-nothing policy remains valid where completeness is required. |
 | Why do the production diagram and local demonstration describe different release rules? | Codex’s diagram and explanation described a different release policy from the code. I rejected that inconsistency and required alignment across code, tests, diagrams and documentation, then checked the revised outputs. |
 | Who fixes missing data, and should missing permission mean NO? | We assigned source ownership and separated data-quality status from channel-specific marketing eligibility; missing permission remains UNKNOWN. |
+| Could the AI-generated code still contain gaps after the initial tests? | I requested a code review in Codex, which found silently skipped empty records, inconsistent permission whitespace matching and duplicate reports that hid field errors. I had the fixes applied and regression tests added; all 39 tests then passed locally and in GitHub Actions on Python 3.12 and 3.14. [Fixes](https://github.com/swihpi/Assesment/commit/f027e5aeb5353d222ae3311a33cc7cee570eb7be) · [Checks](https://github.com/swihpi/Assesment/actions/runs/41202300627). |
+
+In a second review, I asked Codex to assess Claude’s feedback point by point. I accepted changes to configuration validation, Unicode matching, diagnostics and traceability, while retaining the agreed release policy. The revised version passed 60 tests in a fresh local clone on Python 3.14 and in GitHub Actions on Python 3.12 and 3.14. [Version 1.1.0 changes](https://github.com/swihpi/Assesment/commit/6f125de7ae323d9f72fea7d9a3f7c0d006fc5521) · [Checks](https://github.com/swihpi/Assesment/actions/runs/41203284886).
 
 I requested a fresh-copy test on my Mac rather than accepting a claim that the code worked. Passing checks support the tested behaviour; they do not establish cloud readiness or exhaustive correctness.
 

@@ -1,32 +1,100 @@
-Codex-directed local Development/Test execution - 31 October 2026
+Codex-directed local Development/Test execution — 31 October 2026
 Source: https://github.com/swihpi/Assesment
-Commit: 854093aad8c637558ab693ea1c643c99223543d2
-Runtime: Python 3.12.14; clean environment, no third-party packages.
+Code commit: 6f125de7ae323d9f72fea7d9a3f7c0d006fc5521
+Processor: 1.1.0
+Runtime: Python 3.14.4; fresh virtual environment, standard library only.
+Historical 24-test logs are preserved separately in docs/evidence/.
 
-$ python3 process_export.py --input samples/valid.csv --output runs/codex-evidence-valid
-READY: 3 released, 0 need correction. See runs/codex-evidence-valid/summary.txt
+$ python3 process_export.py --input samples/valid.csv --output runs/docs-evidence-v110-valid
+READY: 3 released, 0 need correction. See runs/docs-evidence-v110-valid/summary.txt
+
 Exit code: 0
 
-$ python3 process_export.py --input samples/renamed_report.csv --output runs/codex-evidence-renamed
-READY: 3 released, 0 need correction. See runs/codex-evidence-renamed/summary.txt
+$ python3 process_export.py --input samples/renamed_report.csv --output runs/docs-evidence-v110-renamed
+READY: 3 released, 0 need correction. See runs/docs-evidence-v110-renamed/summary.txt
+
 Exit code: 0
 
-$ python3 process_export.py --input samples/bad_values.csv --output runs/codex-evidence-exceptions
-READY_WITH_EXCEPTIONS: 2 released, 2 need correction. See runs/codex-evidence-exceptions/summary.txt
+$ python3 process_export.py --input samples/bad_values.csv --output runs/docs-evidence-v110-exceptions
+READY_WITH_EXCEPTIONS: 2 released, 2 need correction. See runs/docs-evidence-v110-exceptions/summary.txt
+
 Exit code: 0
 
-$ python3 process_export.py --input samples/breaking_change.csv --output runs/codex-evidence-blocked
-BLOCKED: 0 released, 0 need correction. See runs/codex-evidence-blocked/summary.txt
-Exit code: 2
+$ python3 process_export.py --input samples/breaking_change.csv --output runs/docs-evidence-v110-blocked
 
-$ python3 -m unittest discover -s tests
-........................
+BLOCKED: Missing required columns: customer_id No records released. See runs/docs-evidence-v110-blocked/summary.txt
+Exit code: 3
+
+$ python3 -m unittest discover -s tests -v
+
+test_bad_configuration_stops_before_creating_output (test_diagnostics.DiagnosticTests.test_bad_configuration_stops_before_creating_output) ... ok
+test_bad_mapping_messages_identify_file_and_row (test_diagnostics.DiagnosticTests.test_bad_mapping_messages_identify_file_and_row) ... ok
+test_blocked_cli_explains_missing_header_on_stderr (test_diagnostics.DiagnosticTests.test_blocked_cli_explains_missing_header_on_stderr) ... ok
+test_customer_ids_remain_exact_and_case_sensitive (test_diagnostics.DiagnosticTests.test_customer_ids_remain_exact_and_case_sensitive) ... ok
+test_dates_require_ascii_digits (test_diagnostics.DiagnosticTests.test_dates_require_ascii_digits) ... ok
+test_debug_controls_traceback_for_operational_error (test_diagnostics.DiagnosticTests.test_debug_controls_traceback_for_operational_error) ... ok
+test_decode_failure_after_valid_prefix_blocks_all_release (test_diagnostics.DiagnosticTests.test_decode_failure_after_valid_prefix_blocks_all_release) ... ok
+test_existing_output_log_is_not_modified_on_failure (test_diagnostics.DiagnosticTests.test_existing_output_log_is_not_modified_on_failure) ... ok
+test_failed_diagnostic_write_preserves_original_exception (test_diagnostics.DiagnosticTests.test_failed_diagnostic_write_preserves_original_exception) ... ok
+test_mapping_bom_crlf_and_normalized_keys_are_supported (test_diagnostics.DiagnosticTests.test_mapping_bom_crlf_and_normalized_keys_are_supported) ... ok
+test_mapping_invalid_utf8_has_clear_message (test_diagnostics.DiagnosticTests.test_mapping_invalid_utf8_has_clear_message) ... ok
+test_multiline_record_ranges_survive_blanks_rejections_and_duplicates (test_diagnostics.DiagnosticTests.test_multiline_record_ranges_survive_blanks_rejections_and_duplicates) ... ok
+test_nfc_names_and_regions_do_not_create_false_conflicts (test_diagnostics.DiagnosticTests.test_nfc_names_and_regions_do_not_create_false_conflicts) ... ok
+test_provenance_matches_snapshot_and_utc_time (test_diagnostics.DiagnosticTests.test_provenance_matches_snapshot_and_utc_time) ... ok
+test_report_failure_logs_error_and_provenance_without_success_marker (test_diagnostics.DiagnosticTests.test_report_failure_logs_error_and_provenance_without_success_marker) ... ok
+test_required_fields_are_independent_of_output_order (test_diagnostics.DiagnosticTests.test_required_fields_are_independent_of_output_order) ... ok
+test_semicolon_delimiter_blocks_release (test_diagnostics.DiagnosticTests.test_semicolon_delimiter_blocks_release) ... ok
+test_snapshot_failure_after_mkdir_is_logged (test_diagnostics.DiagnosticTests.test_snapshot_failure_after_mkdir_is_logged) ... ok
+test_structure_error_reports_physical_range (test_diagnostics.DiagnosticTests.test_structure_error_reports_physical_range) ... ok
+test_unexpected_programming_error_is_identified_and_debug_reraises (test_diagnostics.DiagnosticTests.test_unexpected_programming_error_is_identified_and_debug_reraises) ... ok
+test_usage_error_and_version_are_distinct (test_diagnostics.DiagnosticTests.test_usage_error_and_version_are_distinct) ... ok
+test_additive_drift_warns_and_continues (test_processor.ProcessorTests.test_additive_drift_warns_and_continues) ... ok
+test_ambiguous_alias_columns_hold (test_processor.ProcessorTests.test_ambiguous_alias_columns_hold) ... ok
+test_bad_encoding_is_reported_without_guessing (test_processor.ProcessorTests.test_bad_encoding_is_reported_without_guessing) ... ok
+test_bad_values_release_valid_records_with_correction_reports (test_processor.ProcessorTests.test_bad_values_release_valid_records_with_correction_reports) ... ok
+test_breaking_drift_holds_before_processing (test_processor.ProcessorTests.test_breaking_drift_holds_before_processing) ... ok
+test_broken_quoting_and_wrong_record_width_hold (test_processor.ProcessorTests.test_broken_quoting_and_wrong_record_width_hold) ... ok
+test_cli_exit_status_and_missing_input (test_processor.ProcessorTests.test_cli_exit_status_and_missing_input) ... ok
+test_completion_marker_failure_cannot_look_like_success (test_processor.ProcessorTests.test_completion_marker_failure_cannot_look_like_success) ... ok
+test_configuration_can_add_a_confirmed_alias_without_code_changes (test_processor.ProcessorTests.test_configuration_can_add_a_confirmed_alias_without_code_changes) ... ok
+test_confirmed_aliases_reordering_whitespace_and_permission_forms (test_processor.ProcessorTests.test_confirmed_aliases_reordering_whitespace_and_permission_forms) ... ok
+test_customerdata_id_needs_an_explicitly_approved_mapping (test_processor.ProcessorTests.test_customerdata_id_needs_an_explicitly_approved_mapping) ... ok
+test_empty_source_and_empty_snapshot_hold (test_processor.ProcessorTests.test_empty_source_and_empty_snapshot_hold) ... ok
+test_identical_duplicates_are_removed_and_conflicts_excluded (test_processor.ProcessorTests.test_identical_duplicates_are_removed_and_conflicts_excluded) ... ok
+test_invalid_record_cannot_hide_a_conflict_for_a_known_id (test_processor.ProcessorTests.test_invalid_record_cannot_hide_a_conflict_for_a_known_id) ... ok
+test_no_and_unknown_remain_distinct (test_processor.ProcessorTests.test_no_and_unknown_remain_distinct) ... ok
+test_no_usable_records_never_releases (test_processor.ProcessorTests.test_no_usable_records_never_releases) ... ok
+test_only_identical_duplicates_can_release (test_processor.ProcessorTests.test_only_identical_duplicates_can_release) ... ok
+test_report_write_failure_never_creates_a_ready_marker (test_processor.ProcessorTests.test_report_write_failure_never_creates_a_ready_marker) ... ok
+test_same_file_reruns_are_deterministic_and_never_overwrite (test_processor.ProcessorTests.test_same_file_reruns_are_deterministic_and_never_overwrite) ... ok
+test_structure_error_after_valid_rows_prevents_any_release (test_processor.ProcessorTests.test_structure_error_after_valid_rows_prevents_any_release) ... ok
+test_ten_thousand_records_preserve_800_exceptions_and_release_9200 (test_processor.ProcessorTests.test_ten_thousand_records_preserve_800_exceptions_and_release_9200) ... ok
+test_unknown_permission_never_becomes_yes (test_processor.ProcessorTests.test_unknown_permission_never_becomes_yes) ... ok
+test_utf8_bom_and_quoted_multiline_names_are_read_as_records (test_processor.ProcessorTests.test_utf8_bom_and_quoted_multiline_names_are_read_as_records) ... ok
+test_valid_output_matches_predefined_expected_records (test_processor.ProcessorTests.test_valid_output_matches_predefined_expected_records) ... ok
+test_cli_success_exceptions_blocked_and_error_exit_codes (test_review_regressions.ValidatorTests.test_cli_success_exceptions_blocked_and_error_exit_codes) ... ok
+test_conflict_retains_field_errors_and_counts_each_record_once (test_review_regressions.ValidatorTests.test_conflict_retains_field_errors_and_counts_each_record_once) ... ok
+test_conflicting_valid_rows_are_both_rejected (test_review_regressions.ValidatorTests.test_conflicting_valid_rows_are_both_rejected) ... ok
+test_empty_record_is_counted_and_rejected (test_review_regressions.ValidatorTests.test_empty_record_is_counted_and_rejected) ... ok
+test_empty_wrong_width_records_block_release (test_review_regressions.ValidatorTests.test_empty_wrong_width_records_block_release) ... ok
+test_existing_output_is_preserved (test_review_regressions.ValidatorTests.test_existing_output_is_preserved) ... ok
+test_identical_invalid_duplicates_report_date_error (test_review_regressions.ValidatorTests.test_identical_invalid_duplicates_report_date_error) ... ok
+test_identical_valid_duplicates_still_removed (test_review_regressions.ValidatorTests.test_identical_valid_duplicates_still_removed) ... ok
+test_invalid_utf8_blocks_release (test_review_regressions.ValidatorTests.test_invalid_utf8_blocks_release) ... ok
+test_malformed_csv_blocks_release (test_review_regressions.ValidatorTests.test_malformed_csv_blocks_release) ... ok
+test_only_empty_record_blocks_release (test_review_regressions.ValidatorTests.test_only_empty_record_blocks_release) ... ok
+test_permission_whitespace_and_case_match_mapping (test_review_regressions.ValidatorTests.test_permission_whitespace_and_case_match_mapping) ... ok
+test_physical_blank_lines_are_skipped (test_review_regressions.ValidatorTests.test_physical_blank_lines_are_skipped) ... ok
+test_unknown_permission_stays_unknown (test_review_regressions.ValidatorTests.test_unknown_permission_stays_unknown) ... ok
+test_valid_input_and_snapshot_preserved (test_review_regressions.ValidatorTests.test_valid_input_and_snapshot_preserved) ... ok
+
 ----------------------------------------------------------------------
-Ran 24 tests in 0.194s
+Ran 60 tests in 0.725s
 
 OK
 Exit code: 0
 
-Verification: received copies match the inputs; approved values match expected records.
-Bad-value input: F001/F004 released, UNKNOWN preserved; two correction cases.
-Missing required heading: BLOCKED; no cleaned CSV. All 24 tests passed.
+Independent verification: received snapshots match inputs; valid and renamed outputs match expected rows.
+Bad-value sample: F001/F004 released, UNKNOWN retained, two rejected records.
+Missing heading: BLOCKED, exit 3, no cleaned.csv.
+All 60 automated tests passed. Production/cloud readiness is outside this local check.

@@ -4,7 +4,7 @@
 
 A standalone Python program preserves a received CRM CSV, normalizes approved equivalents, releases valid customer records, and reports records needing correction. If the file cannot be interpreted reliably, it blocks release of the entire input. The hypothetical customer is a sports organisation preparing customer data for analytics and later audience decisions. [Customer context and value](docs/customer_note.md) · [Assessment narrative](docs/assessment.md).
 
-The processor is **305 lines**, including comments and blank lines, and uses Python's standard library. This is a local demonstration of the same receiving → validation → approved/correction policy proposed for ADW. The Oracle cloud integration and campaign controls are not implemented.
+The standalone Python processor uses only Python's standard library. This is a local demonstration of the same receiving → validation → approved/correction policy proposed for ADW. The Oracle cloud integration and campaign controls are not implemented.
 
 ## Result and scope
 
@@ -143,7 +143,7 @@ The CRM/data owner owns source correction; the integration owner owns mappings a
 python3 tools/benchmark.py --sizes 1000 100000 --output runs/benchmark.csv
 ```
 
-Single local runs measured 1,000 records in 0.039 seconds and 100,000 in 0.517 seconds, with counts verified. Python 3.14.4 on macOS 26.6.2 ARM64. The timer includes startup, snapshot copying, processing and report writing; generation and independent output counting are outside it. Records and statuses are retained in memory, so memory grows with input. These measurements do not establish Production/cloud capacity.
+Historical local runs of an earlier processor revision measured 1,000 records in 0.039 seconds and 100,000 in 0.517 seconds, with counts verified. Python 3.14.4 on macOS 26.6.2 ARM64. The timer includes startup, snapshot copying, processing and report writing; generation and independent output counting are outside it. Records and statuses are retained in memory, so memory grows with input. Version 1.1.0 has not been re-benchmarked. These historical measurements do not establish Production/cloud capacity.
 
 No live extraction, schedule, ADW load, cloud status management, source locking, exactly-once delivery, automated correction, sentiment model or campaign enforcement is implemented. The caller must provide a completed file. Source retention makes local outcomes inspectable; Production access, retention and deletion rules remain customer decisions. Reprocessing uses a fresh run folder, not an append operation. [Walkthrough](docs/walkthrough.md).
 

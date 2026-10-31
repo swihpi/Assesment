@@ -25,6 +25,8 @@ Python 3.12 and 3.14 are the verification targets, locally and in GitHub's Linux
 
 ## Measurements and limitations
 
-Single local Python 3.14.4 measurements on macOS 26.6.2 ARM64: 1,000 records in 0.038596 seconds; 100,000 in 0.517292 seconds. Counts were independently checked. Startup, snapshot copying, processing and reports are timed; input generation and independent output counting are not. Raw results are in benchmark.csv. Memory grows with retained records/statuses; no Production capacity, constant-memory, cloud-performance or peak-memory claim is made.
+Historical measurements from an earlier processor revision, retained for context: local Python 3.14.4 measurements on macOS 26.6.2 ARM64: 1,000 records in 0.038596 seconds; 100,000 in 0.517292 seconds. Counts were independently checked. Startup, snapshot copying, processing and reports are timed; input generation and independent output counting are not. Raw results are in benchmark.csv. Memory grows with retained records/statuses; no Production capacity, constant-memory, cloud-performance or peak-memory claim is made.
+
+Version 1.1.0 has not been re-benchmarked. Historical 24-test logs are preserved separately; `test-run.txt` and `evidence/codex-run-current.txt` now contain the genuine current 60-test execution.
 
 No OIC/OCI Function handler, ADW connection, approved-view access control, campaign filter, exception delivery or correction workflow has been deployed. Automated checks establish only the local processor's behavior. New cloud work must be validated in Development/Test before reviewed Production promotion.
