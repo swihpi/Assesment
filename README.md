@@ -212,3 +212,18 @@ This submission was developed around the assignment’s requirements: a small, c
 | “A small but meaningful test set covering core behavior is preferred” | Automated tests cover selected core behaviour and regression cases, with expected outputs and reproducible execution evidence. [Tests](tests) · [Validation evidence](docs/validation.md) |
 | “basic logging and minimal observability that fits the shape of the system” | Logs, counts, statuses, source references, diagnostics and completion markers support troubleshooting of local runs. [Outputs and completion](README.md#outputs-record-status-and-completion) · [Example run log](examples/with-exceptions/run.log) |
 | “identify likely bottlenecks, have a sensible measurement strategy, and can explain how the design would scale” | A reproducible benchmark verifies counts and records its environment. Retained records are identified as the memory bottleneck; local timings are not production-capacity claims. [Benchmark tool](tools/benchmark.py) · [Raw measurements](docs/benchmark.csv) |
+
+### Submission checklist against the brief
+
+This checklist confirms that the submission addresses the deliverable requirements and engineering expectations in the assignment brief. Each checked item is supported by the implementation or evidence linked above.
+
+- [x] Runnable ingestion and normalisation flow handling schema drift and bad data.
+- [x] Clear, actionable errors identifying the affected record, field, problem and corrective action.
+- [x] Git repository with setup and run instructions.
+- [x] Documented customer context, assumptions and intended value.
+- [x] Architecture, technology choices, trade-offs and known limitations explained.
+- [x] A coherent file-to-file implementation, with production extensions explicitly outside scope.
+- [x] AI assistance, human review and deliberate limits on AI reliance documented in the README.
+- [x] Meaningful automated tests covering core behaviour and failure cases.
+- [x] Basic logging, processing summaries and traceable diagnostics.
+- [x] Performance measurements, likely bottlenecks and scaling considerations documented.
