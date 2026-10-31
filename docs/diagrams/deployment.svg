@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="650" viewBox="0 0 900 650" role="img" aria-labelledby="title desc"><title id="title">Proposed ADW receiving, validation and controlled-use flow</title><desc id="desc">CRM exports to SFTP. Oracle Integration Cloud retains readable records in an ADW receiving area. Proposed Python validation in an OCI Function assigns status. Approved records proceed to downstream eligibility checks; correction cases remain restricted and are reported to the source owner.</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#637880"/></marker></defs><rect width="900" height="650" rx="14" fill="#fbfcfa"/>
-<text x="450" y="30" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="700" fill="#40857b">PROPOSED PRODUCTION FLOW</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="710" viewBox="0 0 900 710" role="img" aria-labelledby="title desc"><title id="title">Validate before loading ADW</title><desc id="desc">OIC retrieves the CSV from SFTP, archives the original file, coordinates validation, then loads approved records and restricted correction cases into ADW. Uninterpretable files are archived but no customer rows are approved.</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#637880"/></marker></defs><rect width="900" height="710" rx="14" fill="#fbfcfa"/>
+<text x="450" y="29" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="700" fill="#40857b">PROPOSED PRODUCTION FLOW</text>
 <rect x="24" y="52" width="250" height="75" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
 <text x="149.0" y="79" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">CRM reporting</text>
 <text x="149.0" y="102" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Completed daily CSV export</text>
@@ -11,28 +11,30 @@
 <text x="751.0" y="102" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Retrieval &amp; orchestration</text>
 <polyline points="274,90 325,90" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)"/>
 <polyline points="575,90 626,90" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)"/>
-<polyline points="751,127 751,160 450,160 450,187" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)"/>
-<rect x="180" y="187" width="540" height="90" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
-<text x="450.0" y="214" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">ADW receiving area</text>
-<text x="450.0" y="237" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Retain all readable received records</text>
-<text x="450.0" y="258" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Batch and source-row references; restricted access</text>
-<polyline points="450,277 450,314" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)"/>
-<rect x="180" y="314" width="540" height="96" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
-<text x="450.0" y="341" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">Python validation &amp; normalization</text>
-<text x="450.0" y="364" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Proposed hosting: OCI Function invoked by integration</text>
-<text x="450.0" y="385" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Assess native mappings first; assign status and reason</text>
-<polyline points="450,410 450,438 234,438 234,471" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)"/>
-<polyline points="450,438 666,438 666,471" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)"/>
-<rect x="24" y="471" width="420" height="100" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
-<text x="234.0" y="498" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">APPROVED SELECTION</text>
-<text x="234.0" y="521" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">ACCEPTED / ACCEPTED_WITH_WARNING</text>
-<text x="234.0" y="542" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Required checks pass; uncertainty is preserved</text>
-<rect x="456" y="471" width="420" height="100" rx="9" fill="#faf1e4" stroke="#a47530" stroke-width="1.3"/>
-<text x="666.0" y="498" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">CORRECTION CASES</text>
-<text x="666.0" y="521" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">NEEDS_CORRECTION + reason</text>
-<text x="666.0" y="542" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Missing ID, invalid required data or conflict</text>
-<text x="234" y="601" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="700" fill="#17363d">Apply current channel / purpose eligibility</text>
-<text x="234" y="625" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="400" fill="#17363d">UNKNOWN or NO does not authorise sending</text>
-<text x="666" y="601" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="700" fill="#17363d">Exception report → source owner</text>
-<text x="666" y="625" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="400" fill="#17363d">Correct at source → re-export → revalidate</text>
-<text x="450" y="403" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#835c22">Input contract failure → BLOCKED; no approved records</text></svg>
+<polyline points="751,127 751,157 450,157 450,183" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="180" y="183" width="540" height="90" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
+<text x="450.0" y="210" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">Preserve the original file</text>
+<text x="450.0" y="233" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Proposed archive: OCI Object Storage</text>
+<text x="450.0" y="254" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Exact bytes and batch reference; restricted access</text>
+<polyline points="450,273 450,311" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="180" y="311" width="540" height="113" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
+<text x="450.0" y="338" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">Validate &amp; normalize BEFORE ADW loading</text>
+<text x="450.0" y="361" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">OIC mappings or proposed Python OCI Function</text>
+<text x="450.0" y="382" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Required fields, dates, permission and identity rules</text>
+<text x="450.0" y="403" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Unreliable input → BLOCKED; retain raw file and report</text>
+<polyline points="450,424 450,451 234,451 234,483" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)"/>
+<polyline points="450,451 666,451 666,483" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)"/>
+<rect x="24" y="483" width="420" height="104" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
+<text x="234.0" y="510" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">ADW: APPROVED RECORDS</text>
+<text x="234.0" y="533" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">ACCEPTED / ACCEPTED_WITH_WARNING</text>
+<text x="234.0" y="554" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Only records that passed the required checks</text>
+<rect x="456" y="483" width="420" height="104" rx="9" fill="#faf1e4" stroke="#a47530" stroke-width="1.3"/>
+<text x="666.0" y="510" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">ADW: CORRECTION CASES</text>
+<text x="666.0" y="533" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">NEEDS_CORRECTION + reason</text>
+<text x="666.0" y="554" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Restricted source values; excluded from approved use</text>
+<text x="234" y="617" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="700" fill="#17363d">Apply current channel / purpose eligibility</text>
+<text x="234" y="640" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="400" fill="#17363d">UNKNOWN or NO does not authorise sending</text>
+<text x="666" y="617" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="700" fill="#17363d">Exception report → source owner</text>
+<text x="666" y="640" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="400" fill="#17363d">Correct at source → re-export → revalidate</text>
+<text x="450" y="682" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="700" fill="#17363d">Customer-record loads follow classification; cloud components remain proposed.</text>
+</svg>

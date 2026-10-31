@@ -4,7 +4,7 @@ Stefan Willems — Senior Forward Deployed Engineer assessment
 
 ## The customer problem and the thinking behind it
 
-A sports organisation wants to bring customer information from its CRM into an analytics environment. Its available interface is a daily CSV export. Changes to report headings, incomplete values and conflicting records make that input difficult to use reliably. We build a small flow that preserves received data, normalizes approved equivalents, releases valid records and reports correction cases. If the input cannot be interpreted reliably, no approved output is released. The customer and incident are hypothetical, informed by my Oracle experience.
+A sports organisation wants to bring customer information from its CRM into an analytics environment. Its available interface is a daily CSV export. Changes to report headings, incomplete values and conflicting records make that input difficult to use reliably. I built a small flow that preserves received data, normalizes approved equivalents, releases valid records and reports correction cases. If the input cannot be interpreted reliably, no approved output is released. The customer and incident are hypothetical, informed by my Oracle experience.
 
 ### Key decisions
 
@@ -18,7 +18,7 @@ A sports organisation wants to bring customer information from its CRM into an a
 
 ### The experience that informed the case
 
-This assignment reminded me of an internal Social Media Sentiment Analysis initiative I championed within Oracle’s OCI Think Tank, bringing together colleagues from EMEA and the US. I proposed the use case and helped assemble the integration, analytics, product-management, and database expertise needed to explore it. My contribution included architectural direction and tool choices around Oracle Integration Cloud, Data Integration, Autonomous Data Warehouse, and Oracle Analytics Cloud. Oracle Integration Cloud connects applications and data sources and orchestrates integration workflows. I also created several dashboards; a colleague configured the database sentiment analysis.
+This assignment reminded me of an internal Social Media Sentiment Analysis initiative I championed within Oracle’s OCI Think Tank, bringing together colleagues from EMEA and the US. I proposed the use case and helped assemble the integration, analytics, product-management, and database expertise needed to explore it. My contribution included architectural direction and evaluating which Oracle services could support the use case, including Oracle Integration Cloud, Data Integration, Autonomous Data Warehouse and Oracle Analytics Cloud. I understood Oracle Integration Cloud’s role in connecting systems and orchestrating data flows, but did not configure or implement integrations myself. I created several Oracle Analytics Cloud dashboards; a colleague configured the database sentiment analysis.
 
 The wider ambition was to combine aggregated social-media audience signals with other customer-held information, including individual profiles, ticket purchases, and merchandise transactions. This could help a company decide where to invest its advertising, promotion, and communication budget, and which audiences or customers to approach through email, push notifications, WhatsApp, or SMS. The intended outcome was more relevant engagement and increased revenue, while customers retained their source data in their own database. For this assessment, we make one foundational input dependable before it supports those decisions.
 
@@ -26,7 +26,7 @@ The wider ambition was to combine aggregated social-media audience signals with 
 
 For this hypothetical customer, the CRM has no usable API or supported application-specific connector available for the integration, including through Oracle Integration Cloud. It does support scheduled CSV reports and delivery to a customer-controlled SFTP location. Each night at 02:00 UTC, it exports selected customer fields: ID, name, region, joining date, last-purchase date, and marketing permission. Oracle Integration Cloud retrieves the completed file from SFTP.
 
-![Proposed cloud deployment of the demonstrated policy: retain received records in ADW, validate, and separate approved records from correction cases. Oracle Integration Cloud coordinates the flow; Python in an OCI Function is the illustrated option. Cloud storage and controls remain proposed.](diagrams/deployment.svg)
+![Proposed production flow: OIC retrieves and archives the original CSV, coordinates validation before database loading, then writes approved records and restricted correction cases to ADW. Python in an OCI Function is the illustrated validation option; the cloud deployment remains proposed.](diagrams/deployment.svg)
 
 The assumed incident is a report-template change: headings are renamed, columns are reordered, and some records contain missing or inconsistent values. The database itself need not have changed. We agree field meanings with the source owner and make those rules executable. Automated delivery alone does not establish that a renamed field has the intended meaning. The **implemented demonstration starts with an available, completed CSV** and ends with local output. The CRM export, SFTP collection, cloud integration, and database loading remain proposed deployment work.
 
@@ -71,7 +71,7 @@ If `customer_id` becomes `customerdata_id`, the processor initially blocks relea
 
 ## Demonstration and evidence
 
-The Python processor is 176 lines, including comments and blank lines, and uses the standard library. It runs without cloud credentials, a database or additional packages. I direct Codex to execute the examples and tests, then review the results; the README contains exact setup and reproduction commands. Local files represent the receiving area, per-record status and approved selection, so the implementation demonstrates the policy illustrated in the cloud diagram.
+The Python processor is 176 lines, including comments and blank lines, and uses the standard library. It runs without cloud credentials, a database or additional packages. I direct Codex to execute the examples and tests, then review the results; the README contains exact setup and reproduction commands. Local files represent the raw-file archive, per-record status and approved selection, so the implementation demonstrates the policy illustrated in the cloud diagram.
 
 ### One successful record
 
@@ -122,7 +122,7 @@ These single local measurements include startup, received-file copying, processi
 
 ### Retain received data; control approved use
 
-In the **proposed production design**, Oracle Integration Cloud retrieves the completed SFTP export and coordinates loading and validation. All readable source records are retained in a restricted receiving area in Autonomous Data Warehouse (ADW), including records needing correction. Validation assigns `validation_status` and `validation_reason`, with import-batch and source-row references for traceability. Python hosted in an OCI Function is the illustrated validation option; native Oracle Integration Cloud mappings and controls should first be assessed against the same requirements. Cloud interfaces, loading, status updates and access controls still require implementation.
+In the proposed production design, Oracle Integration Cloud retrieves the completed SFTP export and preserves the original file in a restricted raw-file archive, with OCI Object Storage as the proposed location. OIC then coordinates validation and normalisation before invoking ADW loading. Native mappings and controls should first be assessed; the illustrated option invokes Python hosted separately in an OCI Function. For fully readable input, classified results are written to ADW with validation_status, validation_reason and import-batch/source-record references: valid records enter the approved selection, while correction cases remain restricted. Function interfaces, archive access, database loading and access enforcement still require implementation.
 
 | Example | Proposed ADW status | Available use |
 | --- | --- | --- |
@@ -130,7 +130,7 @@ In the **proposed production design**, Oracle Integration Cloud retrieves the co
 | Customer ID missing, required date invalid, or identities conflict | NEEDS_CORRECTION | Retained for investigation; excluded from approved downstream use. |
 | Required checks pass, permission is unknown | ACCEPTED_WITH_WARNING | Retained in the trusted dataset; excluded from campaigns requiring confirmed permission. |
 
-The local files and ADW design implement the same separation: received.csv corresponds to the restricted receiving area, record_status.csv to validation status and reason, cleaned.csv to the approved selection, and rejected.csv to actionable correction diagnostics. Python proves the local selection rules. ADW loading, access enforcement and correction replay remain proposed. A missing-ID row can be stored for investigation without being merged into a trusted customer profile.
+The local files demonstrate the same order and selection policy: received.csv corresponds to the preserved raw file, record_status.csv records classification, cleaned.csv contains the approved selection, and rejected.csv supplies actionable correction diagnostics. For 10,000 fully parsed records with 800 independent failures and no duplicates, all 10,000 remain in the raw file; after validation, ADW can retain 9,200 approved records and 800 restricted correction cases. Exception storage must retain invalid values safely, such as an invalid date as source text. An unreadable file is archived and reported as a file-level failure; it is not represented as successfully parsed customer rows. ADW writes and correction replay remain proposed.
 
 ### Who corrects the data?
 
@@ -147,13 +147,17 @@ After a source correction, the updated export is validated again. A successful c
 
 ![Validate locally, then in Development/Test, before reviewed Production promotion.](diagrams/promotion.svg)
 
-We never test a new script, mapping, or integration in Production first. Use synthetic files locally, then a dedicated Development/Test environment to validate completed-file detection, missing exports, permissions, connectivity, retries, receiving-area loads, status assignment, partial updates, exception recovery and downstream exclusion. Only after review and successful validation should the flow be promoted to Production with separate configuration and monitoring. Only the local file-processing stage has been exercised here; no live customer dataset or Production system was used.
+We never test a new script, mapping, or integration in Production first. Use synthetic files locally, then a dedicated Development/Test environment to validate completed-file detection, missing exports, permissions, connectivity, retries, raw-file retention, pre-load validation, classified ADW loads, partial updates, exception recovery and downstream exclusion. Only after review and successful validation should the flow be promoted to Production with separate configuration and monitoring. Only the local file-processing stage has been exercised here; no live customer dataset or Production system was used.
 
 The current processor requires a completed source export and snapshots its received bytes before parsing. Live extraction, secure transfer, scheduling, ADW loading and status updates, exception delivery, exactly-once processing, sentiment scoring and campaign enforcement remain outside its implementation. Destination updates must support partial approval and reconciliation; a daily snapshot alone is insufficient for immediate permission changes, so marketing activation needs a suitable current-permission check.
 
 If source failures recur, we review reporting, change ownership, supported interfaces, and operating cost. Stabilising the report may suffice. CRM modernisation or replacement becomes a separate recommendation where justified, weighed against migration cost and disruption.
 
 ## Codex assistance and my judgement
+
+### How I approached this implementation
+
+My strongest experience is in cloud architecture, analytics and bringing different technical disciplines together around a business problem. For this assessment, I supplied the Oracle experience, developed the scenario with Codex, questioned assumptions and directed changes to the processing approach. Codex generated the Python implementation and executed the tests at my direction. I reviewed the functional outcomes and challenged whether the behaviour matched the intended solution. This reflects how I use AI to extend my delivery capabilities, while keeping my contribution and the limits of the demonstrated solution explicit.
 
 The original NHL sentiment proposition, internal advocacy, architecture direction, dashboard work and wider customer-data ambition came from my Oracle experience. The hypothetical CRM incident and detailed processing rules were developed with Codex assistance. I used the tool iteratively, questioned assumptions and checked whether the diagrams, implementation and operating explanation actually described the same solution.
 
