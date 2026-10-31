@@ -16,12 +16,16 @@ STATUS_FIELDS = ("record", "customer_id", "validation_status", "validation_reaso
 HERE = Path(__file__).resolve().parent
 
 
+def normalize_key(value):
+    return " ".join(value.split()).casefold()
+
+
 def load_mapping(path):
     with path.open(encoding="utf-8-sig", newline="") as handle:
         reader = csv.reader(handle, strict=True)
         next(reader)
         rows = list(reader)
-    mapping = {" ".join(key.split()).casefold(): value.strip() for key, value in rows}
+    mapping = {normalize_key(key): value.strip() for key, value in rows}
     if len(mapping) != len(rows) or "" in mapping:
         raise ValueError("Mapping contains empty or repeated source values")
     return mapping
@@ -44,7 +48,7 @@ def normalize(raw, number, permissions, warnings):
                 date.fromisoformat(row[field])
             except ValueError:
                 problems.append((field, "INVALID_DATE"))
-    row["marketing_permission"] = permissions.get(row["marketing_permission"].casefold(), "UNKNOWN")
+    row["marketing_permission"] = permissions.get(normalize_key(row["marketing_permission"]), "UNKNOWN")
     if row["marketing_permission"] == "UNKNOWN":
         warnings.append(issue(number, row["customer_id"], "marketing_permission", "UNKNOWN_PERMISSION",
                               "Missing or unrecognised permission", "Confirm in CRM; UNKNOWN is not permission."))
@@ -92,7 +96,7 @@ def process_file(input_path, output_path, config_dir=None):
         with (output / "received.csv").open(encoding="utf-8-sig", newline="") as handle:
             reader = csv.reader(handle, strict=True)
             headers = next(reader, [])
-            names = [" ".join(name.split()).casefold() for name in headers]
+            names = [normalize_key(name) for name in headers]
             mapped = [aliases.get(name) for name in names]
             known = [name for name in mapped if name]
             missing = set(FIELDS) - set(known)
@@ -107,7 +111,7 @@ def process_file(input_path, output_path, config_dir=None):
                     warnings.append(issue(0, "", header, "EXTRA_COLUMN", "Unused column ignored",
                                           "Review whether this new field is needed."))
             for values in reader:
-                if not values or all(not value.strip() for value in values):
+                if not values:
                     continue
                 if len(values) != len(headers):
                     raise ValueError(f"Wrong column count near physical line {reader.line_num}")
@@ -125,17 +129,24 @@ def process_file(input_path, output_path, config_dir=None):
 
     for records in groups.values():
         first = records[0][1]
-        conflict = len(records) > 1 and any(problems or row != first for _, row, problems in records)
+        conflict = len(records) > 1 and any(row != first for _, row, _ in records)
         for index, (number, row, problems) in enumerate(records):
             row_status, reason = "ACCEPTED", "Required checks passed"
-            if conflict:
-                row_status, reason = "NEEDS_CORRECTION", "Conflicting records for the same customer ID"
-                rejected.append(issue(number, row["customer_id"], "customer_id", "CONFLICTING_RECORDS_FOR_ID",
-                                      "Repeated ID has conflicting or invalid records", "Resolve in the source; no winner is guessed."))
-            elif problems:
-                fields, codes = zip(*problems)
+            if conflict or problems:
+                # Keep one report row per rejected record so counts still reconcile.
+                fields, codes, messages, actions = [], [], [], []
+                if conflict:
+                    fields.append("customer_id")
+                    codes.append("CONFLICTING_RECORDS_FOR_ID")
+                    messages.append("Repeated ID has conflicting normalized records.")
+                    actions.append("Resolve in the source; no winner is guessed.")
+                for field, code in problems:
+                    message, action = problem_detail(field, code)
+                    fields.append(field)
+                    codes.append(code)
+                    messages.append(message)
+                    actions.append(action)
                 row_status, reason = "NEEDS_CORRECTION", "; ".join(codes)
-                messages, actions = zip(*(problem_detail(field, code) for field, code in problems))
                 rejected.append(issue(number, row["customer_id"], "; ".join(fields), "; ".join(codes),
                                       " ".join(messages), " ".join(actions)))
             elif index:

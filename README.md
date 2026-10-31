@@ -4,7 +4,7 @@
 
 A standalone Python program preserves a received CRM CSV, normalizes approved equivalents, releases valid customer records, and reports records needing correction. If the file cannot be interpreted reliably, it blocks release of the entire input. The hypothetical customer is a sports organisation preparing customer data for analytics and later audience decisions. [Customer context and value](docs/customer_note.md) · [Assessment narrative](docs/assessment.md).
 
-The processor is **190 lines**, including comments and blank lines, and uses Python's standard library. This is a local demonstration of the same receiving → validation → approved/correction policy proposed for ADW. The Oracle cloud integration and campaign controls are not implemented.
+The processor is **201 lines**, including comments and blank lines, and uses Python's standard library. This is a local demonstration of the same receiving → validation → approved/correction policy proposed for ADW. The Oracle cloud integration and campaign controls are not implemented.
 
 ## Result and scope
 
@@ -66,7 +66,7 @@ All six headings must exist, using canonical names or approved aliases:
 
 Readable CSV mappings in `config/` define heading aliases and permission equivalents. Approved heading changes and reordered columns work; an extra unused column warns. A missing/ambiguous required heading, wrong record width, broken quoting, unsupported encoding or empty input blocks the input. Even a valid prefix of a structurally broken file is not released.
 
-For a fully parsed file, missing/invalid required values and conflicting records for the same customer ID affect those records, while valid records are released. Identical normalized duplicates are retained once. A new heading such as `customerdata_id` initially blocks release; only after source-owner confirmation should its alias to `customer_id` be added and tested. A change in identifier meaning or values needs identity reconciliation, not a spelling substitution.
+For a fully parsed file, missing/invalid required values and conflicting records for the same customer ID affect those records, while valid records are released. Identical normalized duplicates are retained once. Empty CSV records are counted and rejected for missing required values; only blank physical lines are skipped. Permission mapping keys and incoming values use the same case and whitespace normalization. Identical invalid duplicates retain their field-level errors, and genuine ID conflicts include any field-level errors in the correction report. A new heading such as `customerdata_id` initially blocks release; only after source-owner confirmation should its alias to `customer_id` be added and tested. A change in identifier meaning or values needs identity reconciliation, not a spelling substitution.
 
 ![Implemented local processing](docs/diagrams/validation.svg)
 
@@ -127,7 +127,7 @@ The CRM/data owner owns source correction; the integration owner owns mappings a
 
 ## Verification, performance and limits
 
-**24 automated tests** cover expected output, heading drift, required fields/dates, NO/UNKNOWN, duplicates, malformed input, encoding, reruns, write failures, source retention, approved alias changes and the 10,000/800 case. [Expected outcomes](samples/expected_outcomes.md) · [Validation evidence](docs/validation.md).
+**39 automated tests** cover expected output, heading drift, required fields/dates, NO/UNKNOWN, duplicates, malformed input, encoding, reruns, write failures, source retention, approved alias changes and the 10,000/800 case. [Expected outcomes](samples/expected_outcomes.md) · [Validation evidence](docs/validation.md).
 
 ```sh
 python3 tools/benchmark.py --sizes 1000 100000 --output runs/benchmark.csv
