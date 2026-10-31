@@ -4,7 +4,7 @@ Stefan Willems — Senior Forward Deployed Engineer assessment
 
 ## The customer problem and the thinking behind it
 
-A sports organisation wants to bring customer information from its CRM into an analytics environment. Its available interface is a daily CSV export. Changes to report headings, incomplete values and conflicting records make that input difficult to use reliably. I built a small flow that preserves received data, normalizes approved equivalents, releases valid records and reports correction cases. If the input cannot be interpreted reliably, no approved output is released. The customer and incident are hypothetical, informed by my Oracle experience.
+A sports organisation wants to bring customer information from its CRM into an analytics environment. For the customer, a successfully delivered file is only part of the problem: they need to know which information they can use, what still needs attention, and whether correcting one problem will delay everything else. The available interface is a daily CSV export, but changing headings, incomplete values and conflicting records make that input difficult to trust. I built a small flow that preserves received data, releases valid records and reports correction cases; unreliable input prevents approval. The customer and incident are hypothetical, informed by my Oracle experience.
 
 ### Key decisions
 
@@ -24,7 +24,7 @@ The wider ambition was to combine aggregated social-media audience signals with 
 
 ## The source and the missing handoff
 
-For this hypothetical customer, the CRM has no usable API or supported application-specific connector available for the integration, including through Oracle Integration Cloud. It does support scheduled CSV reports and delivery to a customer-controlled SFTP location. Each night at 02:00 UTC, it exports selected customer fields: ID, name, region, joining date, last-purchase date, and marketing permission. Oracle Integration Cloud retrieves the completed file from SFTP.
+The first discussion would establish what the CRM can reliably provide today, who owns the export and which constraints are genuine. A CSV interface may be adequate; replacing it is only useful if it solves a customer problem. For this hypothetical case, no usable CRM API or supported application-specific connector is available, including through Oracle Integration Cloud. The CRM does support scheduled CSV reports and delivery to customer-controlled SFTP. Each night at 02:00 UTC, it exports ID, name, region, joining date, last-purchase date and marketing permission; Oracle Integration Cloud retrieves the completed file.
 
 ![Proposed production flow: OIC retrieves and archives the original CSV, coordinates validation before database loading, then writes approved records and restricted correction cases to ADW. Python in an OCI Function is the illustrated validation option; the cloud deployment remains proposed.](diagrams/deployment.svg)
 
@@ -49,7 +49,7 @@ The local demonstration and proposed ADW deployment follow the same policy: **pr
 
 ### What happens to 10,000 records with 800 failures?
 
-For a fully parsed input with 800 independent required-value failures and no duplicates, `received.csv` retains all 10,000 records, `cleaned.csv` contains the 9,200 valid records, and correction/status reports identify the 800 exceptions. The run is `READY_WITH_EXCEPTIONS`. A test verifies this exact case. If a required heading is missing or the CSV structure breaks, the whole input is `BLOCKED`, because we cannot establish its meaning or completeness; no cleaned CSV is released. A readable input with no valid records is also BLOCKED.
+Rejecting bad data is straightforward to describe. The harder question is what the customer loses while those problems are being corrected. For a fully parsed input with 800 independent required-value failures and no duplicates, received.csv retains all 10,000 records, cleaned.csv contains the 9,200 valid records, and correction/status reports identify the 800 exceptions. The run is READY_WITH_EXCEPTIONS . A test verifies this exact case. If a required heading is missing or the CSV structure breaks, the whole input is BLOCKED , because we cannot establish its meaning or completeness; no cleaned CSV is released. A readable input with no valid records is also BLOCKED.
 
 This assumes the destination supports partial updates: missing rows must not be interpreted as deleted customers, and a partial selection must never blindly replace a complete customer table. The local program demonstrates the selection policy; ADW updates and later correction replay still need implementation. A missing-ID row remains traceable by its import batch and source-record reference, which identifies the received row rather than a real customer. No customer identity is manufactured to make the record pass.
 
@@ -151,6 +151,8 @@ The local files demonstrate the same order and selection policy: received.csv co
 
 ### Who corrects the data?
 
+When an import has problems, the customer should know what remains usable, what is restricted, who is investigating and what happens next. In the proposed operating approach, the update would distinguish a source-data problem from a processing failure and establish an agreed point for the next update. The aim is to keep the customer informed while the responsible teams work through the issue, without promising a resolution time before the cause is understood.
+
 The customer’s designated data owner is accountable for source quality; the integration team is accountable for applying the agreed rules and reporting failures. An exception CSV identifies the source file, affected row, available customer reference, problem and required action, and is delivered through an agreed secure channel to the responsible owner. The operating process is to assign the issue, correct the authoritative source, re-export, revalidate and reconcile the result. Unresolved counts and their age remain visible so the same records do not silently fail every day. Exception delivery, assignment and recovery tracking are proposed operating capabilities, not functions of the current script.
 
 | Issue | Proposed responsible team |
@@ -174,9 +176,7 @@ If source failures recur, we review reporting, change ownership, supported inter
 
 ### How I approached this implementation
 
-My strongest experience is in cloud architecture, analytics and bringing different technical disciplines together around a business problem. For this assessment, I supplied the Oracle experience, developed the scenario with Codex, questioned assumptions and directed changes to the processing approach. Codex generated the Python implementation and executed the tests at my direction. I reviewed the functional outcomes and challenged whether the behaviour matched the intended solution. This reflects how I use AI to extend my delivery capabilities, while keeping my contribution and the limits of the demonstrated solution explicit.
-
-The original NHL sentiment proposition, internal advocacy, architecture direction, dashboard work and wider customer-data ambition came from my Oracle experience. The hypothetical CRM incident and detailed processing rules were developed with Codex assistance. I used the tool iteratively, questioned assumptions and checked whether the diagrams, implementation and operating explanation actually described the same solution.
+My strongest experience is in cloud architecture, analytics and bringing different technical disciplines together around a business problem. The original NHL sentiment proposition, internal advocacy, architectural direction and dashboard work came from my Oracle experience. For this assessment, I developed the hypothetical scenario with Codex, questioned assumptions and directed changes to the processing approach. Codex generated the Python implementation and executed the tests at my direction. I reviewed the functional outcomes and challenged whether the diagrams, code and operating explanation described the same solution. The examples below show where those questions changed the result.
 
 ### Questions that changed the design
 
@@ -192,7 +192,7 @@ These review questions shaped the requirements; the detailed implementation chan
 
 ### How Codex helped and where judgement remains necessary
 
-I chose Codex to work with documents, code and execution results in one workspace. It assisted with structure, tooling research, synthetic fixtures, expected outcomes, Python, tests, documentation and execution at my direction; a supplied Claude critique also informed the review. I supplied the experience and challenged complexity, missing handoffs, business impact and consistency. AI assistance did not remove the need to confirm source meaning, agree operating responsibilities or assess the consequences of rejecting customer data.
+I chose Codex to work with documents, code and execution results in one workspace. It assisted with structure, tooling research, synthetic fixtures, expected outcomes, Python, tests, documentation and execution; a supplied Claude critique also informed the review. That assistance extended what I could deliver, but source meanings, operating responsibilities and the consequences of rejecting customer data still required judgement. The distinction between demonstrated behaviour and proposed cloud capabilities remains explicit.
 
 The running processor has no LLM dependency. Known mappings, dates and duplicate handling need repeatable, explainable outcomes. AI could help investigate an unfamiliar field, but a person must confirm its meaning before approving a mapping. Neither AI nor the integration should invent missing identity or permission. Adding an agent to daily processing would need a specific customer benefit and a reliable way to validate its output.
 
