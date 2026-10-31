@@ -10,7 +10,7 @@ A sports organisation wants to bring customer information from its CRM into an a
 
 Start with four inspectable records. The supplied samples/bad_values.csv demonstration contains four synthetic customer records: two are released and two need correction, one for a missing customer ID and one for an invalid joining date. One released record retains UNKNOWN permission; ingestion acceptance does not authorise marketing.
 
-The same processor is separately checked with 10,000 synthetic records. An automated test deliberately generates 800 records with missing IDs and 9,200 valid records, then verifies the released IDs, correction counts and received-file preservation. This is one test within the passing 60-test suite. The two examples use different inputs; both were actually executed. These local results do not establish cloud readiness, and database partial updates still require an agreed destination policy.
+The same processor is separately checked with 10,000 synthetic records. An automated test deliberately generates 800 records with missing IDs and 9,200 valid records, then verifies the released IDs, correction counts and received-file preservation. The two examples use different inputs; both were actually executed. These local results do not establish cloud readiness, and database partial updates still require an agreed destination policy.
 
 ### Why a batch example?
 
