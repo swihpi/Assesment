@@ -10,6 +10,14 @@ A sports organisation wants to bring customer information from its CRM into an a
 
 For this exercise, I deliberately assumed a legacy CRM whose available interface is a scheduled CSV export. This keeps the demonstration focused on a practical source constraint and on making inconsistent data usable. Where the business needs customer changes reflected within seconds or minutes—and the source supports it—a streaming integration would be a stronger fit. The validation, identity and permission principles demonstrated here would still apply, while continuous processing would require additional handling for repeated updates, event ordering and recovery. The current implementation demonstrates batch processing only.
 
+### Technology key
+
+| Service | Abbreviation | Role in this proposal |
+| --- | --- | --- |
+| Oracle Integration Cloud | OIC | Retrieve files and coordinate processing. |
+| Autonomous Data Warehouse | ADW | Store classified customer records. |
+| Oracle Analytics Cloud | OAC | Present information through dashboards. |
+
 ### Key decisions
 
 | Decision | Why |
@@ -22,13 +30,13 @@ For this exercise, I deliberately assumed a legacy CRM whose available interface
 
 ### The experience that informed the case
 
-This assignment reminded me of a Social Media Sentiment Analysis initiative I championed through what we informally called the OCI Think Tank. It began with two people: Mark, an Oracle US sales representative, and me. We shared an enthusiasm for experimenting with customer solutions that could generate Oracle revenue while helping customers create their own commercial advantage and revenue opportunities. We then brought in like-minded colleagues from EMEA and the US, assembling the integration, analytics, product-management and database expertise needed to explore the use case. My contribution included architectural direction and evaluating which Oracle services could support the use case, including Oracle Integration Cloud, Data Integration, Autonomous Data Warehouse and Oracle Analytics Cloud. I understood Oracle Integration Cloud’s role in connecting systems and orchestrating data flows, but did not configure or implement integrations myself. I created several Oracle Analytics Cloud dashboards; a colleague configured the database sentiment analysis.
+This assignment reminded me of a Social Media Sentiment Analysis initiative I championed through what we informally called the OCI Think Tank. It began with two people: Mark, an Oracle US sales representative, and me. We shared an enthusiasm for experimenting with customer solutions that could generate Oracle revenue while helping customers create their own commercial advantage and revenue opportunities. We then brought in like-minded colleagues from EMEA and the US, assembling the integration, analytics, product-management and database expertise needed to explore the use case. My contribution included architectural direction and evaluating which Oracle services could support the use case, including OIC, ADW and OAC. I understood OIC’s role in connecting systems and orchestrating data flows, but did not configure or implement integrations myself. I created several OAC dashboards; a colleague configured the database sentiment analysis.
 
 The wider ambition was to combine aggregated social-media audience signals with other customer-held information, including individual profiles, ticket purchases, and merchandise transactions. This could help a company decide where to invest its advertising, promotion, and communication budget, and which audiences or customers to approach through email, push notifications, WhatsApp, or SMS. The intended outcome was more relevant engagement and increased revenue, while customers retained their source data in their own database. For this assessment, we make one foundational input dependable before it supports those decisions.
 
 ## The source and the missing handoff
 
-The first discussion would establish what the CRM can reliably provide today, who owns the export and which constraints are genuine. A CSV interface may be adequate; replacing it is only useful if it solves a customer problem. For this hypothetical case, no usable CRM API or supported application-specific connector is available, including through Oracle Integration Cloud. The CRM does support scheduled CSV reports and delivery to customer-controlled SFTP. Each night at 02:00 UTC, it exports ID, name, region, joining date, last-purchase date and marketing permission; Oracle Integration Cloud retrieves the completed file.
+The first discussion would establish what the CRM can reliably provide today, who owns the export and which constraints are genuine. A CSV interface may be adequate; replacing it is only useful if it solves a customer problem. For this hypothetical case, no usable CRM API or supported application-specific connector is available, including through OIC. The CRM does support scheduled CSV reports and delivery to customer-controlled SFTP. Each night at 02:00 UTC, it exports ID, name, region, joining date, last-purchase date and marketing permission; OIC retrieves the completed file.
 
 ![Proposed production flow: OIC retrieves and archives the original CSV, coordinates validation before database loading, then writes approved records and restricted correction cases to ADW. Python in an OCI Function is the illustrated validation option; the cloud deployment remains proposed.](diagrams/deployment.svg)
 
@@ -139,11 +147,11 @@ These single local measurements include startup, received-file copying, processi
 
 ## Production direction and boundaries
 
-**Demonstration choice:** standalone Python makes the selected behavior locally reproducible. **Production recommendation:** first assess whether native Oracle Integration Cloud mappings and controls meet the validation, duplicate-handling, and diagnostic requirements; use a separate function where those requirements justify it. If custom Python is selected, Oracle Integration Cloud can invoke a separately hosted OCI Function. The rules could be reused, but a function handler, cloud input/output interface, and destination loading still require implementation. The command-line script is not an embedded Python library inside Oracle Integration Cloud.
+**Demonstration choice:** standalone Python makes the selected behavior locally reproducible. **Production recommendation:** first assess whether native OIC mappings and controls meet the validation, duplicate-handling, and diagnostic requirements; use a separate function where those requirements justify it. If custom Python is selected, OIC can invoke a separately hosted OCI Function. The rules could be reused, but a function handler, cloud input/output interface, and destination loading still require implementation. The command-line script is not an embedded Python library inside OIC.
 
 ### Retain received data; control approved use
 
-In the proposed production design, Oracle Integration Cloud retrieves the completed SFTP export and preserves the original file in a restricted raw-file archive, with OCI Object Storage as the proposed location. OIC then coordinates validation and normalisation before invoking ADW loading. Native mappings and controls should first be assessed; the illustrated option invokes Python hosted separately in an OCI Function. For fully readable input, classified results are written to ADW with validation_status, validation_reason and import-batch/source-record references: valid records enter the approved selection, while correction cases remain restricted. Function interfaces, archive access, database loading and access enforcement still require implementation.
+In the proposed production design, OIC retrieves the completed SFTP export and preserves the original file in a restricted raw-file archive, with OCI Object Storage as the proposed location. OIC then coordinates validation and normalisation before invoking ADW loading. Native mappings and controls should first be assessed; the illustrated option invokes Python hosted separately in an OCI Function. For fully readable input, classified results are written to ADW with validation_status, validation_reason and import-batch/source-record references: valid records enter the approved selection, while correction cases remain restricted. Function interfaces, archive access, database loading and access enforcement still require implementation.
 
 | Example | Proposed ADW status | Available use |
 | --- | --- | --- |
@@ -186,7 +194,7 @@ My strongest experience is in cloud architecture, analytics and bringing differe
 
 | My review question | Decision and consequence |
 | --- | --- |
-| How does the CRM export actually reach the integration? | We made the scheduled CSV export, CRM-to-SFTP delivery and Oracle Integration Cloud retrieval explicit. |
+| How does the CRM export actually reach the integration? | We made the scheduled CSV export, CRM-to-SFTP delivery and OIC retrieval explicit. |
 | Why introduce unfamiliar database programming or a long script? | We chose a compact, independently runnable Python example I could inspect and discuss. |
 | Why should 800 bad records prevent use of 9,200 valid ones? | We revised the policy to retain received data, release valid records and report correction cases. Unreliable input structure still blocks release. |
 | Why do the production diagram and local demonstration describe different release rules? | I challenged the mismatch. The code, tests, diagrams and documentation were aligned around one processing policy, with local files representing the proposed ADW areas. |
@@ -242,6 +250,6 @@ The original screenshot places social information alongside game events. Correla
 
 1. *Integrating a Messy External Data Source — Forward Deployed Engineer Home Assignment*, and the supplied Candidate Guide.
 2. [Oracle: Define the integration schedule](https://docs.oracle.com/en/cloud/paas/application-integration/integrations-user/define-integration-schedule.html).
-3. [Oracle: Invoke OCI Functions from an Oracle Integration Cloud integration](https://docs.oracle.com/en/cloud/paas/application-integration/integrations-user/invoke-oracle-cloud-infrastructure-functions-directly-from-integration-oci-function-action.html).
+3. [Oracle: Invoke OCI Functions from an OIC integration](https://docs.oracle.com/en/cloud/paas/application-integration/integrations-user/invoke-oracle-cloud-infrastructure-functions-directly-from-integration-oci-function-action.html).
 4. [Oracle: Python function packaging](https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functions-codeonly-python.htm).
 5. [Oracle: FTP Adapter capabilities, including SFTP](https://docs.oracle.com/en/cloud/paas/application-integration/ftp-adapter/ftp-adapter-capabilities.html).

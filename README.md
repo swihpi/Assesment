@@ -6,6 +6,14 @@ A standalone Python program preserves a received CRM CSV, normalizes approved eq
 
 The processor is **176 lines**, including comments and blank lines, and uses Python's standard library. This is a local demonstration of the same receiving → validation → approved/correction policy proposed for ADW. The Oracle cloud integration and campaign controls are not implemented.
 
+## Technology key
+
+| Service | Abbreviation | Role in this proposal |
+| --- | --- | --- |
+| Oracle Integration Cloud | OIC | Retrieve files and coordinate processing. |
+| Autonomous Data Warehouse | ADW | Store classified customer records. |
+| Oracle Analytics Cloud | OAC | Present information through dashboards. |
+
 ## Setup and run in Development or Test
 
 Use Python 3.12 or 3.14; both are checked in clean environments. No third-party packages, credentials, database or cloud connection are required. Git is needed only for cloning; downloading and extracting the repository ZIP is an alternative.
@@ -91,9 +99,9 @@ The script does **not** implement campaign selection or send messages. In produc
 
 ![Proposed CRM, ADW and validation flow](docs/diagrams/deployment.svg)
 
-**Demonstration choice:** local Python and CSV files make the processing policy reproducible without Oracle platform access. **Production recommendation:** assess native Oracle Integration Cloud mappings and controls first; use a separately hosted Python function where the validation, duplicate-handling and diagnostic requirements justify it.
+**Demonstration choice:** local Python and CSV files make the processing policy reproducible without Oracle platform access. **Production recommendation:** assess native OIC mappings and controls first; use a separately hosted Python function where the validation, duplicate-handling and diagnostic requirements justify it.
 
-The assumed CRM has no usable API or supported application-specific connector, but supports scheduled CSV reports and SFTP delivery. Oracle Integration Cloud retrieves the completed file, archives the original bytes in a restricted raw-file location (proposed: OCI Object Storage), and coordinates validation before database loading. It then writes classified approved records and restricted correction cases into ADW, with status and reason. The diagram illustrates Python hosted in an OCI Function; its handler and cloud I/O still need implementation. The raw archive preserves the exact file, including malformed input; ADW retains readable classified records while an approved selection excludes correction cases. Exception storage must accommodate invalid values as source data, rather than forcing an invalid date into a date column. Campaign eligibility is a further check. [Architecture, ownership and recovery](docs/deployment.md).
+The assumed CRM has no usable API or supported application-specific connector, but supports scheduled CSV reports and SFTP delivery. OIC retrieves the completed file, archives the original bytes in a restricted raw-file location (proposed: OCI Object Storage), and coordinates validation before database loading. It then writes classified approved records and restricted correction cases into ADW, with status and reason. The diagram illustrates Python hosted in an OCI Function; its handler and cloud I/O still need implementation. The raw archive preserves the exact file, including malformed input; ADW retains readable classified records while an approved selection excludes correction cases. Exception storage must accommodate invalid values as source data, rather than forcing an invalid date into a date column. Campaign eligibility is a further check. [Architecture, ownership and recovery](docs/deployment.md).
 
 For 10,000 fully parsed records with 800 independent required-value failures and no duplicates, the local demonstration preserves all 10,000 in `received.csv`, releases 9,200 in `cleaned.csv`, and reports 800 correction cases. A test verifies this exact scenario. The proposed ADW deployment applies the same policy. It requires a destination that supports partial updates: omitted rows must not mean deletion, and a partial file must never blindly replace a complete customer table. Reconciliation, updates to existing customers and correction replay remain deployment work.
 
@@ -113,7 +121,7 @@ No live extraction, schedule, ADW load, cloud status management, source locking,
 
 ## My judgement and Codex assistance
 
-I originated and championed the sports sentiment initiative within Oracle, brought colleagues together, contributed to the Oracle Integration Cloud / Autonomous Data Warehouse / Oracle Analytics Cloud architecture and created dashboards. I supplied that experience, directed the assessment and challenged assumptions rather than accepting the generated design unchanged.
+I originated and championed the sports sentiment initiative within Oracle, brought colleagues together, contributed to the OIC / ADW / OAC architecture and created dashboards. I supplied that experience, directed the assessment and challenged assumptions rather than accepting the generated design unchanged.
 
 | My review question | Consequence |
 | --- | --- |

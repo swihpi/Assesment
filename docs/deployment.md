@@ -2,7 +2,7 @@
 
 The local processor is implemented. The following cloud deployment is proposed; it has not been provisioned or tested.
 
-1. The CRM generates its completed daily export and delivers it to customer-controlled SFTP. Oracle Integration Cloud retrieves it on the agreed schedule. Missing files, completion detection and previously processed exports need an explicit delivery contract.
+1. The CRM generates its completed daily export and delivers it to customer-controlled SFTP. OIC retrieves it on the agreed schedule. Missing files, completion detection and previously processed exports need an explicit delivery contract.
 2. OIC archives the exact received bytes in a restricted raw-file location, proposed as OCI Object Storage, with a batch reference. This preserves malformed or unsupported-encoding input without claiming it became readable database rows.
 3. OIC coordinates validation and normalisation before database loading. Assess native mappings and controls first; the illustrated option invokes Python hosted separately in an OCI Function. Its handler and cloud I/O still need implementation. The CLI script cannot be deployed unchanged.
 4. After classification, OIC loads readable records into ADW: approved records enter the controlled approved selection; correction cases retain source values, status and reason in restricted exception storage. Invalid dates must be representable as source text. A file-level contract failure produces no approved customer rows. Campaign-specific permission and other eligibility checks apply separately; a flag alone does not enforce exclusion.
