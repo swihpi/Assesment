@@ -30,7 +30,7 @@ The wider ambition was to combine aggregated social-media audience signals with 
 
 The first discussion would establish what the CRM can reliably provide today, who owns the export and which constraints are genuine. A CSV interface may be adequate; replacing it is only useful if it solves a customer problem. For this hypothetical case, no usable CRM API or supported application-specific connector is available, including through Oracle Integration Cloud. The CRM does support scheduled CSV reports and delivery to customer-controlled SFTP. Each night at 02:00 UTC, it exports ID, name, region, joining date, last-purchase date and marketing permission; Oracle Integration Cloud retrieves the completed file.
 
-![Proposed production flow: OIC retrieves and archives the original CSV, coordinates validation before database loading, then writes approved records and restricted correction cases to ADW. Python in an OCI Function is the illustrated validation option; the cloud deployment remains proposed.](https://myprofile.ro/adobe2/assets/deployment.svg?v=validate-before-adw)
+![Proposed production flow: OIC retrieves and archives the original CSV, coordinates validation before database loading, then writes approved records and restricted correction cases to ADW. Python in an OCI Function is the illustrated validation option; the cloud deployment remains proposed.](diagrams/deployment.svg)
 
 The assumed incident is a report-template change: headings are renamed, columns are reordered, and some records contain missing or inconsistent values. The database itself need not have changed. We agree field meanings with the source owner and make those rules executable. Automated delivery alone does not establish that a renamed field has the intended meaning. The **implemented demonstration starts with an available, completed CSV** and ends with local output. The CRM export, SFTP collection, cloud integration, and database loading remain proposed deployment work.
 
@@ -49,7 +49,7 @@ The local demonstration and proposed ADW deployment follow the same policy: **pr
 | Identical normalized duplicate | Retain one approved copy; report the duplicate as ignored. |
 | Unknown permission | Preserve UNKNOWN, report a warning and retain the otherwise valid record. Campaign eligibility is separate. |
 
-![Implemented local flow: preserve the received file, separate record errors from input-wide failures, and publish approved records only after a successful completion marker.](https://myprofile.ro/adobe2/assets/validation.svg?v=aligned-policy)
+![Implemented local flow: preserve the received file, separate record errors from input-wide failures, and publish approved records only after a successful completion marker.](diagrams/validation.svg)
 
 ### What happens to 10,000 records with 800 failures?
 
@@ -116,7 +116,7 @@ A record with joining date 2024-02-30 is excluded and reported with customer F00
 | Renamed/reordered report | READY: the same three expected records. |
 | Bad-value export | READY_WITH_EXCEPTIONS: F001 and F004 released; two correction cases. |
 
-The current reproduction results and test output are available in the [execution log](https://myprofile.ro/adobe2/downloads/validation.txt) and the public repository’s automated checks.
+The current reproduction results and test output are available in the [execution log](test-run.txt) and the public repository’s automated checks.
 
 The program first preserves the received bytes as received.csv and leaves the original source unchanged. Each completed run writes record_status.csv, rejection and warning reports, a summary and a log. cleaned.csv contains approved records only. A READY or READY_WITH_EXCEPTIONS marker is written last; consumers must require one of those markers before using the output. BLOCKED or no completion marker means no approved release. Existing run folders cannot be overwritten.
 
@@ -168,7 +168,7 @@ The customer’s designated data owner is accountable for source quality; the in
 
 After a source correction, the updated export is validated again. A successful correction can move the affected row into the approved selection, with traceability and duplicate handling so reprocessing does not create extra customers. A permission value is not filled in merely to pass validation: if no authoritative evidence exists, it stays UNKNOWN and the relevant marketing restriction remains. Corrections should not silently overwrite newer customer information or more recent permission changes.
 
-![Validate locally, then in Development/Test, before reviewed Production promotion.](https://myprofile.ro/adobe2/assets/promotion.svg)
+![Validate locally, then in Development/Test, before reviewed Production promotion.](diagrams/promotion.svg)
 
 We never test a new script, mapping, or integration in Production first. Use synthetic files locally, then a dedicated Development/Test environment to validate completed-file detection, missing exports, permissions, connectivity, retries, raw-file retention, pre-load validation, classified ADW loads, partial updates, exception recovery and downstream exclusion. Only after review and successful validation should the flow be promoted to Production with separate configuration and monitoring. Only the local file-processing stage has been exercised here; no live customer dataset or Production system was used.
 
@@ -204,7 +204,7 @@ The running processor has no LLM dependency. Known mappings, dates and duplicate
 
 The broader idea combined different sources to support audience decisions:
 
-![The broader audience-data concept. CRM quality checks are the implemented local slice.](https://myprofile.ro/adobe2/assets/architecture.svg)
+![The broader audience-data concept. CRM quality checks are the implemented local slice.](diagrams/architecture.svg)
 
 Social post text is unstructured; derived sentiment scores and summaries are structured outputs. CRM, ticketing, and purchase records have their own definitions and checks. Aggregate sentiment may inform campaign timing. It does not identify a known customer’s sentiment. Combining individual records requires a reliable linking identifier and confirmation that the information may be used for that purpose.
 
@@ -216,13 +216,13 @@ The initiative focused on NHL hockey. The original presentation includes Nashvil
 
 The original screenshot illustrates aggregate sentiment categories and trends. The source slide identifies Oracle Text in Autonomous.
 
-![Original slide 6: aggregate sentiment. Historical screenshot, reproduced unchanged.](https://myprofile.ro/adobe2/assets/original-slide-6.png)
+*Historical screenshot is available in the private presentation; original images are not included in this repository.*
 
 ### Original slide 7: match-day context
 
 The original screenshot places social information alongside game events. Correlating timelines is different from identifying an individual fan or establishing campaign impact.
 
-![Original slide 7: match-day context. Historical screenshot, reproduced unchanged.](https://myprofile.ro/adobe2/assets/original-slide-7.png)
+*Historical screenshot is available in the private presentation; original images are not included in this repository.*
 
 ## Assignment coverage
 
