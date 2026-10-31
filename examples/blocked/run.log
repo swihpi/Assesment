@@ -1,3 +1,7 @@
+processor_version: 1.1.0
+started_at_utc: 2026-10-31T12:55:54.701264+00:00
+input_sha256: 691eae17acb09088b59d9880ab710e7a5942c815a1494d936ba32415a11b17a0
 READ breaking_change.csv
 CHECK 0 parsed, 0 rejected, 0 duplicates removed
 RESULT BLOCKED
+REASON Missing required columns: customer_id

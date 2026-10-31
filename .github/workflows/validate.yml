@@ -40,6 +40,6 @@ jobs:
           python3 process_export.py --input samples/breaking_change.csv --output runs/blocked
           result=$?
           set -e
-          test "$result" -eq 2
+          test "$result" -eq 3
           test -f runs/blocked/BLOCKED
           test ! -e runs/blocked/cleaned.csv

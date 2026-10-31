@@ -203,7 +203,7 @@ class ProcessorTests(unittest.TestCase):
             ], capture_output=True, text=True)
         self.assertEqual(invoke("valid.csv", "valid-cli").returncode, 0)
         self.assertEqual(invoke("bad_values.csv", "partial-cli").returncode, 0)
-        self.assertEqual(invoke("breaking_change.csv", "blocked-cli").returncode, 2)
+        self.assertEqual(invoke("breaking_change.csv", "blocked-cli").returncode, 3)
         failure = invoke("does-not-exist.csv", "missing-cli")
         self.assertEqual(failure.returncode, 1)
         self.assertFalse((self.work / "missing-cli").exists())

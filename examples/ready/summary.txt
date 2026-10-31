@@ -1,10 +1,14 @@
 status: READY
 source_file: valid.csv
 source_fully_parsed: true
+processor_version: 1.1.0
+started_at_utc: 2026-10-31T12:55:54.696918+00:00
+input_sha256: 9af1a3046b5b79fe20b96a8b6950418c7d45de0808f05b003d8a252aaddd0032
+blocking_reason:
 parsed_records: 3
 valid_records: 3
 rejected_records: 0
 released_records: 3
 identical_duplicates_removed: 0
 warnings: 0
-processing_seconds_before_report_write: 0.0011
+processing_seconds_before_report_write: 0.001169

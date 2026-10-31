@@ -1,5 +1,5 @@
-record,customer_id,validation_status,validation_reason
-1,F001,ACCEPTED,Required checks passed
-2,,NEEDS_CORRECTION,MISSING_VALUE
-3,F003,NEEDS_CORRECTION,INVALID_DATE
-4,F004,ACCEPTED_WITH_WARNING,Permission not confirmed
+record,customer_id,validation_status,validation_reason,source_line_start,source_line_end
+1,F001,ACCEPTED,Required checks passed,2,2
+2,,NEEDS_CORRECTION,MISSING_VALUE,3,3
+3,F003,NEEDS_CORRECTION,INVALID_DATE,4,4
+4,F004,ACCEPTED_WITH_WARNING,Permission not confirmed,5,5

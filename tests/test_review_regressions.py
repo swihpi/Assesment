@@ -21,10 +21,10 @@ class ValidatorTests(unittest.TestCase):
         self.source = self.root / "source.csv"
         self.output = self.root / "run"
         self.write_csv(self.config / "column_aliases.csv", [
-            ("source", "target"), *[(name, name) for name in validator.FIELDS],
+            ("source_column", "output_column"), *[(name, name) for name in validator.FIELDS],
         ])
         self.write_csv(self.config / "permission_values.csv", [
-            ("source", "target"), ("yes", "YES"), ("no", "NO"), ("opt in", "YES"),
+            ("source_value", "output_value"), ("yes", "YES"), ("no", "NO"), ("opt in", "YES"),
         ])
         self.valid = ["C1", "Alice", "West", "2026-01-01", "", "yes"]
 
@@ -190,7 +190,7 @@ class ValidatorTests(unittest.TestCase):
         cases = (
             ("valid", [self.valid], 0, "READY"),
             ("exceptions", [self.valid, [""] * 6], 0, "READY_WITH_EXCEPTIONS"),
-            ("blocked", [[""] * 6], 2, "BLOCKED"),
+            ("blocked", [[""] * 6], 3, "BLOCKED"),
         )
         for name, rows, exit_code, status in cases:
             with self.subTest(name=name):
@@ -202,7 +202,7 @@ class ValidatorTests(unittest.TestCase):
                 result = subprocess.run(command, capture_output=True, text=True, timeout=10,
                                         env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"})
                 self.assertEqual(result.returncode, exit_code, result.stderr)
-                self.assertIn(status + ":", result.stdout)
+                self.assertIn(status + ":", result.stderr if status == "BLOCKED" else result.stdout)
                 self.assertTrue((self.output / status).is_file())
                 self.assertEqual((self.output / "cleaned.csv").exists(), status != "BLOCKED")
                 retry = subprocess.run(command, capture_output=True, text=True, timeout=10)

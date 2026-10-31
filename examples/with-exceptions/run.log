@@ -1,3 +1,6 @@
+processor_version: 1.1.0
+started_at_utc: 2026-10-31T12:55:54.699566+00:00
+input_sha256: 608bb3e43431a63f7a07c829dc127f67aceff50297309ded85c7b0548257ec5c
 READ bad_values.csv
 CHECK 4 parsed, 2 rejected, 0 duplicates removed
 RESULT READY_WITH_EXCEPTIONS

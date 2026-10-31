@@ -93,7 +93,7 @@ If `customer_id` becomes `customerdata_id`, the processor initially blocks relea
 
 ## Demonstration and evidence
 
-The Python processor is 190 lines, including comments and blank lines, and uses the standard library. It runs without cloud credentials, a database or additional packages. I direct Codex to execute the examples and tests, then review the results; the README contains exact setup and reproduction commands. Local files represent the raw-file archive, per-record status and approved selection, so the implementation demonstrates the policy illustrated in the cloud diagram.
+The Python processor is 305 lines, including comments and blank lines, and uses the standard library. It runs without cloud credentials, a database or additional packages. I direct Codex to execute the examples and tests, then review the results; the README contains exact setup and reproduction commands. Local files represent the raw-file archive, per-record status and approved selection, so the implementation demonstrates the policy illustrated in the cloud diagram.
 
 ### Python preview: checking real dates
 
@@ -154,7 +154,7 @@ Each completed run contains the original received bytes, record statuses, correc
 
 ### Correctness and operability
 
-Twenty-four automated tests cover predefined output, heading changes, required fields, dates, NO versus UNKNOWN, duplicate handling, malformed input, encoding, reruns and failed report/completion-marker writes. They also verify received-byte preservation, the 10,000/800 case, an explicitly approved customerdata_id alias, and a structure error encountered after valid records. Expected outcomes specify approved IDs and independent counts, rather than relying only on the processor’s summary. The summary exposes parsing completeness, candidates, released records, warnings and duration. For fully parsed input:
+Sixty automated tests cover predefined output, heading changes, required fields, dates, NO versus UNKNOWN, duplicate handling, malformed input, encoding, reruns and failed report/completion-marker writes. They also verify received-byte preservation, the 10,000/800 case, an explicitly approved customerdata_id alias, and a structure error encountered after valid records. Expected outcomes specify approved IDs and independent counts, rather than relying only on the processor’s summary. The summary exposes parsing completeness, candidates, released records, warnings and duration. For fully parsed input:
 
 Parsed records = Valid records + Rejected records + Identical duplicates removed
 
@@ -275,7 +275,7 @@ The original screenshot places social information alongside game events. Correla
 | Schema drift, bad data, actionable errors | Sections 3–4 and executed examples. |
 | Setup and run instructions | README prerequisites, commands, outputs, and exit statuses. |
 | Architecture, trade-offs, and limitations | Sections 2–5. |
-| Meaningful tests and reliability | Twenty-four passing tests, explicit expected output, and fresh-copy checks. |
+| Meaningful tests and reliability | Sixty passing tests, explicit expected output, and fresh-copy checks. |
 | Logging and observability | Counts, parsing completeness, reports, log, duration, and completion markers. |
 | Performance and scalability thinking | Recorded measurements, their limits, and the memory bottleneck. |
 | AI disclosure and deliberate non-reliance | Section 6 and the README. |

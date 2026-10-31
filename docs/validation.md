@@ -1,10 +1,12 @@
 # Validation evidence
 
-30 October 2026. Local Development/Test execution uses synthetic inputs; no customer or Production system is involved. Candidate-independent rehearsal remains separate from automated checks.
+31 October 2026. Local Development/Test execution uses synthetic inputs; no customer or Production system is involved. Candidate-independent rehearsal remains separate from automated checks.
 
 ## Correctness and recovery boundaries
 
-The 24-test suite verifies exact normalized output, heading drift, missing/invalid values, explicit NO versus UNKNOWN, duplicates, input preservation, source-record status, malformed CSV, encoding, reruns, CLI exit codes and report/completion-marker failures. It includes a generated 10,000-record case with 800 missing IDs: all received bytes are retained, exactly the 9,200 expected valid IDs are released, and exactly 800 statuses require correction. A late structural error blocks every approval, even after a valid record was parsed. The customerdata_id example is blocked until its explicit alias is provided.
+The 60-test suite verifies exact normalized output, heading drift, missing/invalid values, explicit NO versus UNKNOWN, duplicates, input preservation, source-record status, malformed CSV, encoding, reruns, CLI exit codes and report/completion-marker failures. It includes a generated 10,000-record case with 800 missing IDs: all received bytes are retained, exactly the 9,200 expected valid IDs are released, and exactly 800 statuses require correction. A late structural error blocks every approval, even after a valid record was parsed. The customerdata_id example is blocked until its explicit alias is provided.
+
+Version 1.1.0 adds tests for mapping headers and malformed configuration, Unicode equivalents and exact customer IDs, physical line ranges, provenance hashes and UTC timestamps, distinct exit codes, debug tracebacks, best-effort operational error logs, semicolon delimiters and a decode failure after a valid prefix. All 60 tests passed locally on Python 3.14.4 before publication. GitHub Actions separately verifies Python 3.12 and 3.14.
 
 The original fixture values predated the original processor. The reviewed release expectations explicitly state approved IDs and independent counts. Tests and sample outputs check the documented current policy.
 

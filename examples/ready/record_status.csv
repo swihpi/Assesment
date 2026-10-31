@@ -1,4 +1,4 @@
-record,customer_id,validation_status,validation_reason
-1,F001,ACCEPTED,Required checks passed
-2,F002,ACCEPTED,Required checks passed
-3,F003,ACCEPTED,Required checks passed
+record,customer_id,validation_status,validation_reason,source_line_start,source_line_end
+1,F001,ACCEPTED,Required checks passed,2,2
+2,F002,ACCEPTED,Required checks passed,3,3
+3,F003,ACCEPTED,Required checks passed,4,4

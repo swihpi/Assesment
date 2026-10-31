@@ -4,7 +4,7 @@
 
 A standalone Python program preserves a received CRM CSV, normalizes approved equivalents, releases valid customer records, and reports records needing correction. If the file cannot be interpreted reliably, it blocks release of the entire input. The hypothetical customer is a sports organisation preparing customer data for analytics and later audience decisions. [Customer context and value](docs/customer_note.md) · [Assessment narrative](docs/assessment.md).
 
-The processor is **201 lines**, including comments and blank lines, and uses Python's standard library. This is a local demonstration of the same receiving → validation → approved/correction policy proposed for ADW. The Oracle cloud integration and campaign controls are not implemented.
+The processor is **305 lines**, including comments and blank lines, and uses Python's standard library. This is a local demonstration of the same receiving → validation → approved/correction policy proposed for ADW. The Oracle cloud integration and campaign controls are not implemented.
 
 ## Result and scope
 
@@ -47,7 +47,7 @@ To demonstrate a file-level block, run this separately:
 python3 process_export.py --input samples/breaking_change.csv --output runs/dev-blocked
 ```
 
-This deliberately returns BLOCKED and **exit code 2**, because a required heading has no approved mapping. No cleaned CSV is produced. This is expected rejection, not a crash; chaining further commands with `&&` would stop there. Exit 1 indicates an operational/configuration failure. Invalid command syntax also uses the argument parser's exit code 2, so read the message and completion marker.
+This deliberately returns BLOCKED and **exit code 3**, because a required heading has no approved mapping. No cleaned CSV is produced. This is expected rejection, not a crash; chaining further commands with `&&` would stop there. Exit 1 indicates an operational/configuration failure. Invalid command syntax uses exit code 2; blocked processing uses 3. File-level blocking reasons are printed to stderr and retained in the reports.
 
 **Never test a new script or mapping in Production first.** Use synthetic inputs locally, then validate the deployed integration in a dedicated Development/Test environment before reviewed Production promotion. [Deployment approach](docs/deployment.md).
 
@@ -64,9 +64,9 @@ All six headings must exist, using canonical names or approved aliases:
 | `last_purchase_date` | Same date format or empty. |
 | `marketing_permission` | Approved values become YES/NO; missing or unfamiliar values stay UNKNOWN with a warning. |
 
-Readable CSV mappings in `config/` define heading aliases and permission equivalents. Approved heading changes and reordered columns work; an extra unused column warns. A missing/ambiguous required heading, wrong record width, broken quoting, unsupported encoding or empty input blocks the input. Even a valid prefix of a structurally broken file is not released.
+Readable CSV mappings in `config/` define heading aliases and permission equivalents. Their required headers are `source_column,output_column` and `source_value,output_value`, respectively. Empty files, header-only files, malformed rows, duplicate or empty keys and unsupported targets fail configuration validation before a run folder is created; messages identify the file and row where available. Approved heading changes and reordered columns work; an extra unused column warns. A missing/ambiguous required heading, wrong record width, broken quoting, unsupported encoding or empty input blocks the input. Even a valid prefix of a structurally broken file is not released.
 
-For a fully parsed file, missing/invalid required values and conflicting records for the same customer ID affect those records, while valid records are released. Identical normalized duplicates are retained once. Empty CSV records are counted and rejected for missing required values; only blank physical lines are skipped. Permission mapping keys and incoming values use the same case and whitespace normalization. Identical invalid duplicates retain their field-level errors, and genuine ID conflicts include any field-level errors in the correction report. A new heading such as `customerdata_id` initially blocks release; only after source-owner confirmation should its alias to `customer_id` be added and tested. A change in identifier meaning or values needs identity reconciliation, not a spelling substitution.
+For a fully parsed file, missing/invalid required values and conflicting records for the same customer ID affect those records, while valid records are released. Identical normalized duplicates are retained once. Empty CSV records are counted and rejected for missing required values; only blank physical lines are skipped. Permission mapping keys and incoming values use the same case and whitespace normalization. Names and regions use Unicode NFC normalization before comparison; customer IDs retain exact, case-sensitive matching after surrounding whitespace is trimmed. Identical invalid duplicates retain their field-level errors, and genuine ID conflicts include any field-level errors in the correction report. A new heading such as `customerdata_id` initially blocks release; only after source-owner confirmation should its alias to `customer_id` be added and tested. A change in identifier meaning or values needs identity reconciliation, not a spelling substitution.
 
 ![Implemented local processing](docs/diagrams/validation.svg)
 
@@ -74,7 +74,7 @@ Conflicting attributes under one ID can describe inconsistent records for the sa
 
 ## Outputs, record status and completion
 
-Every readable source is copied byte for byte to `received.csv` before parsing. The original source remains unchanged. The run folder identifies the import batch; `record` refers to a nonblank CSV record in source order, not a physical line, which may span multiple lines.
+Every readable source is copied byte for byte to `received.csv` before parsing. The original source remains unchanged. The run folder identifies the import batch; `record` refers to a CSV data record in source order, excluding blank physical lines. Correctly shaped records containing empty fields are included. Reports also provide `source_line_start` and `source_line_end`, including for quoted multiline records. Locations remain blank when buffered decoding cannot reliably identify the failing line.
 
 | Output | Purpose |
 | --- | --- |
@@ -83,7 +83,7 @@ Every readable source is copied byte for byte to `received.csv` before parsing. 
 | `record_status.csv` | Source-record reference, available customer ID, validation status and reason. |
 | `rejected.csv` | File/record, field, problem and corrective action. |
 | `warnings.csv` | Unknown permission, unused columns and ignored identical duplicates. |
-| `summary.txt`, `run.log` | Parsing completeness, counts, released records, outcome, duration and stages. |
+| `summary.txt`, `run.log` | Parsing completeness, counts, released records, outcome, duration and stages; processor version, UTC start timestamp and SHA-256 of the received bytes. |
 
 Record statuses are ACCEPTED, ACCEPTED_WITH_WARNING, NEEDS_CORRECTION, or DUPLICATE_IGNORED. A valid candidate in an incompletely parsed input is NOT_RELEASED. Missing IDs are traceable through the batch and source-record reference; these are tracking references, not invented customer identities.
 
@@ -91,11 +91,21 @@ Record statuses are ACCEPTED, ACCEPTED_WITH_WARNING, NEEDS_CORRECTION, or DUPLIC
 | --- | --- | --- |
 | `READY` | Complete input; approved output; no rejected records. Warnings may exist. | 0 |
 | `READY_WITH_EXCEPTIONS` | Complete input; approved output plus correction cases. | 0 |
-| `BLOCKED` | Input cannot be interpreted completely, or no valid records remain; no approved output. | 2 |
+| `BLOCKED` | Input cannot be interpreted completely, or no valid records remain; no approved output. | 3 |
+
+The `warnings` count is the number of warning entries across received records, including records later rejected or deduplicated. It is not a count of released customers with warnings.
 
 The completion marker is written **last**, after reports and any cleaned output. Consumers must require READY or READY_WITH_EXCEPTIONS before using `cleaned.csv`. No marker means incomplete output, even if a file is present. BLOCKED inputs retain their received copy and available diagnostics. A missing/unreadable source or failed configuration may stop before a run folder can be created.
 
 For complete input: **parsed records = valid records + rejected records + identical duplicates removed**. For blocked input, `released_records` is zero; `valid_records` may describe candidates seen before a parsing failure and is not evidence of release.
+
+## Diagnostics and compatibility in version 1.1.0
+
+`BLOCKED` now exits 3 instead of 2. Update callers that check the old code. READY and READY_WITH_EXCEPTIONS still exit 0, operational/configuration errors exit 1, and invalid command syntax exits 2. The correction, warning and status CSVs append two physical-line columns; consumers should read by heading rather than assume a fixed column count. The cleaned customer CSV keeps its existing six-column schema.
+
+Use `python3 process_export.py --version` to inspect the processor version. Add `--debug` to a processing command for a traceback. Expected errors have concise messages; unexpected programming errors identify their exception type and suggest debug mode.
+
+For operational failures after this process creates the output folder, it attempts to append the error to `run.log`. A full disk or other storage failure may also prevent logging. No new FAILED marker is introduced; consumers still require a successful completion marker. Existing output folders and their logs are never reused. The snapshot hash identifies the received bytes; it does not prove the source remained stable during copying. Supply a completed source file.
 
 ## An actual actionable error
 
@@ -127,7 +137,7 @@ The CRM/data owner owns source correction; the integration owner owns mappings a
 
 ## Verification, performance and limits
 
-**39 automated tests** cover expected output, heading drift, required fields/dates, NO/UNKNOWN, duplicates, malformed input, encoding, reruns, write failures, source retention, approved alias changes and the 10,000/800 case. [Expected outcomes](samples/expected_outcomes.md) · [Validation evidence](docs/validation.md).
+**60 automated tests** cover expected output, heading drift, required fields/dates, NO/UNKNOWN, duplicates, malformed input, encoding, reruns, write failures, source retention, approved alias changes and the 10,000/800 case. [Expected outcomes](samples/expected_outcomes.md) · [Validation evidence](docs/validation.md).
 
 ```sh
 python3 tools/benchmark.py --sizes 1000 100000 --output runs/benchmark.csv

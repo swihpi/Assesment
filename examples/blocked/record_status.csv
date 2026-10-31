@@ -1,1 +1,1 @@
-record,customer_id,validation_status,validation_reason
+record,customer_id,validation_status,validation_reason,source_line_start,source_line_end
