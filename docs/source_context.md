@@ -1,6 +1,6 @@
 # Annex: personal context supplied by Stefan
 
-The OCI Think Tank was a collaboration between EMEA and US colleagues exploring a sports-data service. Stefan contributed to architecture and tool considerations involving Oracle Integration Cloud / Data Integration, Autonomous Database, recovery considerations, and the flow into OAC, where he created a number of dashboards. A colleague configured the database sentiment analysis.
+The OCI Think Tank was an informal internal initiative that began with Stefan and Mark, an Oracle US sales representative. They brought in like-minded colleagues from EMEA and the US who shared an enthusiasm for experimenting with customer solutions that could generate Oracle revenue while creating commercial advantage and revenue opportunities for customers. Stefan contributed to architecture and tool considerations involving Oracle Integration Cloud / Data Integration, Autonomous Database, recovery considerations, and the flow into OAC, where he created a number of dashboards. A colleague configured the database sentiment analysis.
 
 The original initiative focused on NHL hockey, including a Nashville Predators versus LA Kings illustration, and a broader landscape of business and social sources. The assessment extends that experience into a hypothetical sports organisation and CRM integration problem.
 
