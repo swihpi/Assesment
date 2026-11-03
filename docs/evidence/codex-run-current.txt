@@ -3,7 +3,7 @@ Source: https://github.com/swihpi/Assesment
 Code commit: 6f125de7ae323d9f72fea7d9a3f7c0d006fc5521
 Processor: 1.1.0
 Runtime: Python 3.14.4; fresh virtual environment, standard library only.
-Historical 24-test logs are preserved separately in docs/evidence/.
+Earlier execution logs are available in Git history.
 
 $ python3 process_export.py --input samples/valid.csv --output runs/docs-evidence-v110-valid
 READY: 3 released, 0 need correction. See runs/docs-evidence-v110-valid/summary.txt
