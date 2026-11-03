@@ -20,6 +20,10 @@ Batch and source-record references identify received rows even when a customer I
 
 Use dummy inputs locally, then validate the deployed integration in a dedicated Development/Test environment. Check file completion, missing exports, credentials, timeouts, retries, raw-file archiving, pre-load validation, classified ADW loads, approved selection, partial updates, report delivery, correction replay and campaign exclusion. Only after review and successful validation should the same reviewed artifacts be promoted with separate Production configuration, monitoring and rollback arrangements. Only local processing has been exercised.
 
+## Customer and internal coordination
+
+I would give the source owner traceable correction examples and avoid attributing the problem to the CRM before investigating the export and processing. If our processing appears responsible, I would involve internal engineering with a reproducible input, expected and actual behaviour, customer impact and checks already performed, raising product or priority decisions when needed. I would remain the customer’s point of contact and agree the next update while the teams investigate. Before production, I would review validation results and remaining limitations with the customer’s technical owner and internal support team, confirming monitoring, failure notifications and escalation ownership.
+
 ## Official capability references
 
 - [Transform records with OIC mappings](https://docs.oracle.com/en/cloud/paas/application-integration/ftp-adapter/configure-data-mapping-transform-data-files.html).
