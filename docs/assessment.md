@@ -22,7 +22,6 @@ My preference for a customer solution would be to automate the process: collect 
 
 The working example starts with a completed CSV and ends with an approved CSV, correction reports and a clear processing result. This covers the part of the problem where the incoming data is checked and made usable. Automated collection from SFTP and loading into ADW are explained as the next steps; they have not been built as part of this demonstration.
 
-[Coverage against the brief →](#how-the-submission-addresses-the-assignment)
 
 ### Oracle services used in the proposal
 
@@ -174,7 +173,6 @@ I use Codex to execute the examples and tests, then compare the reported results
 
 <picture: available in the private presentation>
 
-[Read the execution log](evidence/codex-run-current.txt)
 
 ### One record that passes
 
