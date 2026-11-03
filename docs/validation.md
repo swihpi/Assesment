@@ -1,44 +1,32 @@
 # Validation evidence
 
-31 October 2026. Local Development/Test execution uses dummy inputs; no customer or Production system is involved.
+The automated checks use dummy data in local Development/Test environments. They verify the local file processor, not the proposed cloud connections or campaign controls.
 
-## Correctness and recovery boundaries
-
-The 60-test suite verifies exact normalized output, heading drift, missing/invalid values, explicit NO versus UNKNOWN, duplicates, input preservation, source-record status, malformed CSV, encoding, reruns, CLI exit codes and report/completion-marker failures. It includes a generated 10,000-record case with 800 missing IDs: all received bytes are retained, exactly the 9,200 expected valid IDs are released, and exactly 800 statuses require correction. A late structural error blocks every approval, even after a valid record was parsed. The customerdata_id example is blocked until its explicit alias is provided.
-
-Version 1.1.0 adds tests for mapping headers and malformed configuration, Unicode equivalents and exact customer IDs, physical line ranges, provenance hashes and UTC timestamps, distinct exit codes, debug tracebacks, best-effort operational error logs, semicolon delimiters and a decode failure after a valid prefix. All 60 tests passed locally on Python 3.14.4 before publication. GitHub Actions separately verifies Python 3.12 and 3.14.
-
-The expected results specify which customer IDs should be released and how many records need correction. The tests compare the processor’s output with those expectations.
+## Run the checks
 
 ```sh
 python3 -m unittest discover -s tests -v
 ```
 
-## Reproduction examples
+The suite checks expected customer IDs and counts, approved heading changes, required fields and dates, permission values, repeated records, malformed files, configuration errors and output-write failures. It also checks that the input is preserved and that incomplete processing does not release usable output. The GitHub workflow runs on Python 3.12 and 3.14.
 
-- valid.csv: READY; three approved records matching the predefined CSV.
-- renamed_report.csv: READY; the same three approved records.
-- bad_values.csv: READY_WITH_EXCEPTIONS; F001 and F004 approved, two correction cases, source copy unchanged.
-- breaking_change.csv: BLOCKED; no approved output, diagnostics and received copy retained.
+## Expected results
 
-Python 3.12 and 3.14 are the verification targets, locally and in GitHub's Linux workflow. The full outputs in examples/ show a successful run, a run with exceptions and a blocked run. Consumers require the corresponding success marker before using cleaned.csv.
+| Input | Expected outcome |
+| --- | --- |
+| `samples/valid.csv` | Three approved records. |
+| `samples/renamed_report.csv` | The same three approved records. |
+| `samples/bad_values.csv` | F001 and F004 approved; two records reported for correction. |
+| `samples/breaking_change.csv` | BLOCKED; no cleaned CSV. |
 
-## Small demonstration versus larger verification
+For field-level expectations, see [expected outcomes](../samples/expected_outcomes.md). Recorded execution is available in the [test log](evidence/codex-run-current.txt).
 
-The four-record `samples/bad_values.csv` example releases two records and reports two different correction cases. The separate 10,000-record test deliberately generates 800 missing IDs and 9,200 valid IDs. These are two dummy inputs processed under the same rules, not conflicting results. Test counts describe test cases, not customer records.
+## Larger case
 
 ```sh
-python3 process_export.py --input samples/bad_values.csv --output runs/demo-small
-python3 -m unittest discover -s tests -k ten_thousand -v
 python3 tools/large_case_demo.py --output runs/demo-10000
 ```
 
-The unittest creates temporary files and deletes them afterward. The last command retains the generated input, processor reports and independent verification for inspection. [Actual retained-case execution](evidence/large-case-current.txt). The generation deliberately sets the 800-record error count; it is not a measurement of a customer dataset. The same retained case is executed in GitHub Actions on both configured Python versions.
+This generates 10,000 records, deliberately including 800 missing IDs, and runs the same processor. Independent checks verify the exact 9,200 approved IDs, 800 correction cases and unchanged received file. The command retains its input and outputs; use a new output folder for each run. See the [recorded execution](evidence/large-case-current.txt).
 
-## Measurements and limitations
-
-Single local runs of processor version 1.1.0 measured 1,000 records in 0.051 seconds and 100,000 in 0.595 seconds, with output counts independently verified. Python 3.14.4 on macOS 26.6.2. The timer includes startup, snapshot copying, processing and report writing; generation and independent output counting are outside it. The raw measurements record the processor SHA-256 and UTC timestamp. Memory grows with retained records; these measurements do not establish Production/cloud capacity or a supported memory ceiling. [Raw results](benchmark.csv).
-
-The current execution is recorded in [the 60-test log](evidence/codex-run-current.txt). Earlier logs and screenshots remain available in Git history rather than being duplicated in the current source tree.
-
-No OIC/OCI Function handler, ADW connection, approved-view access control, campaign filter, exception delivery or correction workflow has been deployed. Automated checks establish only the local processor's behavior. New cloud work must be validated in Development/Test before reviewed Production promotion.
+These checks establish behaviour for the supplied scenarios. They do not prove that source facts are correct or that an OIC/ADW deployment works. Benchmark methodology and capacity limits are described in the README.
