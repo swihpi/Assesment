@@ -1,7 +1,5 @@
 # Reliable CRM CSV ingestion
 
-[Code and files](https://github.com/swihpi/Assesment) · [Automated validation](https://github.com/swihpi/Assesment/actions/workflows/validate.yml)
-
 A standalone Python program preserves a received CRM CSV, normalizes approved equivalents, releases valid customer records, and reports records needing correction. If the file cannot be interpreted reliably, it blocks release of the entire input. The hypothetical customer is a sports organisation preparing customer data for analytics and later audience decisions. [Customer context and value](docs/customer_note.md) · [Assessment narrative](docs/assessment.md).
 
 The standalone Python processor uses only Python's standard library. This is a local demonstration of the same receiving → validation → approved/correction policy proposed for ADW. The Oracle cloud integration and campaign controls are not implemented.
@@ -48,7 +46,7 @@ Expected result: `READY_WITH_EXCEPTIONS`, two released and two needing correctio
 python3 -m unittest discover -s tests -k ten_thousand -v
 ```
 
-This selects one automated test that generates and checks 10,000 records. It reports one passing test and deletes its temporary files afterward. [See the test](tests/test_processor.py#L212-L227).
+This selects one automated test that generates and checks 10,000 records. It reports one passing test and deletes its temporary files afterward.
 
 To keep the larger input and outputs for inspection, run:
 
@@ -56,7 +54,7 @@ To keep the larger input and outputs for inspection, run:
 python3 tools/large_case_demo.py --output runs/demo-10000
 ```
 
-This generates the dummy input, invokes the same processor CLI and independently checks the resulting files. It retains `input-10000.csv`, the complete `result/` folder and `verification.json`. The verified result is 9,200 released records and 800 missing-ID correction cases. [Recorded execution](docs/evidence/large-case-current.txt). Each command that writes output requires a new folder.
+This generates the dummy input, invokes the same processor CLI and independently checks the resulting files. It retains `input-10000.csv`, the complete `result/` folder and `verification.json`. The verified result is 9,200 released records and 800 missing-ID correction cases. Each command that writes output requires a new folder.
 
 ### Other examples and the complete test suite
 
@@ -142,7 +140,7 @@ This row is taken from `rejected.csv` produced by the bad-value example. Record 
 | --- | --- | --- | --- | --- | --- |
 | 3 | F003 | member_since | INVALID_DATE | Joining date is not a valid YYYY-MM-DD calendar date. | Confirm joining date in the authoritative CRM record, correct it and re-export. |
 
-Messages and next actions identify the particular missing field or invalid date. Several problems remain combined into one report row per rejected record. The source owner confirms and corrects the joining date in the CRM and re-exports; the processor does not guess a replacement. [Full generated report](examples/with-exceptions/rejected.csv). Repeated IDs with inconsistent records use `CONFLICTING_RECORDS_FOR_ID`; the program does not establish that distinct identities exist.
+Messages and next actions identify the particular missing field or invalid date. Several problems remain combined into one report row per rejected record. The source owner confirms and corrects the joining date in the CRM and re-exports; the processor does not guess a replacement. Repeated IDs with inconsistent records use `CONFLICTING_RECORDS_FOR_ID`; the program does not establish that distinct identities exist.
 
 ## Data quality and marketing eligibility
 
@@ -156,7 +154,7 @@ The script does **not** implement campaign selection or send messages. In produc
 
 **Demonstration choice:** local Python and CSV files make the processing policy reproducible without Oracle platform access. **Production recommendation:** assess native OIC mappings and controls first; use a separately hosted Python function where the validation, duplicate-handling and diagnostic requirements justify it.
 
-The assumed CRM has no usable API or supported application-specific connector, but supports scheduled CSV reports and SFTP delivery. OIC retrieves the completed file, archives the original bytes in a restricted raw-file location (proposed: OCI Object Storage), and coordinates validation before database loading. It then writes classified approved records and restricted correction cases into ADW, with status and reason. The diagram illustrates Python hosted in an OCI Function; its handler and cloud I/O still need implementation. The raw archive preserves the exact file, including malformed input; ADW retains readable classified records while an approved selection excludes correction cases. Exception storage must accommodate invalid values as source data, rather than forcing an invalid date into a date column. Campaign eligibility is a further check. [Architecture, ownership and recovery](docs/deployment.md).
+The assumed CRM has no usable API or supported application-specific connector, but supports scheduled CSV reports and SFTP delivery. OIC retrieves the completed file, archives the original bytes in a restricted raw-file location (proposed: OCI Object Storage), and coordinates validation before database loading. It then writes classified approved records and restricted correction cases into ADW, with status and reason. The diagram illustrates Python hosted in an OCI Function; its handler and cloud I/O still need implementation. The raw archive preserves the exact file, including malformed input; ADW retains readable classified records while an approved selection excludes correction cases. Exception storage must accommodate invalid values as source data, rather than forcing an invalid date into a date column. Campaign eligibility is a further check.
 
 For 10,000 fully parsed records with 800 independent required-value failures and no duplicates, the local demonstration preserves all 10,000 in `received.csv`, releases 9,200 in `cleaned.csv`, and reports 800 correction cases. A test verifies this exact scenario. The proposed ADW deployment applies the same policy. It requires a destination that supports partial updates: omitted rows must not mean deletion, and a partial file must never blindly replace a complete customer table. Reconciliation, updates to existing customers and correction replay remain deployment work.
 
@@ -206,16 +204,16 @@ This submission was developed around the assignment’s requirements: a small, c
 
 | Requirement from the brief | Implementation or evidence |
 | --- | --- |
-| “cope with schema drift and bad data while surfacing clear, actionable errors” | Confirmed heading mappings, field checks, record-level correction cases and file-level blocking are implemented. [Processor](process_export.py) · [Example correction report](examples/with-exceptions/rejected.csv) |
-| “runnable code, a README with setup and run instructions, assumptions, architecture overview, trade-offs, and known limitations” | The repository provides runnable code, exact commands, expected outcomes, diagrams and documented boundaries. [README](README.md) · [Design and deployment](docs/deployment.md) |
-| “a short note describing the customer context you assumed and the value your solution would create” | The sports-organisation scenario, source constraints and intended value are explicit; the customer incident is hypothetical. [Customer context and value](docs/customer_note.md) |
-| “the goal is not to build a production-grade system” | The working scope is local file processing. Cloud retrieval, database updates and campaign execution remain proposed extensions. [Scope and limitations](README.md#result-and-scope) |
-| “A small but coherent end-to-end slice is preferred” | A completed CSV becomes preserved input, normalised approved output, correction reports and a final completion status. [Walkthrough](docs/walkthrough.md) · [Inspectable outputs](examples/with-exceptions) |
-| “clarity of design, code quality, reasoning, and trade-offs rather than alignment to a specific stack” | Standard-library Python makes the demonstration reproducible without cloud access. The design explains mapping approval, partial release and conservative conflict handling. [Processing contract](README.md#processing-contract) · [Design reasoning](docs/assessment.md) |
+| “cope with schema drift and bad data while surfacing clear, actionable errors” | Confirmed heading mappings, field checks, record-level correction cases and file-level blocking are implemented. [Processor](process_export.py) |
+| “runnable code, a README with setup and run instructions, assumptions, architecture overview, trade-offs, and known limitations” | The repository provides runnable code, exact commands, expected outcomes, diagrams and documented boundaries. |
+| “a short note describing the customer context you assumed and the value your solution would create” | The sports-organisation scenario, source constraints and intended value are explicit; the customer incident is hypothetical. |
+| “the goal is not to build a production-grade system” | The working scope is local file processing. Cloud retrieval, database updates and campaign execution remain proposed extensions. |
+| “A small but coherent end-to-end slice is preferred” | A completed CSV becomes preserved input, normalised approved output, correction reports and a final completion status. |
+| “clarity of design, code quality, reasoning, and trade-offs rather than alignment to a specific stack” | Standard-library Python makes the demonstration reproducible without cloud access. The design explains mapping approval, partial release and conservative conflict handling. |
 | “where AI was used, how it was used, and where you deliberately chose not to rely on it” | The README describes Codex assistance and human review. Runtime decisions use deterministic rules; unfamiliar source meanings require human confirmation. [AI disclosure](README.md#my-judgement-and-codex-assistance) |
-| “A small but meaningful test set covering core behavior is preferred” | Automated tests cover selected core behaviour and regression cases, with expected outputs and reproducible execution evidence. [Tests](tests) · [Validation evidence](docs/validation.md) |
-| “basic logging and minimal observability that fits the shape of the system” | Logs, counts, statuses, source references, diagnostics and completion markers support troubleshooting of local runs. [Outputs and completion](README.md#outputs-record-status-and-completion) · [Example run log](examples/with-exceptions/run.log) |
-| “identify likely bottlenecks, have a sensible measurement strategy, and can explain how the design would scale” | A reproducible benchmark verifies counts and records its environment. Retained records are identified as the memory bottleneck; local timings are not production-capacity claims. [Benchmark tool](tools/benchmark.py) · [Raw measurements](docs/benchmark.csv) |
+| “A small but meaningful test set covering core behavior is preferred” | Automated tests cover selected core behaviour and regression cases, with expected outputs and reproducible execution evidence. [Tests](tests) |
+| “basic logging and minimal observability that fits the shape of the system” | Logs, counts, statuses, source references, diagnostics and completion markers support troubleshooting of local runs. [Example run log](examples/with-exceptions/run.log) |
+| “identify likely bottlenecks, have a sensible measurement strategy, and can explain how the design would scale” | A reproducible benchmark verifies counts and records its environment. Retained records are identified as the memory bottleneck; local timings are not production-capacity claims. |
 
 ### Submission checklist against the brief
 
