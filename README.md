@@ -194,6 +194,8 @@ On occasions I asked Codex to assess Claude’s feedback point by point. I accep
 
 ### Where AI helped, and where I kept clear limits
 
+Codex generated the Python implementation and automated tests, including technical failure cases I would not have identified myself. I focused my review on the customer rules and reported outcomes, and requested further reviews with both Codex and Claude. I did not independently review every test assertion. The passing tests provide evidence for the behaviours checked, rather than a guarantee that the code has no gaps.
+
 I chose Codex because it allowed me to work with documents, code and execution results in one place. It helped with the scenario, research, dummy data, code, tests, documentation and execution, while feedback from Claude also informed the review. I remained responsible for the intended behaviour, the questions asked and whether the reported results made sense. The walkthrough explains the main mechanisms behind those decisions so they can be discussed and reproduced.
 
 The running processor does not call an LLM. Agreed mappings, required values and date checks should give repeatable results. AI could help investigate an unfamiliar field, but the source owner still needs to confirm its meaning before a mapping is approved. Neither AI nor the integration should invent a missing customer ID or marketing permission, and I would only introduce an agent into the daily process if it solved a clear customer problem and its output could be checked reliably.
