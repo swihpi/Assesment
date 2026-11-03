@@ -1,5 +1,6 @@
 # Reliable CRM CSV ingestion
 
+[Automated validation](https://github.com/swihpi/Assesment/actions/workflows/validate.yml)
 A standalone Python program preserves a received CRM CSV, normalizes approved equivalents, releases valid customer records, and reports records needing correction. If the file cannot be interpreted reliably, it blocks release of the entire input. The hypothetical customer is a sports organisation preparing customer data for analytics and later audience decisions. [Customer context and value](docs/customer_note.md).
 
 The standalone Python processor uses only Python's standard library. This is a local demonstration of the same receiving → validation → approved/correction policy proposed for ADW. The Oracle cloud integration and campaign controls are not implemented.
@@ -46,7 +47,7 @@ Expected result: `READY_WITH_EXCEPTIONS`, two released and two needing correctio
 python3 -m unittest discover -s tests -k ten_thousand -v
 ```
 
-This selects one automated test that generates and checks 10,000 records. It reports one passing test and deletes its temporary files afterward.
+This selects one automated test that generates and checks 10,000 records. It reports one passing test and deletes its temporary files afterward. [See the test](tests/test_processor.py#L212-L227).
 
 To keep the larger input and outputs for inspection, run:
 
@@ -54,7 +55,7 @@ To keep the larger input and outputs for inspection, run:
 python3 tools/large_case_demo.py --output runs/demo-10000
 ```
 
-This generates the dummy input, invokes the same processor CLI and independently checks the resulting files. It retains `input-10000.csv`, the complete `result/` folder and `verification.json`. The verified result is 9,200 released records and 800 missing-ID correction cases. Each command that writes output requires a new folder.
+This generates the dummy input, invokes the same processor CLI and independently checks the resulting files. It retains `input-10000.csv`, the complete `result/` folder and `verification.json`. The verified result is 9,200 released records and 800 missing-ID correction cases. [Recorded execution](docs/evidence/large-case-current.txt). Each command that writes output requires a new folder.
 
 ### Other examples and the complete test suite
 
@@ -207,13 +208,13 @@ This submission was developed around the assignment’s requirements: a small, c
 | “cope with schema drift and bad data while surfacing clear, actionable errors” | Confirmed heading mappings, field checks, record-level correction cases and file-level blocking are implemented. [Processor](process_export.py) |
 | “runnable code, a README with setup and run instructions, assumptions, architecture overview, trade-offs, and known limitations” | The repository provides runnable code, exact commands, expected outcomes, diagrams and documented boundaries. |
 | “a short note describing the customer context you assumed and the value your solution would create” | The sports-organisation scenario, source constraints and intended value are explicit; the customer incident is hypothetical. |
-| “the goal is not to build a production-grade system” | The working scope is local file processing. Cloud retrieval, database updates and campaign execution remain proposed extensions. |
-| “A small but coherent end-to-end slice is preferred” | A completed CSV becomes preserved input, normalised approved output, correction reports and a final completion status. |
-| “clarity of design, code quality, reasoning, and trade-offs rather than alignment to a specific stack” | Standard-library Python makes the demonstration reproducible without cloud access. The design explains mapping approval, partial release and conservative conflict handling. |
+| “the goal is not to build a production-grade system” | The working scope is local file processing. Cloud retrieval, database updates and campaign execution remain proposed extensions. [Scope and limitations](README.md#result-and-scope) |
+| “A small but coherent end-to-end slice is preferred” | A completed CSV becomes preserved input, normalised approved output, correction reports and a final completion status. [Inspectable outputs](examples/with-exceptions) |
+| “clarity of design, code quality, reasoning, and trade-offs rather than alignment to a specific stack” | Standard-library Python makes the demonstration reproducible without cloud access. The design explains mapping approval, partial release and conservative conflict handling. [Processing contract](README.md#processing-contract) |
 | “where AI was used, how it was used, and where you deliberately chose not to rely on it” | The README describes Codex assistance and human review. Runtime decisions use deterministic rules; unfamiliar source meanings require human confirmation. [AI disclosure](README.md#my-judgement-and-codex-assistance) |
 | “A small but meaningful test set covering core behavior is preferred” | Automated tests cover selected core behaviour and regression cases, with expected outputs and reproducible execution evidence. [Tests](tests) |
-| “basic logging and minimal observability that fits the shape of the system” | Logs, counts, statuses, source references, diagnostics and completion markers support troubleshooting of local runs. [Example run log](examples/with-exceptions/run.log) |
-| “identify likely bottlenecks, have a sensible measurement strategy, and can explain how the design would scale” | A reproducible benchmark verifies counts and records its environment. Retained records are identified as the memory bottleneck; local timings are not production-capacity claims. |
+| “basic logging and minimal observability that fits the shape of the system” | Logs, counts, statuses, source references, diagnostics and completion markers support troubleshooting of local runs. [Outputs and completion](README.md#outputs-record-status-and-completion) · [Example run log](examples/with-exceptions/run.log) |
+| “identify likely bottlenecks, have a sensible measurement strategy, and can explain how the design would scale” | A reproducible benchmark verifies counts and records its environment. Retained records are identified as the memory bottleneck; local timings are not production-capacity claims. [Benchmark tool](tools/benchmark.py) |
 
 ### Submission checklist against the brief
 
