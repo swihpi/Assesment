@@ -1,40 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="710" viewBox="0 0 900 710" role="img" aria-labelledby="title desc"><title id="title">Validate before loading ADW</title><desc id="desc">OIC retrieves the CSV from SFTP, archives the original file, coordinates validation, then loads approved records and restricted correction cases into ADW. Uninterpretable files are archived but no customer rows are approved.</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#637880"/></marker></defs><rect width="900" height="710" rx="14" fill="#fbfcfa"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="710" viewBox="0 0 900 710" role="img" aria-labelledby="title desc"><title id="title">Validate before loading ADW</title><desc id="desc">OIC retrieves the CSV from SFTP, archives the original file, coordinates validation, then loads approved records and restricted correction cases into ADW. Uninterpretable files are archived but no customer rows are approved.</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#637880" /></marker></defs><rect width="900" height="710" rx="14" fill="#fbfcfa" />
 <text x="450" y="29" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="700" fill="#40857b">PROPOSED PRODUCTION FLOW</text>
-<rect x="24" y="52" width="250" height="75" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
+<rect x="24" y="52" width="250" height="75" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3" />
 <text x="149.0" y="79" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">CRM reporting</text>
 <text x="149.0" y="102" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Completed daily CSV export</text>
-<rect x="325" y="52" width="250" height="75" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
+<rect x="325" y="52" width="250" height="75" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3" />
 <text x="450.0" y="79" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">SFTP file drop</text>
 <text x="450.0" y="102" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Customer-controlled location</text>
-<rect x="626" y="52" width="250" height="75" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
+<rect x="626" y="52" width="250" height="75" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3" />
 <text x="751.0" y="79" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">OIC</text>
-<text x="751.0" y="102" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Retrieval &amp; orchestration</text>
-<polyline points="274,90 325,90" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)"/>
-<polyline points="575,90 626,90" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)"/>
-<polyline points="751,127 751,157 450,157 450,183" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)"/>
-<rect x="180" y="183" width="540" height="90" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
-<text x="450.0" y="210" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">Preserve the original file</text>
+<text x="751.0" y="102" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">File collection &amp; processing</text>
+<polyline points="274,90 325,90" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)" />
+<polyline points="575,90 626,90" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)" />
+<polyline points="751,127 751,157 450,157 450,183" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)" />
+<rect x="180" y="183" width="540" height="90" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3" />
+<text x="450.0" y="210" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">Keep the original file</text>
 <text x="450.0" y="233" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Proposed archive: OCI Object Storage</text>
-<text x="450.0" y="254" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Exact bytes and batch reference; restricted access</text>
-<polyline points="450,273 450,311" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)"/>
-<rect x="180" y="311" width="540" height="113" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
-<text x="450.0" y="338" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">Validate &amp; normalize BEFORE database loading</text>
-<text x="450.0" y="361" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">OIC mappings or proposed Python OCI Function</text>
-<text x="450.0" y="382" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Required fields, dates, permission and identity rules</text>
-<text x="450.0" y="403" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Unreliable input → BLOCKED; retain raw file and report</text>
-<polyline points="450,424 450,451 234,451 234,483" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)"/>
-<polyline points="450,451 666,451 666,483" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)"/>
-<rect x="24" y="483" width="420" height="104" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3"/>
+<polyline points="450,273 450,311" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)" />
+<rect x="180" y="311" width="540" height="113" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3" />
+<text x="450.0" y="338" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">Check the data BEFORE loading ADW</text>
+<text x="450.0" y="361" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">OIC checks or a separate Python OCI Function</text>
+<polyline points="450,424 450,451 234,451 234,483" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)" />
+<polyline points="450,451 666,451 666,483" fill="none" stroke="#637880" stroke-width="1.6" marker-end="url(#arrow)" />
+<rect x="24" y="483" width="420" height="104" rx="9" fill="#eaf3f0" stroke="#40857b" stroke-width="1.3" />
 <text x="234.0" y="510" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">Database (ADW): APPROVED</text>
 <text x="234.0" y="533" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">ACCEPTED / ACCEPTED_WITH_WARNING</text>
 <text x="234.0" y="554" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Only records that passed the required checks</text>
-<rect x="456" y="483" width="420" height="104" rx="9" fill="#faf1e4" stroke="#a47530" stroke-width="1.3"/>
+<rect x="456" y="483" width="420" height="104" rx="9" fill="#faf1e4" stroke="#a47530" stroke-width="1.3" />
 <text x="666.0" y="510" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#17363d">Database (ADW): CORRECTIONS</text>
 <text x="666.0" y="533" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">NEEDS_CORRECTION + reason</text>
-<text x="666.0" y="554" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Restricted source values; excluded from approved use</text>
-<text x="234" y="617" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="700" fill="#17363d">Apply current channel / purpose eligibility</text>
-<text x="234" y="640" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="400" fill="#17363d">UNKNOWN or NO does not authorise sending</text>
+<text x="666.0" y="554" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="400" fill="#17363d">Keep problem records separate for correction</text>
+<text x="234" y="617" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="700" fill="#17363d">Check permission for the channel and purpose</text>
+<text x="234" y="640" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="400" fill="#17363d">Missing permission or NO means do not send</text>
 <text x="666" y="617" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="700" fill="#17363d">Exception report → source owner</text>
 <text x="666" y="640" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="400" fill="#17363d">Correct at source → re-export → revalidate</text>
-<text x="450" y="682" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="700" fill="#17363d">Customer-record loads follow classification; cloud components remain proposed.</text>
+<text x="450" y="682" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="700" fill="#17363d">Check first, then load ADW. The cloud connections are the next step.</text>
 </svg>

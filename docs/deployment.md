@@ -14,11 +14,11 @@ The local processor is implemented. The following cloud deployment is proposed; 
 
 The local received.csv corresponds to the raw-file archive; record_status.csv corresponds to per-record status/reason; cleaned.csv corresponds to the approved selection; rejected.csv contains actionable correction diagnostics. The local program implements that selection policy but has no ADW connection. Validation precedes the proposed ADW writes. The cloud deployment must apply partial updates safely: absence must not mean deletion and a partial selection must never replace a complete customer table. Existing-customer updates, source freshness, duplicate replay, corrections and permission changes need reconciliation rules.
 
-Batch and source-record references identify received rows even when a customer ID is missing; they do not invent customer identity. Conflicting IDs remain excluded until resolved. NO and UNKNOWN are distinct; neither authorises sending in the assumed consent-based campaign. Production access, retention and deletion policies need agreement.
+Batch and source-record references identify received rows even when a customer ID is missing; they do not invent customer identity. Conflicting records for the same customer ID remain excluded until resolved. Records with different customer IDs are not matched to the same person by this processor. NO and UNKNOWN are distinct; neither authorises sending in the assumed consent-based campaign. Production access, retention and deletion policies need agreement.
 
 ## Development/Test before Production
 
-Use synthetic inputs locally, then validate the deployed integration in a dedicated Development/Test environment. Check file completion, missing exports, credentials, timeouts, retries, raw-file archiving, pre-load validation, classified ADW loads, approved selection, partial updates, report delivery, correction replay and campaign exclusion. Only after review and successful validation should the same reviewed artifacts be promoted with separate Production configuration, monitoring and rollback arrangements. Only local processing has been exercised.
+Use dummy inputs locally, then validate the deployed integration in a dedicated Development/Test environment. Check file completion, missing exports, credentials, timeouts, retries, raw-file archiving, pre-load validation, classified ADW loads, approved selection, partial updates, report delivery, correction replay and campaign exclusion. Only after review and successful validation should the same reviewed artifacts be promoted with separate Production configuration, monitoring and rollback arrangements. Only local processing has been exercised.
 
 ## Official capability references
 

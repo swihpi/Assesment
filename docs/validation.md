@@ -1,6 +1,6 @@
 # Validation evidence
 
-31 October 2026. Local Development/Test execution uses synthetic inputs; no customer or Production system is involved. Candidate-independent rehearsal remains separate from automated checks.
+31 October 2026. Local Development/Test execution uses dummy inputs; no customer or Production system is involved.
 
 ## Correctness and recovery boundaries
 
@@ -8,7 +8,7 @@ The 60-test suite verifies exact normalized output, heading drift, missing/inval
 
 Version 1.1.0 adds tests for mapping headers and malformed configuration, Unicode equivalents and exact customer IDs, physical line ranges, provenance hashes and UTC timestamps, distinct exit codes, debug tracebacks, best-effort operational error logs, semicolon delimiters and a decode failure after a valid prefix. All 60 tests passed locally on Python 3.14.4 before publication. GitHub Actions separately verifies Python 3.12 and 3.14.
 
-The original fixture values predated the original processor. The reviewed release expectations explicitly state approved IDs and independent counts. Tests and sample outputs check the documented current policy.
+The expected results specify which customer IDs should be released and how many records need correction. The tests compare the processor’s output with those expectations.
 
 ```sh
 python3 -m unittest discover -s tests -v
@@ -25,7 +25,7 @@ Python 3.12 and 3.14 are the verification targets, locally and in GitHub's Linux
 
 ## Small demonstration versus larger verification
 
-The four-record `samples/bad_values.csv` example releases two records and reports two different correction cases. The separate 10,000-record test deliberately generates 800 missing IDs and 9,200 valid IDs. These are two synthetic inputs processed under the same rules, not conflicting results. Test counts describe test cases, not customer records.
+The four-record `samples/bad_values.csv` example releases two records and reports two different correction cases. The separate 10,000-record test deliberately generates 800 missing IDs and 9,200 valid IDs. These are two dummy inputs processed under the same rules, not conflicting results. Test counts describe test cases, not customer records.
 
 ```sh
 python3 process_export.py --input samples/bad_values.csv --output runs/demo-small
@@ -37,7 +37,7 @@ The unittest creates temporary files and deletes them afterward. The last comman
 
 ## Measurements and limitations
 
-Single local runs of processor version 1.1.0 measured 1,000 records in 0.051 seconds and 100,000 in 0.595 seconds, with output counts independently verified. Python 3.14.4 on macOS 26.6.2 ARM64. The timer includes startup, snapshot copying, processing and report writing; generation and independent output counting are outside it. The raw measurements record the processor SHA-256 and UTC timestamp. Memory grows with retained records; these measurements do not establish Production/cloud capacity or a supported memory ceiling. [Raw results](benchmark.csv).
+Single local runs of processor version 1.1.0 measured 1,000 records in 0.051 seconds and 100,000 in 0.595 seconds, with output counts independently verified. Python 3.14.4 on macOS 26.6.2. The timer includes startup, snapshot copying, processing and report writing; generation and independent output counting are outside it. The raw measurements record the processor SHA-256 and UTC timestamp. Memory grows with retained records; these measurements do not establish Production/cloud capacity or a supported memory ceiling. [Raw results](benchmark.csv).
 
 The current execution is recorded in [the 60-test log](evidence/codex-run-current.txt). Earlier logs and screenshots remain available in Git history rather than being duplicated in the current source tree.
 

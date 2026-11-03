@@ -8,9 +8,9 @@ The standalone Python processor uses only Python's standard library. This is a l
 
 ## Result and scope
 
-Start with `samples/bad_values.csv`: four synthetic customer records, two released and two needing correction (a missing customer ID and an invalid date). Every input and output can be inspected by hand.
+Start with `samples/bad_values.csv`: four dummy customer records, two released and two needing correction (a missing customer ID and an invalid date). Every input and output can be inspected by hand.
 
-A separate automated test generates 10,000 synthetic records, including 800 with missing IDs, and verifies exactly 9,200 released IDs, 800 correction cases and received-byte preservation. It is one of the 60 tests. The same processor handles both datasets; the `--input` file determines how many records it processes. Both cases have been executed; neither is a real customer export.
+A separate automated test generates 10,000 dummy records, including 800 with missing IDs, and verifies exactly 9,200 released IDs, 800 correction cases and received-byte preservation. It is one of the 60 tests. The same processor handles both datasets; the `--input` file determines how many records it processes. Both cases have been executed; neither is a real customer export.
 
 Independent row errors permit partial release; uncertain mappings or malformed structure block the input. Database destinations must support partial updates: omission cannot mean deletion, and partial files must not replace complete tables.
 
@@ -56,7 +56,7 @@ To keep the larger input and outputs for inspection, run:
 python3 tools/large_case_demo.py --output runs/demo-10000
 ```
 
-This generates the synthetic input, invokes the same processor CLI and independently checks the resulting files. It retains `input-10000.csv`, the complete `result/` folder and `verification.json`. The verified result is 9,200 released records and 800 missing-ID correction cases. [Recorded execution](docs/evidence/large-case-current.txt). Each command that writes output requires a new folder.
+This generates the dummy input, invokes the same processor CLI and independently checks the resulting files. It retains `input-10000.csv`, the complete `result/` folder and `verification.json`. The verified result is 9,200 released records and 800 missing-ID correction cases. [Recorded execution](docs/evidence/large-case-current.txt). Each command that writes output requires a new folder.
 
 ### Other examples and the complete test suite
 
@@ -76,7 +76,7 @@ python3 process_export.py --input samples/breaking_change.csv --output runs/dev-
 
 This deliberately returns BLOCKED and **exit code 3**, because a required heading has no approved mapping. No cleaned CSV is produced. This is expected rejection, not a crash; chaining further commands with `&&` would stop there. Exit 1 indicates an operational/configuration failure. Invalid command syntax uses exit code 2; blocked processing uses 3. File-level blocking reasons are printed to stderr and retained in the reports.
 
-**Never test a new script or mapping in Production first.** Use synthetic inputs locally, then validate the deployed integration in a dedicated Development/Test environment before reviewed Production promotion. [Deployment approach](docs/deployment.md).
+**Never test a new script or mapping in Production first.** Use dummy inputs locally, then validate the deployed integration in a dedicated Development/Test environment before reviewed Production promotion. [Deployment approach](docs/deployment.md).
 
 ## Processing contract
 
@@ -93,11 +93,11 @@ All six headings must exist, using canonical names or approved aliases:
 
 Readable CSV mappings in `config/` define heading aliases and permission equivalents. Their required headers are `source_column,output_column` and `source_value,output_value`, respectively. Empty files, header-only files, malformed rows, duplicate or empty keys and unsupported targets fail configuration validation before a run folder is created; messages identify the file and row where available. Approved heading changes and reordered columns work; an extra unused column warns. A missing/ambiguous required heading, wrong record width, broken quoting, unsupported encoding or empty input blocks the input. Even a valid prefix of a structurally broken file is not released.
 
-For a fully parsed file, missing/invalid required values and conflicting records for the same customer ID affect those records, while valid records are released. Identical normalized duplicates are retained once. Empty CSV records are counted and rejected for missing required values; only blank physical lines are skipped. Permission mapping keys and incoming values use the same case and whitespace normalization. Names and regions use Unicode NFC normalization before comparison; customer IDs retain exact, case-sensitive matching after surrounding whitespace is trimmed. Identical invalid duplicates retain their field-level errors, and genuine ID conflicts include any field-level errors in the correction report. A new heading such as `customerdata_id` initially blocks release; only after source-owner confirmation should its alias to `customer_id` be added and tested. A change in identifier meaning or values needs identity reconciliation, not a spelling substitution.
+For a fully parsed file, missing/invalid required values and conflicting records for the same customer ID affect those records, while valid records are released. When repeated records have the same customer ID and the same values after tidying, one valid copy is retained. Invalid copies still need correction. Empty CSV records are counted and rejected for missing required values; only blank physical lines are skipped. Permission mapping keys and incoming values use the same case and whitespace normalization. Names and regions use Unicode NFC normalization before comparison; customer IDs retain exact, case-sensitive matching after surrounding whitespace is trimmed. Identical invalid duplicates retain their field-level errors, and genuine ID conflicts include any field-level errors in the correction report. A new heading such as `customerdata_id` initially blocks release; only after source-owner confirmation should its alias to `customer_id` be added and tested. A change in identifier meaning or values needs identity reconciliation, not a spelling substitution.
 
 ![Implemented local processing](docs/diagrams/validation.svg)
 
-Conflicting attributes under one ID can describe inconsistent records for the same customer. The prototype withholds the group; it does not determine whether distinct identities exist.
+Conflicting attributes under one ID can describe inconsistent records for the same customer. The prototype leaves that group out of the approved file until the source owner resolves the differences. For example, a report joining current and previous addresses can repeat F002 with NY on one row and CA on another, even when the CRM customer table has only one F002. Different IDs such as F002 and F012 are not matched as one person by this processor.
 
 ## Outputs, record status and completion
 
@@ -146,7 +146,7 @@ Messages and next actions identify the particular missing field or invalid date.
 
 ## Data quality and marketing eligibility
 
-NO means explicit opt-out; UNKNOWN means missing or unrecognised permission. We preserve that distinction. For the assumed consent-based campaign, neither authorises sending. An identifiable record with unknown permission can be released with a warning; it is not thereby eligible for marketing. The single permission field is a demonstration simplification: email permission does not authorise push, SMS or WhatsApp. Production activation must check current channel/purpose permission, address/device validity and other agreed rules.
+NO means explicit opt-out; UNKNOWN means missing or unrecognised permission. We preserve that distinction. For a campaign that requires confirmed permission, neither NO nor UNKNOWN allows a message to be sent. An identifiable record with unknown permission can be released with a warning; it is not thereby eligible for marketing. The single permission field is a demonstration simplification: email permission does not authorise push, SMS or WhatsApp. Production activation must check current channel/purpose permission, address/device validity and other agreed rules.
 
 The script does **not** implement campaign selection or send messages. In production, access to the approved customer selection and campaign-specific filters must enforce the restrictions; a flag that downstream exports can ignore is insufficient.
 
@@ -170,31 +170,35 @@ The CRM/data owner owns source correction; the integration owner owns mappings a
 python3 tools/benchmark.py --sizes 1000 100000 --output runs/benchmark.csv
 ```
 
-Single local runs of processor version 1.1.0 measured 1,000 records in 0.051 seconds and 100,000 in 0.595 seconds, with output counts independently verified. Python 3.14.4 on macOS 26.6.2 ARM64. The timer includes startup, snapshot copying, processing and report writing; generation and independent output counting are outside it. The raw measurements record the processor SHA-256 and UTC timestamp. Memory grows with retained records; these measurements do not establish Production/cloud capacity or a supported memory ceiling. [Raw benchmark results](docs/benchmark.csv).
+Single local runs of processor version 1.1.0 measured 1,000 records in 0.051 seconds and 100,000 in 0.595 seconds, with output counts independently verified. Python 3.14.4 on macOS 26.6.2. The timer includes startup, snapshot copying, processing and report writing; generation and independent output counting are outside it. The raw measurements record the processor SHA-256 and UTC timestamp. Memory grows with retained records; these measurements do not establish Production/cloud capacity or a supported memory ceiling. [Raw benchmark results](docs/benchmark.csv).
 
 No live extraction, schedule, ADW load, cloud status management, source locking, exactly-once delivery, automated correction, sentiment model or campaign enforcement is implemented. The caller must provide a completed file. Source retention makes local outcomes inspectable; Production access, retention and deletion rules remain customer decisions. Reprocessing uses a fresh run folder, not an append operation. [Walkthrough](docs/walkthrough.md).
 
 ## My judgement and Codex assistance
 
-I originated and championed the sports sentiment initiative within Oracle, brought colleagues together, contributed to the OIC / ADW / OAC architecture and created dashboards. I supplied that experience, directed the assessment and challenged assumptions rather than accepting the generated design unchanged.
+### How I approached the assignment
 
-| My review question | Consequence |
+Analytical thinking and problem solving are central to how I work. I break a problem down, question the assumptions and consider different approaches before deciding what makes sense. I am fascinated by AI and how it can help me personally and professionally, but I do not take its output at face value: I ask for sources when factual claims are made, check whether the reasoning holds up and revisit answers when something does not feel right. For this assignment, I brought my Oracle experience and the original NHL idea, then used Codex to develop and test the hypothetical CRM example. I kept questioning whether the proposed behaviour would help the customer and whether the code, diagrams and explanation agreed.
+
+### Questions that changed the result
+
+| Question I raised | What changed |
 | --- | --- |
-| How does the CRM export actually reach the integration? | We made scheduled CSV delivery to SFTP and retrieval explicit. |
-| Why introduce unfamiliar database programming or a long script? | We chose a compact, independently runnable Python example I could inspect. |
-| Why should 800 bad records prevent use of 9,200 valid records? | We revised the policy to preserve received data, release valid rows and track correction cases. |
-| Why do the production diagram and demo describe different release rules? | I challenged the mismatch; the code, tests and documentation were aligned around one policy. |
-| Who fixes missing information, and does missing permission mean NO? | We assigned source ownership and separated data quality from channel-specific marketing eligibility. |
+| How does the CRM export actually reach OIC? | We made the scheduled export, delivery to SFTP and OIC collection explicit. |
+| Why use unfamiliar database programming or make the script unnecessarily long? | We kept a standalone Python example that reviewers could run without Oracle access. |
+| Why should 800 bad records prevent use of 9,200 others? | We changed the policy to allow valid records through, provided the receiving system can safely accept partial updates. |
+| Why do the diagram and code describe different behaviour? | I challenged the mismatch and required the implementation, tests, diagrams and documentation to agree. |
+| Who corrects missing data, and should missing permission become NO? | We identified the responsible source owners and kept missing permission as UNKNOWN. |
+| Could the generated code still have gaps despite passing the initial checks? | I requested code reviews with both Codex and Claude. The reviews identified skipped empty records, inconsistent handling of spaces in permission values and duplicate reports that hid other errors. Fixes and regression tests followed. |
 
-Codex assisted with the hypothetical CRM incident, detailed rules, synthetic fixtures, expected outcomes, code/tests, research, documentation and execution. A supplied Claude critique informed my review. I chose Codex to work with files, code and execution results in one workspace. No runtime LLM is used: repeatable rules handle known mappings, while unfamiliar meanings require human confirmation.
+On occasions I asked Codex to assess Claude’s feedback point by point. I accepted changes to configuration checks, text matching, error messages and traceability while keeping the agreed release policy. Rather than rely on an assurance that the repository would work for someone else, I requested a fresh-copy test on my Mac.
 
-## Reproduce a mapping-only change
+### Where AI helped, and where I kept clear limits
 
-```sh
-python3 tools/mapping_walkthrough.py
-```
+I chose Codex because it allowed me to work with documents, code and execution results in one place. It helped with the scenario, research, dummy data, code, tests, documentation and execution, while feedback from Claude also informed the review. I remained responsible for the intended behaviour, the questions asked and whether the reported results made sense. The walkthrough explains the main mechanisms behind those decisions so they can be discussed and reproduced.
 
-This temporary-workspace exercise verifies that an unfamiliar `customerdata_id` heading blocks release. It then assumes explicit source-owner confirmation, adds the alias only to a temporary mapping, and verifies that three released records exactly match the baseline. The processor and repository mappings are not modified. Source-owner confirmation is an exercise assumption, not approval obtained from a real customer. See the [code walkthrough](docs/walkthrough.md).
+The running processor does not call an LLM. Agreed mappings, required values and date checks should give repeatable results. AI could help investigate an unfamiliar field, but the source owner still needs to confirm its meaning before a mapping is approved. Neither AI nor the integration should invent a missing customer ID or marketing permission, and I would only introduce an agent into the daily process if it solved a clear customer problem and its output could be checked reliably.
+
 
 ## How this submission addresses the assignment
 
