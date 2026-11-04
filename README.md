@@ -96,7 +96,7 @@ For a fully parsed file, missing/invalid required values and conflicting records
 
 ![Implemented local processing](docs/diagrams/validation.svg)
 
-A customer ID should identify one customer in the CRM, but a mistake in creating or combining CSV exports could put that ID into the delivered file twice. In `samples/duplicates.csv`, F001 appears twice with the same details, so the processor retains one valid copy. F002 appears twice with different regions, NY and CA. The processor reports both F002 rows for correction because the file does not say which region to trust. The source owner checks how the export was assembled; the processor cannot determine why the rows were repeated.
+A customer ID should identify one customer in the CRM, but a mistake in creating or combining CSV exports could put that ID into the delivered file twice. In `samples/duplicates.csv`, F001 appears twice with the same details after standardisation, so the processor retains one valid copy. F002 appears twice with different marketing-permission values, NO and YES. The processor reports both F002 rows for correction because the file does not say which value to trust. The source owner checks how the export was assembled; the processor cannot determine why the rows were repeated.
 
 ## Outputs, record status and completion
 
