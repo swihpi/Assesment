@@ -96,7 +96,7 @@ For a fully parsed file, missing/invalid required values and conflicting records
 
 ![Implemented local processing](docs/diagrams/validation.svg)
 
-Conflicting attributes under one ID can describe inconsistent records for the same customer. The prototype leaves that group out of the approved file until the source owner resolves the differences. For example, a report joining current and previous addresses can repeat F002 with NY on one row and CA on another, even when the CRM customer table has only one F002. Different IDs such as F002 and F012 are not matched as one person by this processor.
+A customer ID should identify one customer in the CRM, but a mistake in creating or combining CSV exports could put that ID into the delivered file twice. In `samples/duplicates.csv`, F001 appears twice with the same details, so the processor retains one valid copy. F002 appears twice with different regions, NY and CA. The processor reports both F002 rows for correction because the file does not say which region to trust. The source owner checks how the export was assembled; the processor cannot determine why the rows were repeated.
 
 ## Outputs, record status and completion
 
