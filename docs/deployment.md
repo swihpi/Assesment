@@ -23,15 +23,3 @@ Use dummy inputs locally, then validate the deployed integration in a dedicated 
 ## Customer and internal coordination
 
 I would give the source owner traceable correction examples and avoid attributing the problem to the CRM before investigating the export and processing. If our processing appears responsible, I would involve internal engineering with a reproducible input, expected and actual behaviour, customer impact and checks already performed, raising product or priority decisions when needed. I would remain the customer’s point of contact and agree the next update while the teams investigate. Before production, I would review validation results and remaining limitations with the customer’s technical owner and internal support team, confirming monitoring, failure notifications and escalation ownership.
-
-## Official capability references
-
-- [Transform records with OIC mappings](https://docs.oracle.com/en/cloud/paas/application-integration/ftp-adapter/configure-data-mapping-transform-data-files.html).
-- [Preserve source files in OCI Object Storage](https://docs.oracle.com/en-us/iaas/Content/Object/Concepts/objectstorageoverview.htm).
-
-- [Schedule an integration](https://docs.oracle.com/en/cloud/paas/application-integration/integrations-user/define-integration-schedule.html).
-- [SFTP through the FTP Adapter](https://docs.oracle.com/en/cloud/paas/application-integration/ftp-adapter/ftp-adapter-capabilities.html).
-- [Invoke an OCI Function](https://docs.oracle.com/en/cloud/paas/application-integration/integrations-user/invoke-oracle-cloud-infrastructure-functions-directly-from-integration-oci-function-action.html).
-- [Python function packaging](https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functions-codeonly-python.htm).
-
-These document platform capabilities, not an existing deployment.
